@@ -1,0 +1,10 @@
+/build/
+/nbproject/private/
+/dist/
+nbbinaries/
+nbdist/
+nbactions.xml
+.nb-gradle/
+Thumbs.db
+*.log
+.env
