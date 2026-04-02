@@ -1,5 +1,5 @@
 
-package LOGIC.Conection;
+package connection;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
