@@ -267,7 +267,6 @@ FROM turno;
 
 
 
-
 /* vista_usuario */
 CREATE OR REPLACE VIEW vista_usuario AS
 SELECT
@@ -282,8 +281,9 @@ INNER JOIN cargo c ON u.id_cargo = c.id_cargo
 
 
 
+/* vista_unidad_medida */
 CREATE OR REPLACE VIEW vista_unidad_medida AS
 SELECT
-  nombre_unidad AS `Unidad de Medida`,
+  nombre_unidad_medida AS `Unidad de Medida`,
   abreviatura AS `Abreviatura`
 FROM unidad_medida;

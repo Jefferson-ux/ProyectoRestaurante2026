@@ -219,7 +219,7 @@ CREATE TABLE reserva (
 
 CREATE TABLE unidad_medida (
     id_unidad_medida INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_unidad VARCHAR(45) NOT NULL UNIQUE,
+    nombre_unidad_medida VARCHAR(45) NOT NULL UNIQUE,
     abreviatura VARCHAR(10) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

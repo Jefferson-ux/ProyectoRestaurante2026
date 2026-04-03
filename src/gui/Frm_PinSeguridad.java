@@ -26,7 +26,7 @@ public class Frm_PinSeguridad extends javax.swing.JFrame {
         this.setTitle("Pin de seguridad");
         this.setResizable(false);
         btningresar.setEnabled(false);
-        
+        btn_delete.setText("");
         
         
         TXTPASS.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {

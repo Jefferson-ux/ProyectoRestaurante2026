@@ -388,7 +388,7 @@ INSERT INTO reserva (fecha_registro, fecha_inicio, fecha_fin, cantidad_personas,
 /* ================================================ */
 /*  UNIDAD_MEDIDA (6)                               */
 /* ================================================ */
-INSERT INTO unidad_medida (nombre_unidad, abreviatura) VALUES
+INSERT INTO unidad_medida (nombre_unidad_medida, abreviatura) VALUES
     ('Kilogramo', 'kg'),
     ('Litro',     'lt'),
     ('Unidad',    'und'),
