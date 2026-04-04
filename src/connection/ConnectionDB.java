@@ -310,20 +310,7 @@ public void activarEscuela(int codigoEscuela) throws SQLException {
     CallableStatement cs = conn.prepareCall(sql);
     cs.setInt(1, codigoEscuela); // Solo se pasa el código, el estado lo maneja el procedure
     cs.execute();
-} 
-     
-     
-     
-     
-     
-     
-    
-     
-     
-     
-     
-     
-    
+}
     
     
     
