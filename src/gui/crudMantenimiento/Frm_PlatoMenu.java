@@ -13,6 +13,8 @@ import logic.dao.PlatoMenuMethod;
   /*excel*/
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.table.TableColumnModel;
 
@@ -46,17 +48,11 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         
         
         modeloTablaMesa.setColumnIdentifiers(header);
-        JTABLE_Mant_Mesa.setModel(modeloTablaMesa);
+        JTABLE_Mant_Plato.setModel(modeloTablaMesa);
         
         
         
-        
-        
-        
-        
-        
-        
-        TableColumnModel colModel = JTABLE_Mant_Mesa.getColumnModel();
+        TableColumnModel colModel = JTABLE_Mant_Plato.getColumnModel();
 
     // ID: Lo ocultamos o lo dejamos muy pequeño (según lo que dijo tu profe)
     colModel.getColumn(0).setPreferredWidth(0);
@@ -77,24 +73,15 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     colModel.getColumn(4).setPreferredWidth(350);
 
     // 3. Extras de la Tabla
-    JTABLE_Mant_Mesa.getTableHeader().setReorderingAllowed(false); // No mover columnas
-    JTABLE_Mant_Mesa.setRowHeight(25); // Filas más altas para que respire el diseño
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    JTABLE_Mant_Plato.getTableHeader().setReorderingAllowed(false); // No mover columnas
+    JTABLE_Mant_Plato.setRowHeight(25); // Filas más altas para que respire el diseño
         
         
         //Desactivar button
+        BTN_Nuevo.setEnabled(false);
         BTN_Desactivar.setEnabled(false);
         BTN_Guardar.setEnabled(false);
+        BTN_Cancel.setVisible(false);
         BTN_Modificar.setEnabled(false);
         txtcodigoplato.setEnabled(false);
 
@@ -118,20 +105,22 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaDescripcion = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
-        JTABLE_Mant_Mesa = new javax.swing.JTable();
+        JTABLE_Mant_Plato = new javax.swing.JTable();
         BTN_EXCEL = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         TXT_BuscarMesas = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        BTN_Desactivar1 = new javax.swing.JButton();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        BTN_VerMesas = new javax.swing.JButton();
+        BTN_VerPlatos = new javax.swing.JButton();
         BTN_Desactivar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
         BTN_Nuevo = new javax.swing.JButton();
+        BTN_Cancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -176,7 +165,6 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         });
         jPanel1.add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 250, 30));
 
-        jComboBoxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jPanel1.add(jComboBoxCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 120, 330, 30));
 
         txtNombrePlato.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -206,9 +194,9 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 698, 300));
 
-        JTABLE_Mant_Mesa.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        JTABLE_Mant_Mesa.setForeground(new java.awt.Color(0, 0, 204));
-        JTABLE_Mant_Mesa.setModel(new javax.swing.table.DefaultTableModel(
+        JTABLE_Mant_Plato.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        JTABLE_Mant_Plato.setForeground(new java.awt.Color(0, 0, 204));
+        JTABLE_Mant_Plato.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -219,12 +207,12 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        JTABLE_Mant_Mesa.addMouseListener(new java.awt.event.MouseAdapter() {
+        JTABLE_Mant_Plato.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JTABLE_Mant_MesaMouseClicked(evt);
+                JTABLE_Mant_PlatoMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(JTABLE_Mant_Mesa);
+        jScrollPane1.setViewportView(JTABLE_Mant_Plato);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 400, 920, 220));
 
@@ -257,13 +245,23 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
                 TXT_BuscarMesasKeyReleased(evt);
             }
         });
-        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 290, -1));
+        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 13, 290, -1));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_search_white.png"))); // NOI18N
         jLabel5.setText("BUSCAR");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 10, 120, 30));
+
+        BTN_Desactivar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Desactivar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
+        BTN_Desactivar1.setText("     QUITAR");
+        BTN_Desactivar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_Desactivar1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(BTN_Desactivar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 280, 165, 48));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 920, 50));
 
@@ -288,14 +286,14 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        BTN_VerMesas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerMesas.setText("VER MESAS");
-        BTN_VerMesas.addActionListener(new java.awt.event.ActionListener() {
+        BTN_VerPlatos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_VerPlatos.setText("VER PLATOS DEL MENÚ");
+        BTN_VerPlatos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_VerMesasActionPerformed(evt);
+                BTN_VerPlatosActionPerformed(evt);
             }
         });
-        jPanel3.add(BTN_VerMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 30, 165, 50));
+        jPanel3.add(BTN_VerPlatos, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 30, 165, 50));
 
         BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Desactivar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
@@ -342,6 +340,16 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         });
         jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 94, 165, 48));
 
+        BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
+        BTN_Cancel.setText("     CANCELAR");
+        BTN_Cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_CancelActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 94, 165, 48));
+
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 720));
 
         pack();
@@ -349,95 +357,156 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
 
     
     
+    // Rellenar el ComboBox
+    private void cargarComboBoxCategoria() {
+        try {
+          jComboBoxCategoria.removeAllItems();
+          jComboBoxCategoria.addItem("<<Seleccionar>>"); // Opción por defecto
+          ResultSet rs = methods.comboListarCategorias();
+          while (rs.next()) {
+            jComboBoxCategoria.addItem(rs.getString("Nombre de Categoría"));
+          }
+        } catch (SQLException e) {
+          JOptionPane.showMessageDialog(this, "Error al cargar las Categorías: " + e.getMessage());
+        }
+      }
+    
+    
+    private void limpiarCamposPlatoMenu () {
+        txtcodigoplato.setText("");
+        txtNombrePlato.setText("");
+        jComboBoxCategoria.setSelectedIndex(0);
+        BTN_Guardar.setEnabled(true);
+        BTN_Modificar.setEnabled(false);
+        BTN_Desactivar.setEnabled(false);
+        BTN_VerPlatos.setEnabled(false);
+        
+    } 
+    
+    
     
     ////    CLICKEO EN LA TABLA --> --> 
-    private void JTABLE_Mant_MesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_MesaMouseClicked
-        int selectRow = JTABLE_Mant_Mesa.getSelectedRow();
+    private void JTABLE_Mant_PlatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_PlatoMouseClicked
+        if (!JTABLE_Mant_Plato.isEnabled()) {
+            return; 
+        }
+        
+        int selectRow = JTABLE_Mant_Plato.getSelectedRow();
         if (selectRow >= 0) {
-            String codigo = JTABLE_Mant_Mesa.getValueAt(selectRow, 0).toString();
-            String nombre_plato = JTABLE_Mant_Mesa.getValueAt(selectRow, 1).toString();
-            String precio = JTABLE_Mant_Mesa.getValueAt(selectRow, 2).toString();
-            // TODO --> CATEGORÍA
-            String descripcion = JTABLE_Mant_Mesa.getValueAt(selectRow, 4).toString();
+            String codigo = JTABLE_Mant_Plato.getValueAt(selectRow, 0).toString().trim();
+            String nombre_plato = JTABLE_Mant_Plato.getValueAt(selectRow, 1).toString().trim();
+            String precio = JTABLE_Mant_Plato.getValueAt(selectRow, 2).toString().trim();
+            String categoria = JTABLE_Mant_Plato.getValueAt(selectRow, 3).toString().trim();
+            String descripcion = JTABLE_Mant_Plato.getValueAt(selectRow, 4).toString().trim();
 
             txtcodigoplato.setText(codigo);
             txtNombrePlato.setText(nombre_plato);
             txtPrecio.setText(precio);
             jTextAreaDescripcion.setText(descripcion);
             
+            String categoriaOriginal = categoria;
+            boolean find = false;
+            for (int i=0;i<jComboBoxCategoria.getItemCount();i++){
+                String item = jComboBoxCategoria.getItemAt(i).trim();
+                if (item.equalsIgnoreCase(categoria)){
+                    jComboBoxCategoria.setSelectedIndex(i);
+                    find=true;
+                    break;
+                }
+                
+            }
+            
+            
         }
-        BTN_Guardar.setEnabled(true);
-        BTN_VerMesas.setEnabled(false);
+        
+        txtNombrePlato.setEditable(true);
+        txtPrecio.setEditable(true);
+        jComboBoxCategoria.setEditable(true);
+        jTextAreaDescripcion.setEditable(true);
+        
+        BTN_Guardar.setEnabled(false);
+        BTN_VerPlatos.setEnabled(false);
         BTN_Modificar.setEnabled(true);
         BTN_Desactivar.setEnabled(true);
-    }//GEN-LAST:event_JTABLE_Mant_MesaMouseClicked
+        
+    }//GEN-LAST:event_JTABLE_Mant_PlatoMouseClicked
 
     
     
     
     
-    private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
-       
-        txtcodigoplato.setText("");
-        txtNombrePlato.setText("");
-        txtPrecio.setText("");
-        txtNombrePlato.setText("");
-        jTextAreaDescripcion.setText("");
-
-        txtNombrePlato.requestFocus();
-        txtNombrePlato.setEnabled(true);
-        txtPrecio.setEnabled(true);
-        jTextAreaDescripcion.setEnabled(true);
-
-        BTN_Guardar.setEnabled(true);
-        BTN_Desactivar.setEnabled(false);
-        BTN_Modificar.setEnabled(false);
-
-
-    }//GEN-LAST:event_BTN_NuevoActionPerformed
-
     private void BTN_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTN_GuardarMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_BTN_GuardarMouseClicked
 
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
-      
-   // 1. Validar que el campo no esté vacío
-    String nombre = txtNombrePlato.getText().trim();
-    String precio = txtPrecio.getText().trim();
-    String descripcion = jTextAreaDescripcion.getText().trim();
-    
-    
-    if (nombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese el nombre del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtNombrePlato.requestFocus();
-      return;
-    }
-    if (precio.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese el precio del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtPrecio.requestFocus();
-      return;
-    }
 
-    // 2. Confirmar si el usuario desea guardar
-    int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro?", "Confirmación", JOptionPane.YES_NO_OPTION);
-    if (respuesta == JOptionPane.YES_OPTION) {
+            // 1. Validar que el campo no esté vacío
+            String nombre = txtNombrePlato.getText().trim();
+            String precio = txtPrecio.getText().trim();
+            String categoria = (String) jComboBoxCategoria.getSelectedItem();
+            String descripcion = jTextAreaDescripcion.getText().trim();
+            
+            
+            if (nombre==null || nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el nombre del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+                txtNombrePlato.requestFocus();
+                return;
+            }
+            if (precio==null || precio.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el precio del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+                txtPrecio.requestFocus();
+                return;
+            }
+            int codigoCategoria=-1;
+            try {
+                codigoCategoria = methods.comboSeleccionarID(categoria);
+            } catch (SQLException ex) {
+                Logger.getLogger(Frm_PlatoMenu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if (codigoCategoria==-1){
+                JOptionPane.showMessageDialog(null, "No se encontró la categoría seleccionada", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            
+            
+            
+            // 2. Confirmar si el usuario desea guardar
+            int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (respuesta == JOptionPane.YES_OPTION) {
+                
+                try {
+                    // 3. Llamar al método para insertar
+                    this.methods.insertarPlatoMenu(nombre,descripcion,Double.parseDouble(precio),codigoCategoria);
+                    
+                    // 4. Mostrar mensaje de éxito
+                    JOptionPane.showMessageDialog(this, "Plato registrado correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // 5. Actualizar tabla y limpiar campos
+                    this.MostrarPlatosMenu();
+                    this.limpiarCamposPlatoMenu();
+                    
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al registrar el plato:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    txtNombrePlato.setEditable(false);
+                    txtPrecio.setEditable(false);
+                    jComboBoxCategoria.setEditable(false);
+                    jTextAreaDescripcion.setEditable(false);
 
-      try {
-        // 3. Llamar al método para insertar
-        this.methods.insertarPlatoMenu(nombre,descripcion,Double.parseDouble(precio),"2");
-        JOptionPane.showMessageDialog(null, "AHHHHHHHHH INSERT");
-
-        // 4. Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Plato registrado correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
-
-        // 5. Actualizar tabla y limpiar campos
-        this.MostrarPlatosMenu();
-
-      } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al registrar el plato:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
-      }
-    }
+                    BTN_Guardar.setEnabled(false);
+                    BTN_VerPlatos.setEnabled(false);
+                    BTN_Modificar.setEnabled(false);
+                    BTN_Desactivar.setEnabled(false);
+                    BTN_Nuevo.setVisible(true);
+                    BTN_Cancel.setVisible(false);
+                    JTABLE_Mant_Plato.setEnabled(true);
+                }
+                
+                
+            }   
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
@@ -646,14 +715,16 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     
     
     
-    private void BTN_VerMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerMesasActionPerformed
+    private void BTN_VerPlatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerPlatosActionPerformed
         this.MostrarPlatosMenu();
+        cargarComboBoxCategoria();
+        this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
-        this.BTN_VerMesas.setEnabled(false);
+        this.BTN_VerPlatos.setEnabled(false);
 
-    }//GEN-LAST:event_BTN_VerMesasActionPerformed
+    }//GEN-LAST:event_BTN_VerPlatosActionPerformed
 
     private void TXT_BuscarMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasActionPerformed
         // TODO add your handling code here:
@@ -666,6 +737,51 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     private void txtNombrePlatoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombrePlatoKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombrePlatoKeyTyped
+
+    private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
+        
+        txtcodigoplato.setText("");
+        txtNombrePlato.setText("");
+        txtPrecio.setText("");
+        txtNombrePlato.setText("");
+        jTextAreaDescripcion.setText("");
+
+        txtNombrePlato.requestFocus();
+        txtNombrePlato.setEditable(true);
+        txtPrecio.setEditable(true);
+        jComboBoxCategoria.setEditable(false);
+        jTextAreaDescripcion.setEditable(true);
+
+        // 1. Limpiar la selección actual (Que no quede nada pintado de azul)
+            JTABLE_Mant_Plato.clearSelection();
+
+            // 2. Deshabilitar la tabla para que no se pueda hacer clic
+            JTABLE_Mant_Plato.setEnabled(false);
+        
+        BTN_Guardar.setEnabled(true);
+        BTN_Desactivar.setEnabled(false);
+        BTN_Modificar.setEnabled(false);
+        BTN_Nuevo.setVisible(false);
+        BTN_Cancel.setVisible(true);
+
+    }//GEN-LAST:event_BTN_NuevoActionPerformed
+
+    private void BTN_Desactivar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Desactivar1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BTN_Desactivar1ActionPerformed
+
+    private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
+        JTABLE_Mant_Plato.setRowSelectionAllowed(true);
+        JTABLE_Mant_Plato.setColumnSelectionAllowed(true);
+        JTABLE_Mant_Plato.setCellSelectionEnabled(true);
+        
+        BTN_Guardar.setEnabled(true);
+        BTN_Desactivar.setEnabled(false);
+        BTN_Modificar.setEnabled(false);
+        BTN_Nuevo.setVisible(true);
+        BTN_Cancel.setVisible(false);
+        JTABLE_Mant_Plato.setEnabled(true);
+    }//GEN-LAST:event_BTN_CancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -718,15 +834,17 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;
+    private javax.swing.JButton BTN_Desactivar1;
     private javax.swing.JButton BTN_EXCEL;
     private javax.swing.JButton BTN_Guardar;
     private javax.swing.JButton BTN_Modificar;
     private javax.swing.JButton BTN_Nuevo;
     private javax.swing.JButton BTN_PDF;
-    private javax.swing.JButton BTN_VerMesas;
-    private javax.swing.JTable JTABLE_Mant_Mesa;
+    private javax.swing.JButton BTN_VerPlatos;
+    private javax.swing.JTable JTABLE_Mant_Plato;
     private javax.swing.JTextField TXT_BuscarMesas;
     private javax.swing.JComboBox<String> jComboBoxCategoria;
     private javax.swing.JLabel jLabel1;
@@ -751,7 +869,7 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
 //Método para mostrar las facultades
     public void MostrarPlatosMenu() {
         //Ordenar ASC, DESC
-        JTABLE_Mant_Mesa.setAutoCreateRowSorter(true);
+        JTABLE_Mant_Plato.setAutoCreateRowSorter(true);
         //Limpiar la tabla antes de mostrar nuevos datos
         modeloTablaMesa.setRowCount(0);
         try {
@@ -781,11 +899,16 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
 
 //Método para mostrar las facultades
     public void BuscarMesaPorNombre() {
-        modeloTablaMesa.setRowCount(0);
-        String search = TXT_BuscarMesas.getText().trim();
+        String parametro = TXT_BuscarMesas.getText().trim();
+        if (parametro.isEmpty()) {
+            parametro = "";
+        }
         try {
             //Llama al método que retorna los datos de facultades
-            ResultSet rs = this.methods.buscarPlatoMenu(search);
+            ResultSet rs = this.methods.buscarPlatoMenu(parametro);
+            
+            try (rs) {
+                modeloTablaMesa.setRowCount(0);
             while (rs.next()) {
                 String descripcion = rs.getString("Descripciones");
                 if (descripcion==null||descripcion.isEmpty()){
@@ -801,12 +924,12 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
                 };
                 modeloTablaMesa.addRow(fila);
             }
+            }
+            
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al buscar facultades:\n" + e.getMessage(),
-                    "Error de búsqueda", JOptionPane.ERROR_MESSAGE);
+            System.err.println("Error silencioso en búsqueda: " + e.getMessage());
         }
     }
 
-//Método para insertar nuevo valor a las facultades
 }

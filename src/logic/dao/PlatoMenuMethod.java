@@ -46,7 +46,7 @@ public class PlatoMenuMethod {
        
        /* SEARCH --> BUSCAR DATOS */
     public ResultSet buscarPlatoMenu(String nombre) throws SQLException{
-        String sql = "CALL buscar_plato_menu(?)";/*Llamada al procedimiento*/
+        String sql = "{CALL buscar_plato_menu(?)}";/*Llamada al procedimiento*/
         CallableStatement cs = conn.prepareCall(sql);/*Usamos CallableStatement*/
         cs.setString(1, nombre);    /*Asignamos parámetros*/
         return cs.executeQuery(); 
@@ -54,14 +54,14 @@ public class PlatoMenuMethod {
 
 
        /* INSERT--> AGREGAR DATOS */
-    public void insertarPlatoMenu(String nombre, String descripcion, double precio, String id_categoria) throws SQLException{
-        String sql = "CALL insertar_plato_menu(?,?,?,?)";//Llamada al procedimiento
+    public void insertarPlatoMenu(String nombre, String descripcion, double precio, int id_categoria) throws SQLException{
+        String sql = "{CALL insertar_plato_menu(?,?,?,?)}";//Llamada al procedimiento
         try 
             (PreparedStatement ps =conn.prepareCall(sql)){
             ps.setString(1, nombre);
             ps.setString(2, descripcion);
             ps.setDouble(3, precio);
-            ps.setString(4, id_categoria);
+            ps.setInt(4, id_categoria);
             ps.execute();
             System.out.println("Plato del menú insertada con éxito");
         }
@@ -99,7 +99,25 @@ public class PlatoMenuMethod {
          //======================================//  
         // Métodos de los COMBOBOX - VIEW de FK //
        //======================================//            
-      
+      //=> COMBOBOX
+    public ResultSet comboListarCategorias() throws SQLException{
+        String sql = "Select `Nombre de Categoría` from vista_categoria";
+        Statement st = conn.createStatement(); /*Creamos la sentencia*/
+        return st.executeQuery(sql);               /*Retorna el resultado*/
+    }
+    
+    //=> ID_CATEGORIA
+    public int comboSeleccionarID(String nombre) throws SQLException{
+        String sql = "Select `ID` from vista_categoria WHERE `Nombre de Categoría` = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1,nombre);
+        ResultSet rsAux = ps.executeQuery();
+        if (rsAux.next()){
+            return rsAux.getInt("ID");
+        } else {
+            return -1;
+        }        
+    } 
 
 
 }
