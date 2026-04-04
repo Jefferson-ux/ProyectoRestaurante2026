@@ -10,7 +10,7 @@ CREATE PROCEDURE insertar_cargo (
 )
 BEGIN
     DECLARE v_existencia INT;
-    DECLARE v_msg TEXT;
+    DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_existencia
     FROM cargo
@@ -45,7 +45,7 @@ CREATE PROCEDURE insertar_categoria (
 )
 BEGIN
     DECLARE v_existencia INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_existencia
     FROM categoria
@@ -80,11 +80,11 @@ CREATE PROCEDURE insertar_cliente (
     IN p_apellido VARCHAR(255),
     IN p_correo VARCHAR(255),
     IN p_telefono VARCHAR(50),
-    IN p_observacion TEXT
+    IN p_observacion VARCHAR(500)
 )
 BEGIN
     DECLARE v_existencia INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_existencia
     FROM cliente
@@ -133,7 +133,7 @@ BEGIN
     DECLARE v_turno_existe INT;
     DECLARE v_tipo_existe INT;
     DECLARE v_cargo_existe INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_emp_existe
     FROM empleado
@@ -201,13 +201,13 @@ DELIMITER $$
 CREATE PROCEDURE insertar_usuario (
     IN p_codigo VARCHAR(100),
     IN p_password VARCHAR(255),
-    IN p_observacion TEXT,
+    IN p_observacion VARCHAR(500),
     IN p_id_cargo INT
 )
 BEGIN
     DECLARE v_codigo_existe INT;
     DECLARE v_cargo_existe INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_codigo_existe
     FROM usuario
@@ -268,7 +268,7 @@ CREATE PROCEDURE insertar_pedido (
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     IF p_fecha IS NULL THEN
         SIGNAL SQLSTATE '45000'
@@ -353,7 +353,7 @@ CREATE PROCEDURE insertar_mesa(
 )
 BEGIN
     DECLARE v_existe INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_existe
     FROM mesa
@@ -420,12 +420,12 @@ CREATE PROCEDURE insertar_empleado(
     IN p_correo2 VARCHAR(255),
     IN p_telefono1 VARCHAR(20),
     IN p_telefono2 VARCHAR(20),
-    IN p_observacion TEXT,
+    IN p_observacion VARCHAR(500),
     IN p_id_genero INT
 )
 BEGIN
     DECLARE v_existe INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_existe
     FROM empleado
@@ -518,7 +518,7 @@ CREATE PROCEDURE insertar_detalle_pedido(
     IN p_id_plato_menu INT,
     IN p_cantidad INT,
     IN p_precio_unitario DECIMAL(10,2),
-    IN p_observacion TEXT
+    IN p_observacion VARCHAR(500)
 )
 BEGIN
     IF p_cantidad <= 0 THEN
@@ -577,7 +577,7 @@ CREATE PROCEDURE insertar_factura(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     IF p_total <= 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -642,7 +642,7 @@ CREATE PROCEDURE insertar_producto(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_count
     FROM producto
@@ -730,7 +730,7 @@ CREATE PROCEDURE insertar_proveedor(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     SELECT COUNT(*) INTO v_count
     FROM proveedor
@@ -823,7 +823,7 @@ CREATE PROCEDURE insertar_proveedor_producto(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     IF p_precio_compra < 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -894,13 +894,13 @@ DELIMITER $$
 
 CREATE PROCEDURE insertar_plato_menu(
     IN p_nombre VARCHAR(255),
-    IN p_descripcion TEXT,
+    IN p_descripcion VARCHAR(500),
     IN p_precio DECIMAL(10,2),
     IN p_id_categoria INT
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     IF p_nombre IS NULL OR TRIM(p_nombre) = '' THEN
         SIGNAL SQLSTATE '45000'
@@ -950,18 +950,11 @@ BEGIN
         p_id_categoria,
         DEFAULT
     );
-
-
-
-
     SELECT 'Plato insertado en el menú exitosamente.' AS mensaje;
 
 END$$
 
 DELIMITER ;
-
-
-
 
 
 
@@ -986,7 +979,7 @@ CREATE PROCEDURE insertar_reserva(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg TEXT;
+	DECLARE v_msg VARCHAR(500);
 
     IF p_fecha_inicio >= p_fecha_fin THEN
         SIGNAL SQLSTATE '45000'

@@ -6,7 +6,6 @@
 
 00=========================================================================*/
 
-
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -16,13 +15,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
    /*Método de Mesa*/
-import logic.dao.MesaMethod;
+import logic.dao.PlatoMenuMethod;
 
 
   /*excel*/
 import java.io.File;
 import java.io.FileOutputStream;
 import javax.swing.JFileChooser;
+import javax.swing.table.TableColumnModel;
 
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 //import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -34,31 +34,77 @@ import javax.swing.JFileChooser;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 
-public class Frm_Usuario extends javax.swing.JFrame {
+public class Frm_MantUsuario extends javax.swing.JFrame {
 
     DefaultTableModel modeloTablaMesa = new DefaultTableModel();
     //Objeto conexión a la base de datos
-    MesaMethod methods;
+    PlatoMenuMethod methods;
 
-    public Frm_Usuario() {
+    public Frm_MantUsuario() {
         FlatLightLaf.setup();
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Mantenimiento de las mesa");
+        this.setTitle("Mantenimiento de los platos del Menú");
         
-        this.methods = new MesaMethod();
+        this.methods = new PlatoMenuMethod();
         
 
-        String[] header = {"ID ", "Número de Mesa","Capacidad"};
-
+        String[] header = {"ID ", "Nombre del plato","Precio","Categoría","Descripción"};
+        
+        
+        
         modeloTablaMesa.setColumnIdentifiers(header);
         JTABLE_Mant_Mesa.setModel(modeloTablaMesa);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    TableColumnModel colModel = JTABLE_Mant_Mesa.getColumnModel();
 
+    // ID: Lo ocultamos o lo dejamos muy pequeño (según lo que dijo tu profe)
+    colModel.getColumn(0).setPreferredWidth(0);
+    colModel.getColumn(0).setMinWidth(35);
+    colModel.getColumn(0).setMaxWidth(50); 
+
+    // Nombre: Espacio suficiente
+    colModel.getColumn(1).setPreferredWidth(200);
+
+    // Precio: Un ancho fijo pequeño para que no baile
+    colModel.getColumn(2).setPreferredWidth(80);
+    colModel.getColumn(2).setMaxWidth(100);
+
+    // Categoría: Mediano
+    colModel.getColumn(3).setPreferredWidth(120);
+
+    // Descripción: ¡Que se lleve el resto del espacio!
+    colModel.getColumn(4).setPreferredWidth(350);
+
+    // 3. Extras de la Tabla
+    JTABLE_Mant_Mesa.getTableHeader().setReorderingAllowed(false); // No mover columnas
+    JTABLE_Mant_Mesa.setRowHeight(25); // Filas más altas para que respire el diseño
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         //Desactivar button
         BTN_Desactivar.setEnabled(false);
         BTN_Guardar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-        txtcodigomesa.setEnabled(false);
+        txtcodigoplato.setEnabled(false);
 
     }
 
@@ -70,17 +116,17 @@ public class Frm_Usuario extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        txtcodigomesa = new javax.swing.JTextField();
-        txtcapacidad = new javax.swing.JTextField();
-        BTN_VerMesas = new javax.swing.JButton();
+        txtcodigoplato = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        txtnumeroMesa = new javax.swing.JTextField();
+        txtPrecio = new javax.swing.JTextField();
+        jComboBoxCategoria = new javax.swing.JComboBox<>();
+        txtNombrePlato = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaDescripcion = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTABLE_Mant_Mesa = new javax.swing.JTable();
-        BTN_Nuevo = new javax.swing.JButton();
-        BTN_Guardar = new javax.swing.JButton();
-        BTN_Modificar = new javax.swing.JButton();
-        BTN_Desactivar = new javax.swing.JButton();
         BTN_EXCEL = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -88,71 +134,85 @@ public class Frm_Usuario extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        BTN_VerMesas = new javax.swing.JButton();
+        BTN_Desactivar = new javax.swing.JButton();
+        BTN_Modificar = new javax.swing.JButton();
+        BTN_Guardar = new javax.swing.JButton();
+        BTN_Nuevo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("MANTENIMIENTO DE MESAS");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 0, 240, 30));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("MANTENIMIENTO DE PLATOS DEL MENÚ");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 830, 30));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(204, 0, 51), null));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel2.setText("Codigo de Mesa");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
+        jLabel2.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
+        jLabel2.setText("Codigo del Plato");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel3.setText("Capacidad");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
+        jLabel3.setText("Descripción");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 150, -1));
 
-        txtcodigomesa.setEditable(false);
-        txtcodigomesa.setBackground(new java.awt.Color(255, 255, 255));
-        txtcodigomesa.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtcodigomesa.setForeground(new java.awt.Color(0, 0, 204));
-        txtcodigomesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtcodigomesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.add(txtcodigomesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, 330, 30));
-
-        txtcapacidad.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtcapacidad.setForeground(new java.awt.Color(0, 0, 204));
-        txtcapacidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtcapacidad.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtcapacidad.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtcapacidadKeyTyped(evt);
-            }
-        });
-        jPanel1.add(txtcapacidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 100, 330, 30));
-
-        BTN_VerMesas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerMesas.setText("VER MESAS");
-        BTN_VerMesas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_VerMesasActionPerformed(evt);
-            }
-        });
-        jPanel1.add(BTN_VerMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 20, 180, 50));
+        txtcodigoplato.setEditable(false);
+        txtcodigoplato.setBackground(new java.awt.Color(255, 255, 255));
+        txtcodigoplato.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtcodigoplato.setForeground(new java.awt.Color(0, 0, 204));
+        txtcodigoplato.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtcodigoplato.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.add(txtcodigoplato, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 160, 30));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel6.setText("Número de mesa");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
+        jLabel6.setText("Nombre del Plato*");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 20, 220, -1));
 
-        txtnumeroMesa.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtnumeroMesa.setForeground(new java.awt.Color(0, 0, 204));
-        txtnumeroMesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtnumeroMesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtnumeroMesa.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtPrecio.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtPrecio.setForeground(new java.awt.Color(0, 0, 204));
+        txtPrecio.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtPrecio.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtnumeroMesaKeyTyped(evt);
+                txtPrecioKeyTyped(evt);
             }
         });
-        jPanel1.add(txtnumeroMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 59, 330, 30));
+        jPanel1.add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 250, 30));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 790, 170));
+        jComboBoxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(jComboBoxCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 120, 330, 30));
+
+        txtNombrePlato.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtNombrePlato.setForeground(new java.awt.Color(0, 0, 204));
+        txtNombrePlato.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtNombrePlato.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtNombrePlato.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNombrePlatoKeyTyped(evt);
+            }
+        });
+        jPanel1.add(txtNombrePlato, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 40, 330, 30));
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel7.setText("Precio del Plato*");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 180, -1));
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel8.setText("Categoría*");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 100, 140, -1));
+
+        jTextAreaDescripcion.setColumns(20);
+        jTextAreaDescripcion.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaDescripcion);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 630, 80));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 698, 300));
 
         JTABLE_Mant_Mesa.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         JTABLE_Mant_Mesa.setForeground(new java.awt.Color(0, 0, 204));
@@ -174,17 +234,96 @@ public class Frm_Usuario extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(JTABLE_Mant_Mesa);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 810, 220));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 400, 920, 220));
 
-        BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Nuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_add.png"))); // NOI18N
-        BTN_Nuevo.setText("      NUEVO");
-        BTN_Nuevo.addActionListener(new java.awt.event.ActionListener() {
+        BTN_EXCEL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_EXCEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/excel.png"))); // NOI18N
+        BTN_EXCEL.setText("     Exportar XLSX");
+        BTN_EXCEL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_NuevoActionPerformed(evt);
+                BTN_EXCELActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 190, 50));
+        getContentPane().add(BTN_EXCEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 650, 170, 50));
+
+        jPanel2.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Ingresar el Nombre de la Facultad");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, 30));
+
+        TXT_BuscarMesas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TXT_BuscarMesasActionPerformed(evt);
+            }
+        });
+        TXT_BuscarMesas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                TXT_BuscarMesasKeyReleased(evt);
+            }
+        });
+        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 290, -1));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_search_white.png"))); // NOI18N
+        jLabel5.setText("BUSCAR");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 10, 120, 30));
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 920, 50));
+
+        BTN_Cerrar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Cerrar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_close.png"))); // NOI18N
+        BTN_Cerrar1.setText("     Cerrar");
+        BTN_Cerrar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_Cerrar1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BTN_Cerrar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 650, 165, 50));
+
+        BTN_PDF.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/pdf.png"))); // NOI18N
+        BTN_PDF.setText("     Exportar PDF");
+        BTN_PDF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_PDFActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 650, 170, 50));
+
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        BTN_VerMesas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_VerMesas.setText("VER MESAS");
+        BTN_VerMesas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_VerMesasActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_VerMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 30, 165, 50));
+
+        BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Desactivar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
+        BTN_Desactivar.setText("     QUITAR");
+        BTN_Desactivar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_DesactivarActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 280, 165, 48));
+
+        BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Modificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_update.png"))); // NOI18N
+        BTN_Modificar.setText("    MODIFICAR");
+        BTN_Modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_ModificarActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 219, 165, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_save.png"))); // NOI18N
@@ -199,89 +338,19 @@ public class Frm_Usuario extends javax.swing.JFrame {
                 BTN_GuardarActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, 190, 50));
+        jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 157, 165, 48));
 
-        BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Modificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_update.png"))); // NOI18N
-        BTN_Modificar.setText("    MODIFICAR");
-        BTN_Modificar.addActionListener(new java.awt.event.ActionListener() {
+        BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Nuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_add.png"))); // NOI18N
+        BTN_Nuevo.setText("      NUEVO");
+        BTN_Nuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_ModificarActionPerformed(evt);
+                BTN_NuevoActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 220, 200, 50));
+        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 94, 165, 48));
 
-        BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Desactivar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
-        BTN_Desactivar.setText("     QUITAR");
-        BTN_Desactivar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_DesactivarActionPerformed(evt);
-            }
-        });
-        getContentPane().add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 220, 180, 50));
-
-        BTN_EXCEL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_EXCEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/excel.png"))); // NOI18N
-        BTN_EXCEL.setText("     Exportar XLSX");
-        BTN_EXCEL.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_EXCELActionPerformed(evt);
-            }
-        });
-        getContentPane().add(BTN_EXCEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 560, 170, 40));
-
-        jPanel2.setBackground(new java.awt.Color(0, 0, 0));
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Ingresar el Nombre de la Facultad");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, 30));
-
-        TXT_BuscarMesas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TXT_BuscarMesasActionPerformed(evt);
-            }
-        });
-        TXT_BuscarMesas.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                TXT_BuscarMesasKeyReleased(evt);
-            }
-        });
-        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 14, 290, -1));
-
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_search_white.png"))); // NOI18N
-        jLabel5.setText("BUSCAR");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 120, 30));
-
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 810, 50));
-
-        BTN_Cerrar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Cerrar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_close.png"))); // NOI18N
-        BTN_Cerrar1.setText("     Cerrar");
-        BTN_Cerrar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_Cerrar1ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(BTN_Cerrar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 560, 130, 40));
-
-        BTN_PDF.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/pdf.png"))); // NOI18N
-        BTN_PDF.setText("     Exportar PDF");
-        BTN_PDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_PDFActionPerformed(evt);
-            }
-        });
-        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 560, 170, 40));
-
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 620));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 720));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -289,17 +358,21 @@ public class Frm_Usuario extends javax.swing.JFrame {
     
     
     
-    //// --> --> 
+    ////    CLICKEO EN LA TABLA --> --> 
     private void JTABLE_Mant_MesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_MesaMouseClicked
         int selectRow = JTABLE_Mant_Mesa.getSelectedRow();
         if (selectRow >= 0) {
             String codigo = JTABLE_Mant_Mesa.getValueAt(selectRow, 0).toString();
-            String numero_mesa = JTABLE_Mant_Mesa.getValueAt(selectRow, 1).toString();
-            String capacidad = JTABLE_Mant_Mesa.getValueAt(selectRow, 2).toString();
+            String nombre_plato = JTABLE_Mant_Mesa.getValueAt(selectRow, 1).toString();
+            String precio = JTABLE_Mant_Mesa.getValueAt(selectRow, 2).toString();
+            // TODO --> CATEGORÍA
+            String descripcion = JTABLE_Mant_Mesa.getValueAt(selectRow, 4).toString();
 
-            txtcodigomesa.setText(codigo);
-            txtnumeroMesa.setText(numero_mesa);
-            txtcapacidad.setText(capacidad);
+            txtcodigoplato.setText(codigo);
+            txtNombrePlato.setText(nombre_plato);
+            txtPrecio.setText(precio);
+            jTextAreaDescripcion.setText(descripcion);
+            
         }
         BTN_Guardar.setEnabled(true);
         BTN_VerMesas.setEnabled(false);
@@ -312,12 +385,17 @@ public class Frm_Usuario extends javax.swing.JFrame {
     
     
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
-        txtnumeroMesa.setText("");
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
+       
+        txtcodigoplato.setText("");
+        txtNombrePlato.setText("");
+        txtPrecio.setText("");
+        txtNombrePlato.setText("");
+        jTextAreaDescripcion.setText("");
 
-        txtnumeroMesa.requestFocus();
-        txtcapacidad.setEnabled(true);
+        txtNombrePlato.requestFocus();
+        txtNombrePlato.setEnabled(true);
+        txtPrecio.setEnabled(true);
+        jTextAreaDescripcion.setEnabled(true);
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
@@ -333,43 +411,47 @@ public class Frm_Usuario extends javax.swing.JFrame {
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
       
    // 1. Validar que el campo no esté vacío
-    String nombre = txtnumeroMesa.getText().trim();
-    String capacidad = txtcapacidad.getText().trim();
+    String nombre = txtNombrePlato.getText().trim();
+    String precio = txtPrecio.getText().trim();
+    String descripcion = jTextAreaDescripcion.getText().trim();
+    
+    
     if (nombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese el número de mesa", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtcapacidad.requestFocus();
+      JOptionPane.showMessageDialog(this, "Ingrese el nombre del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+      txtNombrePlato.requestFocus();
       return;
     }
-    if (capacidad.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese la capacidad de la mesa", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtcapacidad.requestFocus();
+    if (precio.isEmpty()) {
+      JOptionPane.showMessageDialog(this, "Ingrese el precio del Plato", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+      txtPrecio.requestFocus();
       return;
     }
 
     // 2. Confirmar si el usuario desea guardar
-    int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de mesas?", "Confirmación", JOptionPane.YES_NO_OPTION);
+    int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
 
       try {
         // 3. Llamar al método para insertar
-        this.methods.insertarMesas(nombre, capacidad);
+        this.methods.insertarPlatoMenu(nombre,descripcion,Double.parseDouble(precio),"2");
+        JOptionPane.showMessageDialog(null, "AHHHHHHHHH INSERT");
 
         // 4. Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Mesa registrada correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Plato registrado correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
 
         // 5. Actualizar tabla y limpiar campos
-        this.MostrarMesas();
+        this.MostrarPlatosMenu();
 
       } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al registrar mesa:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al registrar el plato:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
          // Validar que se haya seleccionado un registro
-    String codStr = txtcodigomesa.getText().trim();
-    String nuevoNombre = txtcapacidad.getText().trim();
+    String codStr = txtcodigoplato.getText().trim();
+    String nuevoNombre = txtNombrePlato.getText().trim();
 
     if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
       JOptionPane.showMessageDialog(this, "Seleccione una facultad y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
@@ -381,14 +463,14 @@ public class Frm_Usuario extends javax.swing.JFrame {
     int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta facultad?", "Confirmación",JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
       try {
-        this.methods.modificarMesas(codigo, nuevoNombre);
+        this.methods.modificarPlatoMenu(codigo, nuevoNombre);
 
         JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
 
-        this.MostrarMesas();
+        this.MostrarPlatosMenu();
         // Limpia los campos de texto
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
+        txtcodigoplato.setText("");
+        //txtprecio.setText("");
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
@@ -400,7 +482,7 @@ public class Frm_Usuario extends javax.swing.JFrame {
 
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
     // 1. Validar que se haya seleccionado una facultad
-    String codStr = txtcodigomesa.getText().trim();
+    String codStr = txtcodigoplato.getText().trim();
     if (codStr.isEmpty()) {
       JOptionPane.showMessageDialog(this,"Seleccione una facultad en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
       return;
@@ -415,10 +497,10 @@ public class Frm_Usuario extends javax.swing.JFrame {
        // 4. Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this,"Mesa desactivada correctamente.","Operación exitosa",JOptionPane.INFORMATION_MESSAGE);
        // 5. Actualizar tabla y limpiar campos
-        this.MostrarMesas();
+        this.MostrarPlatosMenu();
        // Limpia los campos de texto
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
+        txtcodigoplato.setText("");
+        //txtprecio.setText("");
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
@@ -573,7 +655,7 @@ public class Frm_Usuario extends javax.swing.JFrame {
     
     
     private void BTN_VerMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerMesasActionPerformed
-        this.MostrarMesas();
+        this.MostrarPlatosMenu();
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
@@ -581,17 +663,17 @@ public class Frm_Usuario extends javax.swing.JFrame {
 
     }//GEN-LAST:event_BTN_VerMesasActionPerformed
 
-    private void txtcapacidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcapacidadKeyTyped
-
-    }//GEN-LAST:event_txtcapacidadKeyTyped
-
     private void TXT_BuscarMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TXT_BuscarMesasActionPerformed
 
-    private void txtnumeroMesaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnumeroMesaKeyTyped
+    private void txtPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPrecioKeyTyped
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtnumeroMesaKeyTyped
+    }//GEN-LAST:event_txtPrecioKeyTyped
+
+    private void txtNombrePlatoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombrePlatoKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNombrePlatoKeyTyped
 
     /**
      * @param args the command line arguments
@@ -610,14 +692,30 @@ public class Frm_Usuario extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Frm_Usuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Frm_MantUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Frm_Usuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Frm_MantUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Frm_Usuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Frm_MantUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Frm_Usuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Frm_MantUsuario.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -638,7 +736,7 @@ public class Frm_Usuario extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Frm_Usuario().setVisible(true);
+                new Frm_MantUsuario().setVisible(true);
             }
         });
     }
@@ -654,35 +752,47 @@ public class Frm_Usuario extends javax.swing.JFrame {
     private javax.swing.JButton BTN_VerMesas;
     private javax.swing.JTable JTABLE_Mant_Mesa;
     private javax.swing.JTextField TXT_BuscarMesas;
+    private javax.swing.JComboBox<String> jComboBoxCategoria;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField txtcapacidad;
-    private javax.swing.JTextField txtcodigomesa;
-    private javax.swing.JTextField txtnumeroMesa;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextAreaDescripcion;
+    private javax.swing.JTextField txtNombrePlato;
+    private javax.swing.JTextField txtPrecio;
+    private javax.swing.JTextField txtcodigoplato;
     // End of variables declaration//GEN-END:variables
 
 //Método para mostrar las facultades
-    public void MostrarMesas() {
+    public void MostrarPlatosMenu() {
         //Ordenar ASC, DESC
         JTABLE_Mant_Mesa.setAutoCreateRowSorter(true);
         //Limpiar la tabla antes de mostrar nuevos datos
         modeloTablaMesa.setRowCount(0);
         try {
             //Llama al método que retorna los datos de facultades
-            ResultSet rs = this.methods.listarMesas();
+            ResultSet rs = this.methods.listarPlatoMenu();
             while (rs.next()) {
+                String descripcion = rs.getString("Descripciones");
+                if (descripcion==null||descripcion.isEmpty()){
+                    descripcion = "Sin descripción";
+                }
+                
                 Object[] fila = {
                     rs.getInt("ID"),
-                    rs.getString("Número de Mesa"),
-                    rs.getString("Capacidad")
+                    rs.getString("Nombre del Plato"),
+                    rs.getString("Precio"),
+                    rs.getString("Categoría"),
+                    descripcion
                 };
                 modeloTablaMesa.addRow(fila);
             }
@@ -696,15 +806,22 @@ public class Frm_Usuario extends javax.swing.JFrame {
 //Método para mostrar las facultades
     public void BuscarMesaPorNombre() {
         modeloTablaMesa.setRowCount(0);
-        String nombre = TXT_BuscarMesas.getText().trim();
+        String search = TXT_BuscarMesas.getText().trim();
         try {
             //Llama al método que retorna los datos de facultades
-            ResultSet rs = this.methods.buscarMesas(nombre);
+            ResultSet rs = this.methods.buscarPlatoMenu(search);
             while (rs.next()) {
+                String descripcion = rs.getString("Descripciones");
+                if (descripcion==null||descripcion.isEmpty()){
+                    descripcion = "Sin descripción";
+                }
+                
                 Object[] fila = {
                     rs.getInt("ID"),
-                    rs.getString("Número de Mesa"),
-                    rs.getString("Capacidad")
+                    rs.getString("Nombre del Plato"),
+                    rs.getString("Precio"),
+                    rs.getString("Categoría"),
+                    descripcion
                 };
                 modeloTablaMesa.addRow(fila);
             }

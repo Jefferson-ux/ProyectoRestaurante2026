@@ -1,14 +1,3 @@
-/*======================================================================00
-
-
-                        ESTE ARCHIVO NO ESTÁ HECHO
-
-
-00=========================================================================*/
-
-
-
-
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -17,8 +6,8 @@ import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
-   /*Método de Mesa*/
-import logic.dao.MesaMethod;
+   /*Método de Categoría*/
+import logic.dao.CategoriaMethod;
 
 
   /*excel*/
@@ -40,27 +29,27 @@ public class Frm_Categoria extends javax.swing.JFrame {
 
     DefaultTableModel modeloTablaMesa = new DefaultTableModel();
     //Objeto conexión a la base de datos
-    MesaMethod methods;
+    CategoriaMethod methods;
 
     public Frm_Categoria() {
         FlatLightLaf.setup();
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Mantenimiento de las mesa");
+        this.setTitle("Mantenimiento de las categorías");
         
-        this.methods = new MesaMethod();
+        this.methods = new CategoriaMethod();
         
 
-        String[] header = {"ID ", "Número de Mesa","Capacidad"};
+        String[] header = {"ID ", "Nombre de la Categoría"};
 
         modeloTablaMesa.setColumnIdentifiers(header);
-        JTABLE_Mant_Mesa.setModel(modeloTablaMesa);
+        JTABLE_Mant_Categoria.setModel(modeloTablaMesa);
 
         //Desactivar button
         BTN_Desactivar.setEnabled(false);
         BTN_Guardar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-        txtcodigomesa.setEnabled(false);
+        txtcodigocategoria.setEnabled(false);
 
     }
 
@@ -71,14 +60,12 @@ public class Frm_Categoria extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        txtcodigomesa = new javax.swing.JTextField();
-        txtcapacidad = new javax.swing.JTextField();
-        BTN_VerMesas = new javax.swing.JButton();
+        txtcodigocategoria = new javax.swing.JTextField();
+        BTN_VerCategorias = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        txtnumeroMesa = new javax.swing.JTextField();
+        txtnombrecategoria = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        JTABLE_Mant_Mesa = new javax.swing.JTable();
+        JTABLE_Mant_Categoria = new javax.swing.JTable();
         BTN_Nuevo = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
@@ -86,7 +73,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
         BTN_EXCEL = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        TXT_BuscarMesas = new javax.swing.JTextField();
+        TXT_BuscarCategorias = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
@@ -96,69 +83,55 @@ public class Frm_Categoria extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("MANTENIMIENTO DE MESAS");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 0, 240, 30));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("MANTENIMIENTO DE CATEGORÍA");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 30));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(204, 0, 51), null));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel2.setText("Codigo de Mesa");
+        jLabel2.setText("Codigo de Categoría");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel3.setText("Capacidad");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
+        txtcodigocategoria.setEditable(false);
+        txtcodigocategoria.setBackground(new java.awt.Color(255, 255, 255));
+        txtcodigocategoria.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtcodigocategoria.setForeground(new java.awt.Color(0, 0, 204));
+        txtcodigocategoria.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtcodigocategoria.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.add(txtcodigocategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 330, 30));
 
-        txtcodigomesa.setEditable(false);
-        txtcodigomesa.setBackground(new java.awt.Color(255, 255, 255));
-        txtcodigomesa.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtcodigomesa.setForeground(new java.awt.Color(0, 0, 204));
-        txtcodigomesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtcodigomesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.add(txtcodigomesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, 330, 30));
-
-        txtcapacidad.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtcapacidad.setForeground(new java.awt.Color(0, 0, 204));
-        txtcapacidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtcapacidad.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtcapacidad.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtcapacidadKeyTyped(evt);
-            }
-        });
-        jPanel1.add(txtcapacidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 100, 330, 30));
-
-        BTN_VerMesas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerMesas.setText("VER MESAS");
-        BTN_VerMesas.addActionListener(new java.awt.event.ActionListener() {
+        BTN_VerCategorias.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_VerCategorias.setText("VER CATEGORÍAS");
+        BTN_VerCategorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTN_VerMesasActionPerformed(evt);
+                BTN_VerCategoriasActionPerformed(evt);
             }
         });
-        jPanel1.add(BTN_VerMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 20, 180, 50));
+        jPanel1.add(BTN_VerCategorias, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 190, 50));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel6.setText("Número de mesa");
+        jLabel6.setText("Nombre de categoría");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
 
-        txtnumeroMesa.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtnumeroMesa.setForeground(new java.awt.Color(0, 0, 204));
-        txtnumeroMesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtnumeroMesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtnumeroMesa.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtnombrecategoria.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtnombrecategoria.setForeground(new java.awt.Color(0, 0, 204));
+        txtnombrecategoria.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtnombrecategoria.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtnombrecategoria.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtnumeroMesaKeyTyped(evt);
+                txtnombrecategoriaKeyTyped(evt);
             }
         });
-        jPanel1.add(txtnumeroMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 59, 330, 30));
+        jPanel1.add(txtnombrecategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, 330, 30));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 790, 170));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 790, 110));
 
-        JTABLE_Mant_Mesa.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        JTABLE_Mant_Mesa.setForeground(new java.awt.Color(0, 0, 204));
-        JTABLE_Mant_Mesa.setModel(new javax.swing.table.DefaultTableModel(
+        JTABLE_Mant_Categoria.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        JTABLE_Mant_Categoria.setForeground(new java.awt.Color(0, 0, 204));
+        JTABLE_Mant_Categoria.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -169,14 +142,14 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        JTABLE_Mant_Mesa.addMouseListener(new java.awt.event.MouseAdapter() {
+        JTABLE_Mant_Categoria.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JTABLE_Mant_MesaMouseClicked(evt);
+                JTABLE_Mant_CategoriaMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(JTABLE_Mant_Mesa);
+        jScrollPane1.setViewportView(JTABLE_Mant_Categoria);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 810, 220));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 810, 190));
 
         BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Nuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_add.png"))); // NOI18N
@@ -186,7 +159,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_NuevoActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 190, 50));
+        getContentPane().add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 190, 50));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_save.png"))); // NOI18N
@@ -201,7 +174,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_GuardarActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, 190, 50));
+        getContentPane().add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 150, 190, 50));
 
         BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Modificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_update.png"))); // NOI18N
@@ -211,7 +184,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_ModificarActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 220, 200, 50));
+        getContentPane().add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 150, 200, 50));
 
         BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Desactivar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
@@ -221,7 +194,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_DesactivarActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 220, 180, 50));
+        getContentPane().add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 150, 180, 50));
 
         BTN_EXCEL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_EXCEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/excel.png"))); // NOI18N
@@ -231,7 +204,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_EXCELActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_EXCEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 560, 170, 40));
+        getContentPane().add(BTN_EXCEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 470, 170, 40));
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -242,17 +215,17 @@ public class Frm_Categoria extends javax.swing.JFrame {
         jLabel4.setText("Ingresar el Nombre de la Facultad");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, 30));
 
-        TXT_BuscarMesas.addActionListener(new java.awt.event.ActionListener() {
+        TXT_BuscarCategorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TXT_BuscarMesasActionPerformed(evt);
+                TXT_BuscarCategoriasActionPerformed(evt);
             }
         });
-        TXT_BuscarMesas.addKeyListener(new java.awt.event.KeyAdapter() {
+        TXT_BuscarCategorias.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                TXT_BuscarMesasKeyReleased(evt);
+                TXT_BuscarCategoriasKeyReleased(evt);
             }
         });
-        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 14, 290, -1));
+        jPanel2.add(TXT_BuscarCategorias, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 14, 290, -1));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
@@ -260,7 +233,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
         jLabel5.setText("BUSCAR");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 120, 30));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 810, 50));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 810, 50));
 
         BTN_Cerrar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Cerrar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_close.png"))); // NOI18N
@@ -270,7 +243,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_Cerrar1ActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_Cerrar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 560, 130, 40));
+        getContentPane().add(BTN_Cerrar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 470, 130, 40));
 
         BTN_PDF.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/pdf.png"))); // NOI18N
         BTN_PDF.setText("     Exportar PDF");
@@ -279,11 +252,11 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_PDFActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 560, 170, 40));
+        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 470, 170, 40));
 
         jTextField1.setEditable(false);
         jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 620));
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 540));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -292,34 +265,31 @@ public class Frm_Categoria extends javax.swing.JFrame {
     
     
     //// --> --> 
-    private void JTABLE_Mant_MesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_MesaMouseClicked
-        int selectRow = JTABLE_Mant_Mesa.getSelectedRow();
+    private void JTABLE_Mant_CategoriaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_CategoriaMouseClicked
+        int selectRow = JTABLE_Mant_Categoria.getSelectedRow();
         if (selectRow >= 0) {
-            String codigo = JTABLE_Mant_Mesa.getValueAt(selectRow, 0).toString();
-            String numero_mesa = JTABLE_Mant_Mesa.getValueAt(selectRow, 1).toString();
-            String capacidad = JTABLE_Mant_Mesa.getValueAt(selectRow, 2).toString();
+            String codigo = JTABLE_Mant_Categoria.getValueAt(selectRow, 0).toString();
+            String numero_mesa = JTABLE_Mant_Categoria.getValueAt(selectRow, 1).toString();
 
-            txtcodigomesa.setText(codigo);
-            txtnumeroMesa.setText(numero_mesa);
-            txtcapacidad.setText(capacidad);
+        txtcodigocategoria.setText(codigo);
+        txtnombrecategoria.setText(numero_mesa);
+
         }
         BTN_Guardar.setEnabled(true);
-        BTN_VerMesas.setEnabled(false);
+        BTN_VerCategorias.setEnabled(false);
         BTN_Modificar.setEnabled(true);
         BTN_Desactivar.setEnabled(true);
-    }//GEN-LAST:event_JTABLE_Mant_MesaMouseClicked
+    }//GEN-LAST:event_JTABLE_Mant_CategoriaMouseClicked
 
     
     
     
     
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
-        txtnumeroMesa.setText("");
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
-
-        txtnumeroMesa.requestFocus();
-        txtcapacidad.setEnabled(true);
+        txtnombrecategoria.setText("");
+        txtcodigocategoria.setText("");
+        txtnombrecategoria.requestFocus();
+        
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
@@ -335,81 +305,79 @@ public class Frm_Categoria extends javax.swing.JFrame {
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
       
    // 1. Validar que el campo no esté vacío
-    String nombre = txtnumeroMesa.getText().trim();
-    String capacidad = txtcapacidad.getText().trim();
+    String nombre = txtnombrecategoria.getText().trim();
     if (nombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese el número de mesa", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtcapacidad.requestFocus();
-      return;
-    }
-    if (capacidad.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Ingrese la capacidad de la mesa", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtcapacidad.requestFocus();
+      JOptionPane.showMessageDialog(this, "Ingrese el nombre de la categoría", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+      txtnombrecategoria.requestFocus();
       return;
     }
 
     // 2. Confirmar si el usuario desea guardar
-    int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de mesas?", "Confirmación", JOptionPane.YES_NO_OPTION);
+    int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de categorías?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
 
       try {
         // 3. Llamar al método para insertar
-        this.methods.insertarMesas(nombre, capacidad);
+        this.methods.insertarCategoria(nombre);
 
         // 4. Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Mesa registrada correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Categoría registrada correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
 
         // 5. Actualizar tabla y limpiar campos
-        this.MostrarMesas();
+        this.MostrarCategorias();
 
       } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al registrar mesa:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al registrar la categoría:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
          // Validar que se haya seleccionado un registro
-    String codStr = txtcodigomesa.getText().trim();
-    String nuevoNombre = txtcapacidad.getText().trim();
+    String codStr = txtcodigocategoria.getText().trim();
+    String nuevoNombre = txtnombrecategoria.getText().trim();
 
     if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Seleccione una facultad y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Seleccione una Categoria y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
       return;
     }
 
     int codigo = Integer.parseInt(codStr);
     // Confirmación del usuario
-    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta facultad?", "Confirmación",JOptionPane.YES_NO_OPTION);
+    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta Categoria?", "Confirmación",JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
       try {
         this.methods.modificarMesas(codigo, nuevoNombre);
 
         JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
 
-        this.MostrarMesas();
+        this.MostrarCategorias();
         // Limpia los campos de texto
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
+        txtcodigocategoria.setText("");
+        txtnombrecategoria.setText("");
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al modificar facultad:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al modificar categoría:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
       }
     }
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
-    // 1. Validar que se haya seleccionado una facultad
-    String codStr = txtcodigomesa.getText().trim();
+    // 1. Validar que se haya seleccionado una Categoria
+    
+    String codStr = txtcodigocategoria.getText().trim();
+    String nuevoNombre = txtnombrecategoria.getText().trim();
+    
+    
     if (codStr.isEmpty()) {
-      JOptionPane.showMessageDialog(this,"Seleccione una facultad en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(this,"Seleccione una Categoria en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
       return;
     }
     int codigo = Integer.parseInt(codStr); // Convertir a entero
     // 2. Confirmar la acción con el usuario
-    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar esta facultad?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar esta Categoria?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
     if (opcion == JOptionPane.YES_OPTION) {
       try {
        // 3. Llamar al método que ejecuta el procedure de desactivación
@@ -417,15 +385,15 @@ public class Frm_Categoria extends javax.swing.JFrame {
        // 4. Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this,"Mesa desactivada correctamente.","Operación exitosa",JOptionPane.INFORMATION_MESSAGE);
        // 5. Actualizar tabla y limpiar campos
-        this.MostrarMesas();
+        this.MostrarCategorias();
        // Limpia los campos de texto
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
+   txtcodigocategoria.setText("");
+        txtnombrecategoria.setText("");
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
         // 6. Captura cualquier error lanzado por el procedure (por SIGNAL)
-        JOptionPane.showMessageDialog(this,"Error al desactivar facultad:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,"Error al desactivar Categoria:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
       }
    }
     }//GEN-LAST:event_BTN_DesactivarActionPerformed
@@ -474,9 +442,9 @@ public class Frm_Categoria extends javax.swing.JFrame {
 */
     }//GEN-LAST:event_BTN_EXCELActionPerformed
 
-    private void TXT_BuscarMesasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasKeyReleased
-        this.BuscarMesaPorNombre();
-    }//GEN-LAST:event_TXT_BuscarMesasKeyReleased
+    private void TXT_BuscarCategoriasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TXT_BuscarCategoriasKeyReleased
+        this.BuscarCategoriaPorNombre();
+    }//GEN-LAST:event_TXT_BuscarCategoriasKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
         
@@ -574,26 +542,22 @@ public class Frm_Categoria extends javax.swing.JFrame {
     
     
     
-    private void BTN_VerMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerMesasActionPerformed
-        this.MostrarMesas();
+    private void BTN_VerCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerCategoriasActionPerformed
+        this.MostrarCategorias();
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
-        this.BTN_VerMesas.setEnabled(false);
+        this.BTN_VerCategorias.setEnabled(false);
 
-    }//GEN-LAST:event_BTN_VerMesasActionPerformed
+    }//GEN-LAST:event_BTN_VerCategoriasActionPerformed
 
-    private void txtcapacidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcapacidadKeyTyped
-
-    }//GEN-LAST:event_txtcapacidadKeyTyped
-
-    private void TXT_BuscarMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasActionPerformed
+    private void TXT_BuscarCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarCategoriasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TXT_BuscarMesasActionPerformed
+    }//GEN-LAST:event_TXT_BuscarCategoriasActionPerformed
 
-    private void txtnumeroMesaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnumeroMesaKeyTyped
+    private void txtnombrecategoriaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombrecategoriaKeyTyped
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtnumeroMesaKeyTyped
+    }//GEN-LAST:event_txtnombrecategoriaKeyTyped
 
     /**
      * @param args the command line arguments
@@ -653,12 +617,11 @@ public class Frm_Categoria extends javax.swing.JFrame {
     private javax.swing.JButton BTN_Modificar;
     private javax.swing.JButton BTN_Nuevo;
     private javax.swing.JButton BTN_PDF;
-    private javax.swing.JButton BTN_VerMesas;
-    private javax.swing.JTable JTABLE_Mant_Mesa;
-    private javax.swing.JTextField TXT_BuscarMesas;
+    private javax.swing.JButton BTN_VerCategorias;
+    private javax.swing.JTable JTABLE_Mant_Categoria;
+    private javax.swing.JTextField TXT_BuscarCategorias;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -666,25 +629,23 @@ public class Frm_Categoria extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField txtcapacidad;
-    private javax.swing.JTextField txtcodigomesa;
-    private javax.swing.JTextField txtnumeroMesa;
+    private javax.swing.JTextField txtcodigocategoria;
+    private javax.swing.JTextField txtnombrecategoria;
     // End of variables declaration//GEN-END:variables
 
-//Método para mostrar las facultades
-    public void MostrarMesas() {
+//Método para mostrar las Categoriaes
+    public void MostrarCategorias() {
         //Ordenar ASC, DESC
-        JTABLE_Mant_Mesa.setAutoCreateRowSorter(true);
+        JTABLE_Mant_Categoria.setAutoCreateRowSorter(true);
         //Limpiar la tabla antes de mostrar nuevos datos
         modeloTablaMesa.setRowCount(0);
         try {
-            //Llama al método que retorna los datos de facultades
-            ResultSet rs = this.methods.listarMesas();
+            //Llama al método que retorna los datos de Categoriaes
+            ResultSet rs = this.methods.listarCategoria();
             while (rs.next()) {
                 Object[] fila = {
                     rs.getInt("ID"),
-                    rs.getString("Número de Mesa"),
-                    rs.getString("Capacidad")
+                    rs.getString("Nombre de Categoría")
                 };
                 modeloTablaMesa.addRow(fila);
             }
@@ -695,27 +656,26 @@ public class Frm_Categoria extends javax.swing.JFrame {
         }
     }
 
-//Método para mostrar las facultades
-    public void BuscarMesaPorNombre() {
+//Método para mostrar las Categoriaes
+    public void BuscarCategoriaPorNombre() {
         modeloTablaMesa.setRowCount(0);
-        String nombre = TXT_BuscarMesas.getText().trim();
+        String nombre = TXT_BuscarCategorias.getText().trim();
         try {
-            //Llama al método que retorna los datos de facultades
-            ResultSet rs = this.methods.buscarMesas(nombre);
+            //Llama al método que retorna los datos de Categoriaes
+            ResultSet rs = this.methods.buscarCategoria(nombre);
             while (rs.next()) {
                 Object[] fila = {
                     rs.getInt("ID"),
-                    rs.getString("Número de Mesa"),
-                    rs.getString("Capacidad")
+                    rs.getString("Nombre de Categoría")
                 };
                 modeloTablaMesa.addRow(fila);
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al buscar facultades:\n" + e.getMessage(),
+            JOptionPane.showMessageDialog(null, "Error al buscar Categoriaes:\n" + e.getMessage(),
                     "Error de búsqueda", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-//Método para insertar nuevo valor a las facultades
+//Método para insertar nuevo valor a las Categoriaes
 }

@@ -1,3 +1,4 @@
+USE db_restaurant;
 -- ================================================
 -- SCRIPT DE INSERCIÓN DE DATOS - MySQL
 -- Adaptado desde Oracle (secuencias eliminadas,
@@ -224,8 +225,6 @@ INSERT INTO plato_menu (nombre_plato, descripcion_plato, precio_plato, id_catego
     -- Ensaladas / Menu del Dia (id_categoria=6)
     ('Ensalada fresca del huerto', 'Lechuga hidroponica, tomate cherry, cebolla morada y vinagreta',     18.00, 6, 1),
     ('Ensalada tibia de quinua',   'Quinua caliente con pepino, tomate, palta, almendras y limon',       22.00, 6, 1);
-
-
 
 
 

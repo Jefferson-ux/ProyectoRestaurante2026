@@ -1,3 +1,5 @@
+-- VIEW
+USE db_restaurant;
 /*================================================*/
 /*===================   VISTAS  ==================*/
 /*================================================*/
@@ -32,7 +34,8 @@ SELECT
     nombre_cliente      AS `Nombre de Cliente`,
     apellido_cliente    AS `Apellido de Cliente`,
     correo_cliente      AS `Correo`,
-    telefono_cliente    AS `Teléfono Personal`
+    telefono_cliente    AS `Teléfono Personal`,
+    observacion_cliente AS `Observaciones`
 FROM cliente
 WHERE estado = 1;
 
@@ -46,6 +49,7 @@ SELECT
     e.nombre_empleado            AS `Empleado`,
     e.dni_empleado               AS `DNI del Empleado`,
     ca.nombre_cargo              AS `Cargo`,
+    c.descripcion_contrato 		 AS `Descripciones`,
     c.fecha_contrato             AS `Fecha de Contrato`,
     t.nombre_turno               AS `Turno`,
     -- Cambiamos TO_CHAR por TIME_FORMAT
@@ -65,12 +69,14 @@ WHERE
 /* vista_detalle_pedido */
 CREATE OR REPLACE VIEW vista_detalle_pedido AS
 SELECT
+    d.id_detalle 		AS `ID`, 
     pm.nombre_plato         AS `Nombre de Platillo`,
     d.cantidad           AS `Cantidad Pedida`,
     -- Formato de fecha para MySQL
     DATE_FORMAT(p.fecha_pedido, '%d/%m/%Y') AS `Fecha del pedido`,
     -- Formato de moneda para MySQL
-    CONCAT('S/ ', FORMAT(d.precio_unitario, 2)) AS `Precio Unitario`
+    CONCAT('S/ ', FORMAT(d.precio_unitario, 2)) AS `Precio Unitario`,
+    d.observacion_detalle 		 AS `Observaciones`
 FROM detalle_pedido d
 INNER JOIN pedido p      ON d.id_pedido = p.id_pedido
 INNER JOIN plato_menu pm ON d.id_plato_menu = pm.id_plato_menu;
@@ -87,11 +93,16 @@ SELECT
     e.fecha_registro   AS `Fecha de Registro`,
     e.direccion_empleado AS `Lugar de Residencia`,
     e.correo_principal          AS `Correo Principal`,
+    e.correo_secundario          AS `Correo Secundario`,
     e.telefono_principal AS `Teléfono Principal`,
-    g.nombre_genero             AS `Género`
+    e.telefono_secundario AS `Teléfono Secundario`,
+    g.nombre_genero             AS `Género`,
+    e.observacion_empleado 		 AS `Observaciones`
 FROM empleado e
 INNER JOIN genero g ON e.id_genero = g.id_genero
 WHERE  e.estado = 1;
+
+
 
 
 
@@ -141,11 +152,11 @@ WHERE estado = 1;
 /* vista_pedido */
 CREATE OR REPLACE VIEW vista_pedido AS
 SELECT
-    p.id_pedido AS `ID Pedido`,
+    p.id_pedido AS `ID`,
     DATE_FORMAT(p.fecha_pedido, '%d/%m/%Y') AS `Fecha del Pedido`,
     c.dni_cliente AS `DNI del Cliente`,
     CONCAT(c.nombre_cliente, ' ', c.apellido_cliente) AS `Cliente`,
-    e.nombre_empleado AS `Empleado`,
+    CONCAT(e.nombre_empleado, ' ', e.apellido_empleado) AS `Empleado`,
     tp.nombre_tipo_pedido AS `Tipo de Pedido`,
     totales.cantidad_total AS `Cantidad de Platos`
 FROM pedido p
@@ -166,6 +177,7 @@ CREATE OR REPLACE VIEW vista_plato_menu AS
 SELECT
 	pm.id_plato_menu AS `ID`,
     pm.nombre_plato AS `Nombre del Plato`,
+    pm.descripcion_plato 		 AS `Descripciones`,
     CONCAT('S/ ', FORMAT(pm.precio_plato, 2)) AS `Precio`,
     c.nombre_categoria AS `Categoría`
 FROM plato_menu pm
@@ -177,8 +189,10 @@ WHERE pm.estado = 1;
 /* vista_producto */
 CREATE OR REPLACE VIEW vista_producto AS
 SELECT
+    
+    p.id_producto	AS `ID`,
     p.nombre_producto AS `Nombre del Producto`,
-    um.nombre_unidad AS `Unidad de Medida`,
+    um.nombre_unidad_medida AS `Unidad de Medida`,
     um.abreviatura AS `Abreviatura`,
     CONCAT('S/ ', FORMAT(p.precio_producto, 2)) AS `Precio`,
     p.stock_minimo AS `Stock Mínimo`,
@@ -220,6 +234,7 @@ INNER JOIN proveedor pr
 /* vista_reserva */
 CREATE OR REPLACE VIEW vista_reserva AS
 SELECT
+    r.id_reserva 	AS `ID`,
     r.fecha_registro AS `Fecha de Registro`,
     TIME_FORMAT(r.fecha_inicio, '%H:%i') AS `Horario de Inicio`,
     TIME_FORMAT(r.fecha_fin, '%H:%i') AS `Horario de Fin`,
@@ -246,6 +261,7 @@ CREATE OR REPLACE VIEW vista_tipo_pago AS
 SELECT
   nombre_tipo_pago      AS `Tipo de Pago`
 FROM tipo_pago;
+-- !TODO Observar el estado --> Verificar en el procedure que el tipo_pago sea estado 1
 
 
 

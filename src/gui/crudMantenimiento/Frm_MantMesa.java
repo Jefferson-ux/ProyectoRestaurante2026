@@ -328,7 +328,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     String capacidad = txtcapacidad.getText().trim();
     if (nombre.isEmpty()) {
       JOptionPane.showMessageDialog(this, "Ingrese el número de mesa", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      txtcapacidad.requestFocus();
+      txtnumeroMesa.requestFocus();
       return;
     }
     if (capacidad.isEmpty()) {
@@ -363,13 +363,13 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     String nuevoNombre = txtcapacidad.getText().trim();
 
     if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Seleccione una facultad y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Seleccione una Mesa y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
       return;
     }
 
     int codigo = Integer.parseInt(codStr);
     // Confirmación del usuario
-    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta facultad?", "Confirmación",JOptionPane.YES_NO_OPTION);
+    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta Mesa?", "Confirmación",JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
       try {
         this.methods.modificarMesas(codigo, nuevoNombre);
@@ -383,22 +383,22 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al modificar facultad:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al modificar Mesa:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
       }
     }
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
-    // 1. Validar que se haya seleccionado una facultad
+    // 1. Validar que se haya seleccionado una Mesa
     String codStr = txtcodigomesa.getText().trim();
     if (codStr.isEmpty()) {
-      JOptionPane.showMessageDialog(this,"Seleccione una facultad en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(this,"Seleccione una Mesa en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
       return;
     }
     int codigo = Integer.parseInt(codStr); // Convertir a entero
     // 2. Confirmar la acción con el usuario
-    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar esta facultad?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar esta Mesa?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
     if (opcion == JOptionPane.YES_OPTION) {
       try {
        // 3. Llamar al método que ejecuta el procedure de desactivación
@@ -414,7 +414,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
         // 6. Captura cualquier error lanzado por el procedure (por SIGNAL)
-        JOptionPane.showMessageDialog(this,"Error al desactivar facultad:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,"Error al desactivar Mesa:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
       }
    }
     }//GEN-LAST:event_BTN_DesactivarActionPerformed
@@ -652,14 +652,14 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     private javax.swing.JTextField txtnumeroMesa;
     // End of variables declaration//GEN-END:variables
 
-//Método para mostrar las facultades
+//Método para mostrar las Mesaes
     public void MostrarMesas() {
         //Ordenar ASC, DESC
         JTABLE_Mant_Mesa.setAutoCreateRowSorter(true);
         //Limpiar la tabla antes de mostrar nuevos datos
         modeloTablaMesa.setRowCount(0);
         try {
-            //Llama al método que retorna los datos de facultades
+            //Llama al método que retorna los datos de Mesaes
             ResultSet rs = this.methods.listarMesas();
             while (rs.next()) {
                 Object[] fila = {
@@ -676,12 +676,12 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         }
     }
 
-//Método para mostrar las facultades
+//Método para mostrar las Mesaes
     public void BuscarMesaPorNombre() {
         modeloTablaMesa.setRowCount(0);
         String nombre = TXT_BuscarMesas.getText().trim();
         try {
-            //Llama al método que retorna los datos de facultades
+            //Llama al método que retorna los datos de Mesaes
             ResultSet rs = this.methods.buscarMesas(nombre);
             while (rs.next()) {
                 Object[] fila = {
@@ -693,10 +693,10 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al buscar facultades:\n" + e.getMessage(),
+            JOptionPane.showMessageDialog(null, "Error al buscar Mesaes:\n" + e.getMessage(),
                     "Error de búsqueda", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-//Método para insertar nuevo valor a las facultades
+//Método para insertar nuevo valor a las Mesaes
 }
