@@ -4,16 +4,57 @@
  */
 package gui.crudMantenimiento;
 
-/**
- *
- * @author ETHAN
- */
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+//Metodo de producto
+import logic.dao.ProductoMethod;
+//Metodo de unidad medida para el jcombobox
+import logic.dao.UnidadMedidaMethod;
+
 public class Frm_Producto extends javax.swing.JFrame {
+    //Modelo para mostrar datos en ta tabla
+    DefaultTableModel modeloTablaProducto = new DefaultTableModel();
+    
+    //Objeto conexión a la base de datos
+    ProductoMethod PR = new ProductoMethod();
+    UnidadMedidaMethod UM = new UnidadMedidaMethod();
+
+    //VAriable para comprobar cambios en mdoificar
+    private String nombreOriginal;
+    private String precioOriginal;
+    private String stockActualOriginal;
+    private String stockMinimoOriginal;
+    private String unidadOriginal = "";
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Producto.class.getName());
 
     public Frm_Producto() {
         initComponents();
+        
+        //Posicion
+        this.setLocationRelativeTo(null);
+       
+        //Metodo para cargar el combobox
+        cargarUnidadMedida();
+        
+        //definir los encabezados de la tabla
+        String titulos[]={"ID","Nombre del producto","unidad de medida","Abreviatura","Precio del producto", "Stock Minimo","Stock Actual"};
+        
+        //Asignar los tiutlos al modelo
+        modeloTablaProducto.setColumnIdentifiers(titulos);
+        
+        //Establecer el modelo a la JTable
+        JTABLE_Mant_Producto.setModel(modeloTablaProducto);
+        
+        //Desabilitar campo de codigo (solo se mostrara no se escribe)
+        txtcodigoproducto.setEnabled(false);
+        BTN_Cancel.setEnabled(false);
+        BTN_Nuevo.setEnabled(false);
+        BTN_Guardar.setEnabled(false);
+        BTN_Modificar.setEnabled(false);
+        BTN_Desactivar.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -27,7 +68,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         txtcodigoproducto = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtstockActual = new javax.swing.JTextField();
-        jComboBoxunidad_medida = new javax.swing.JComboBox<>();
+        jComboBox_unidad_medida = new javax.swing.JComboBox<>();
         txtNombreProducto = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -39,13 +80,12 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_EXCEL = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        TXT_BuscarMesas = new javax.swing.JTextField();
+        TXT_BuscarProductos = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        BTN_Desactivar1 = new javax.swing.JButton();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        BTN_VerPlatos = new javax.swing.JButton();
+        BTN_VerProductos = new javax.swing.JButton();
         BTN_Desactivar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
@@ -95,7 +135,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         });
         jPanel1.add(txtstockActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 140, 30));
 
-        jPanel1.add(jComboBoxunidad_medida, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 140, 330, 30));
+        jPanel1.add(jComboBox_unidad_medida, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 140, 330, 30));
 
         txtNombreProducto.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtNombreProducto.setForeground(new java.awt.Color(0, 0, 204));
@@ -167,7 +207,6 @@ public class Frm_Producto extends javax.swing.JFrame {
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 400, 920, 220));
 
         BTN_EXCEL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_EXCEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/excel.png"))); // NOI18N
         BTN_EXCEL.setText("     Exportar XLSX");
         BTN_EXCEL.addActionListener(this::BTN_EXCELActionPerformed);
         getContentPane().add(BTN_EXCEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 650, 170, 50));
@@ -181,60 +220,48 @@ public class Frm_Producto extends javax.swing.JFrame {
         jLabel4.setText("Ingresar el Nombre de la Facultad");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, 30));
 
-        TXT_BuscarMesas.addActionListener(this::TXT_BuscarMesasActionPerformed);
-        TXT_BuscarMesas.addKeyListener(new java.awt.event.KeyAdapter() {
+        TXT_BuscarProductos.addActionListener(this::TXT_BuscarProductosActionPerformed);
+        TXT_BuscarProductos.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                TXT_BuscarMesasKeyReleased(evt);
+                TXT_BuscarProductosKeyReleased(evt);
             }
         });
-        jPanel2.add(TXT_BuscarMesas, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 13, 290, -1));
+        jPanel2.add(TXT_BuscarProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 13, 290, -1));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_search_white.png"))); // NOI18N
         jLabel5.setText("BUSCAR");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 10, 120, 30));
-
-        BTN_Desactivar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Desactivar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
-        BTN_Desactivar1.setText("     QUITAR");
-        BTN_Desactivar1.addActionListener(this::BTN_Desactivar1ActionPerformed);
-        jPanel2.add(BTN_Desactivar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 280, 165, 48));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 920, 50));
 
         BTN_Cerrar1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Cerrar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_close.png"))); // NOI18N
         BTN_Cerrar1.setText("     Cerrar");
         BTN_Cerrar1.addActionListener(this::BTN_Cerrar1ActionPerformed);
         getContentPane().add(BTN_Cerrar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 650, 165, 50));
 
-        BTN_PDF.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/pdf.png"))); // NOI18N
         BTN_PDF.setText("     Exportar PDF");
         BTN_PDF.addActionListener(this::BTN_PDFActionPerformed);
         getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 650, 170, 50));
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        BTN_VerPlatos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerPlatos.setText("VER PLATOS DEL MENÚ");
-        BTN_VerPlatos.addActionListener(this::BTN_VerPlatosActionPerformed);
-        jPanel3.add(BTN_VerPlatos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
+        BTN_VerProductos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_VerProductos.setText("VER PLATOS DEL MENÚ");
+        BTN_VerProductos.addActionListener(this::BTN_VerProductosActionPerformed);
+        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
 
         BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Desactivar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
         BTN_Desactivar.setText("     QUITAR");
         BTN_Desactivar.addActionListener(this::BTN_DesactivarActionPerformed);
         jPanel3.add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 280, 165, 48));
 
         BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Modificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_update.png"))); // NOI18N
         BTN_Modificar.setText("    MODIFICAR");
         BTN_Modificar.addActionListener(this::BTN_ModificarActionPerformed);
         jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 220, 165, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_save.png"))); // NOI18N
         BTN_Guardar.setText("     GUARDAR");
         BTN_Guardar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -245,18 +272,16 @@ public class Frm_Producto extends javax.swing.JFrame {
         jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 160, 165, 48));
 
         BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Nuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_add.png"))); // NOI18N
         BTN_Nuevo.setText("      NUEVO");
         BTN_Nuevo.addActionListener(this::BTN_NuevoActionPerformed);
-        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 90, 165, 48));
+        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 100, 165, 48));
 
         BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
         BTN_Cancel.setText("     CANCELAR");
         BTN_Cancel.addActionListener(this::BTN_CancelActionPerformed);
-        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 90, 165, 48));
+        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 100, 165, 48));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 720));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 930, 720));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -270,24 +295,69 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_txtNombreProductoKeyTyped
 
     private void JTABLE_Mant_ProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_ProductoMouseClicked
-    
+        int filaSeleccionada = JTABLE_Mant_Producto.getSelectedRow();
+        BTN_Modificar.setEnabled(true);
+        BTN_Desactivar.setEnabled(true);
+        BTN_Guardar.setEnabled(false);
+        BTN_Cancel.setVisible(false);
+        BTN_Cancel.setEnabled(false);
+        BTN_VerProductos.setEnabled(false);
+
+        if (filaSeleccionada != -1) {
+            // Obtener los datos de la fila seleccionada
+            String codigo = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 0).toString().trim();
+            String nombreProducto = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 1).toString().trim();
+            String precioUnitario = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 4).toString().trim();
+            String stockActual = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 6).toString().trim();
+            String stockMinimo = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 5).toString().trim();
+            String unidadDeMedida = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 2).toString().trim();
+            
+            
+            // Mostrar en los controles
+            txtcodigoproducto.setText(codigo);
+            txtNombreProducto.setText(nombreProducto);
+            txtPreciounitario.setText(precioUnitario);
+            txtstockActual.setText(stockActual);
+            txtstockMinimo.setText(stockMinimo);
+
+            // Guardar valores originales para comparación
+            nombreOriginal = nombreProducto;
+            precioOriginal = precioUnitario;
+            stockActualOriginal = stockActual;
+            stockMinimoOriginal = stockMinimo;
+            unidadOriginal = unidadDeMedida;
+
+            // Buscar coincidencia en el ComboBox ignorando mayúsculas
+            boolean encontrado = false;
+            for (int i = 0; i < jComboBox_unidad_medida.getItemCount(); i++) {
+                String item = jComboBox_unidad_medida.getItemAt(i).trim();
+                if (item.equalsIgnoreCase(unidadDeMedida)) {
+                    jComboBox_unidad_medida.setSelectedIndex(i);
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró, mostrar alerta opcional
+            if (!encontrado) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontró la unidad de medida en la lista del combo.",
+                    "Facultad no encontrada", JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_JTABLE_Mant_ProductoMouseClicked
 
     private void BTN_EXCELActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_EXCELActionPerformed
        
     }//GEN-LAST:event_BTN_EXCELActionPerformed
 
-    private void TXT_BuscarMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasActionPerformed
+    private void TXT_BuscarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TXT_BuscarMesasActionPerformed
+    }//GEN-LAST:event_TXT_BuscarProductosActionPerformed
 
-    private void TXT_BuscarMesasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasKeyReleased
+    private void TXT_BuscarProductosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosKeyReleased
 
-    }//GEN-LAST:event_TXT_BuscarMesasKeyReleased
-
-    private void BTN_Desactivar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Desactivar1ActionPerformed
-       
-    }//GEN-LAST:event_BTN_Desactivar1ActionPerformed
+    }//GEN-LAST:event_TXT_BuscarProductosKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
 
@@ -297,16 +367,83 @@ public class Frm_Producto extends javax.swing.JFrame {
         
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
-    private void BTN_VerPlatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerPlatosActionPerformed
-     
-    }//GEN-LAST:event_BTN_VerPlatosActionPerformed
+    private void BTN_VerProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerProductosActionPerformed
+        this.listarProductos();
+        this.BTN_Nuevo.setEnabled(true);
+        this.BTN_Guardar.setEnabled(false);
+        this.BTN_Desactivar.setEnabled(false);
+        this.BTN_Modificar.setEnabled(false);
+    }//GEN-LAST:event_BTN_VerProductosActionPerformed
 
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
        
     }//GEN-LAST:event_BTN_DesactivarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
-        
+        try {
+            // Obtener datos del formulario
+            String codigoStr = txtcodigoproducto.getText().trim();
+            String nuevoNombreProducto = txtNombreProducto.getText().trim();
+            String nuevoPrecioUnitario = txtPreciounitario.getText().trim();
+            String nuevoStockActual = txtstockActual.getText().trim();
+            String nuevoStockMinimo = txtstockMinimo.getText().trim();
+            String nombreUnidadMedida = (String) jComboBox_unidad_medida.getSelectedItem();
+    
+
+            // Validar campos obligatorios
+            if (codigoStr.isEmpty() || nuevoNombreProducto.isEmpty() || nuevoPrecioUnitario.isEmpty() || nuevoStockActual.isEmpty() || nuevoStockMinimo.isEmpty() || nombreUnidadMedida == null || nombreUnidadMedida.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Validar longitud del nombre
+            if (nuevoNombreProducto.length() > 85) {
+                JOptionPane.showMessageDialog(this, "El nombre de la escuela no debe exceder 85 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Validar si hubo cambios
+            if (nuevoNombreProducto.equalsIgnoreCase(nombreOriginal) && nuevoPrecioUnitario.equalsIgnoreCase(precioOriginal) && nuevoStockActual.equalsIgnoreCase(stockActualOriginal) && nuevoStockMinimo.equalsIgnoreCase(stockMinimoOriginal) && nombreUnidadMedida.equalsIgnoreCase(unidadOriginal)) {
+                JOptionPane.showMessageDialog(this, "No se detectaron cambios en los datos.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Convertir código a entero
+            int codigoProducto = Integer.parseInt(codigoStr);
+            // Convertir precio a double
+            double precio = Double.parseDouble(nuevoPrecioUnitario);
+            // Convertir código a entero
+            int stockActuak = Integer.parseInt(nuevoStockActual);
+            // Convertir código a entero
+            int stockMinimo = Integer.parseInt(nuevoStockMinimo);
+
+            // Obtener código de la unidad de medida (FK)
+            int codigoUnidadMedida = UM.obtenerCodigoUnidad(nombreUnidadMedida);
+            if (codigoUnidadMedida == -1) {
+                JOptionPane.showMessageDialog(this, "La unidad de medida seleccionada no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Verificar duplicidad de nombre con otras escuelas
+            if (PR.existeProductoUnidadMedida(nuevoNombreProducto, codigoProducto)) {
+                JOptionPane.showMessageDialog(this, "Ya existe otra escuela con el mismo nombre.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+             // Llamar al método de modificación
+            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockActuak, stockMinimo, codigoUnidadMedida);
+
+            JOptionPane.showMessageDialog(this, "Escuela profesional actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            // Refrescar tabla y limpiar
+            listarProductos();
+            limpiarCamposProducto();
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Código de producto no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al modificar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTN_GuardarMouseClicked
@@ -314,11 +451,87 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_GuardarMouseClicked
 
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
+        try {  
+            // 1. Obtener datos del formulario
+            //Variable para el jcombobox y el nombre (solo para Strings y jcombox)
+            String nombreProducto = txtNombreProducto.getText().trim();
+            String nombreUnidad = (String) jComboBox_unidad_medida.getSelectedItem();
+            
+            if (nombreProducto.isEmpty()){
+                JOptionPane.showMessageDialog(this, "El nombre del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtNombreProducto.requestFocus();
+                return;
+            }
+            if (txtPreciounitario.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "El precio del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtPreciounitario.requestFocus();
+                return;
+            }
+            if (txtstockActual.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "El stock actual del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtstockActual.requestFocus();
+                return;
+            }
+            if (txtstockMinimo.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "El stock minimo del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtstockMinimo.requestFocus();
+                return;
+            }
+            if (nombreUnidad == null || nombreUnidad.trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "Seleccione una unidad de medida valida.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtNombreProducto.requestFocus();
+                return;
+            }
+            
+            
+            //Proceso de transformación de String a int o Double (Solo para los campos que tienen numeros)
+            double precioUnitario;
+            int stockActual;
+            int stockMinimo; 
+            try {
+                precioUnitario = Double.parseDouble(txtPreciounitario.getText().trim().replace(",", "."));
+                stockActual = Integer.parseInt(txtstockActual.getText().trim());
+                stockMinimo = Integer.parseInt(txtstockMinimo.getText().trim());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, """
+                                                    Error: Uno de los campos num\u00e9ricos tiene un formato incorrecto.
+                                                    Aseg\u00farese de usar solo n\u00fameros (y punto para decimales en el precio).""", 
+                        "Error de entrada", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+          
+            
+            // 3. Obtener el código de la facultad desde la vista
+            int codigoUnidad = UM.obtenerCodigoUnidad(nombreUnidad);
+            if (codigoUnidad == -1) {
+                JOptionPane.showMessageDialog(this, "No se encontró la unidad de medida seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
+             return;
+            }
+            
+            // 4. Insertar usando método de clase (que valida duplicados)
+            PR.insertarProducto(nombreProducto, precioUnitario, stockMinimo, stockActual, codigoUnidad);
 
+            // 5. Confirmar éxito
+            JOptionPane.showMessageDialog(this, "Producto registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            // 6. Refrescar tabla
+            listarProductos();
+
+             // 7. Limpiar campos
+            this.limpiarCamposProducto();
+
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al guardar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
-
+        limpiarCamposProducto();
+        BTN_Cancel.setVisible(true);
+        BTN_Nuevo.setVisible(false);
     }//GEN-LAST:event_BTN_NuevoActionPerformed
 
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
@@ -330,6 +543,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
         BTN_Nuevo.setVisible(true);
+        BTN_Nuevo.setEnabled(true);
         BTN_Cancel.setVisible(false);
         JTABLE_Mant_Producto.setEnabled(true);
     }//GEN-LAST:event_BTN_CancelActionPerformed
@@ -371,16 +585,15 @@ public class Frm_Producto extends javax.swing.JFrame {
     private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;
-    private javax.swing.JButton BTN_Desactivar1;
     private javax.swing.JButton BTN_EXCEL;
     private javax.swing.JButton BTN_Guardar;
     private javax.swing.JButton BTN_Modificar;
     private javax.swing.JButton BTN_Nuevo;
     private javax.swing.JButton BTN_PDF;
-    private javax.swing.JButton BTN_VerPlatos;
+    private javax.swing.JButton BTN_VerProductos;
     private javax.swing.JTable JTABLE_Mant_Producto;
-    private javax.swing.JTextField TXT_BuscarMesas;
-    private javax.swing.JComboBox<String> jComboBoxunidad_medida;
+    private javax.swing.JTextField TXT_BuscarProductos;
+    private javax.swing.JComboBox<String> jComboBox_unidad_medida;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -400,4 +613,62 @@ public class Frm_Producto extends javax.swing.JFrame {
     private javax.swing.JTextField txtstockActual;
     private javax.swing.JTextField txtstockMinimo;
     // End of variables declaration//GEN-END:variables
+    
+    //llenar elementos en el jcombobox el metodo viene de la clase
+    //y la consulta de la vista
+    private void cargarUnidadMedida() {
+        try {
+            jComboBox_unidad_medida.removeAllItems();
+            jComboBox_unidad_medida.addItem("<<Seleccionar>>"); // Opción por defecto
+
+            ResultSet rs = UM.listarUnidadMedida();
+            while (rs.next()) {
+                jComboBox_unidad_medida.addItem(rs.getString("Unidad de Medida"));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las unidades de medidas: " + e.getMessage());
+        }
+    }
+    
+    //método para mostrar registros en el jtable
+    private void listarProductos() {
+        try {
+            // 1. Configuración de la tabla
+            JTABLE_Mant_Producto.setAutoCreateRowSorter(true);
+            modeloTablaProducto.setRowCount(0);
+
+            // 2. Obtener datos
+            ResultSet rs = PR.listarProductos();
+
+            while (rs.next()) {
+            Object fila[] = {
+                rs.getInt("ID"), 
+                rs.getString("Nombre del Producto"),
+                rs.getString("Unidad de Medida"), 
+                rs.getString("Abreviatura"), 
+                rs.getString("Precio"),    
+                rs.getInt("Stock Mínimo"),
+                rs.getInt("Stock Actual")
+            };
+                modeloTablaProducto.addRow(fila);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar la tabla de productos: " + e.getMessage(), "Error de Datos", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void limpiarCamposProducto() {
+            txtcodigoproducto.setText("");
+            txtNombreProducto.setText("");
+            txtPreciounitario.setText("");
+            txtstockActual.setText("");
+            txtstockMinimo.setText("");
+            jComboBox_unidad_medida.setSelectedIndex(0); // O -1 si quieres dejarlo vacío
+            BTN_Guardar.setEnabled(true);
+            BTN_Cancel.setEnabled(true);
+            BTN_Nuevo.setEnabled(false);
+            BTN_Modificar.setEnabled(false);
+            BTN_Desactivar.setEnabled(false);
+            BTN_VerProductos.setEnabled(false);
+        }
 }

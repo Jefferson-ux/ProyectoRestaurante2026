@@ -1,5 +1,13 @@
-package gui.menu;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package vistas;
 
+/**
+ *
+ * @author GIGABYTE
+ */
 public class Frm_LoginAcesso extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_LoginAcesso.class.getName());
@@ -90,17 +98,7 @@ public Frm_LoginAcesso() {
     }//GEN-LAST:event_BTN_IngresarActionPerformed
 
     private void BTN_SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_SalirActionPerformed
-        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "¿Estás seguro de que quieres cerrar la aplicación?",
-            "Confirmar salida",
-            javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE
-        );
-
-        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-            System.exit(0); // Cierra todo el programa
-        }
+        // TODO add your handling code here:
 
     }//GEN-LAST:event_BTN_SalirActionPerformed
 

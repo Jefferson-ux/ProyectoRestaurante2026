@@ -57,10 +57,7 @@ public class CategoriaMethod {
 
        /* INSERT--> AGREGAR DATOS */
     public void insertarCategoria(String nombre) throws SQLException{
-        if (existeCategoriaConNombre(nombre, 0)) {
-    throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
-}
-        String sql = "{CALL insertar_categoria(?)}";//Llamada al procedimiento
+        String sql = "CALL insertar_categoria(?)";//Llamada al procedimiento
         try
             (PreparedStatement ps =conn.prepareCall(sql)){
             ps.setString(1, nombre);
@@ -71,16 +68,13 @@ public class CategoriaMethod {
 
 
        /* UPDATE --> ACTUALIZAR DATOS */
-     public void modificarCategoria(int id, String nuevoNombre) throws SQLException{
-         if (existeCategoriaConNombre(nuevoNombre, id)) {
-    throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
-}
-        String sql = "{CALL Update_Categoria(?,?)}";/*Llamada al procedimiento*/
+     public void modificarMesas(int id, String nuevoNombre) throws SQLException{
+        String sql = "CALL vera_ModificarFacultad(?,?)";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
             ps.setString(2, nuevoNombre);
             ps.executeUpdate();
-            System.out.println("Categoría modificada");
+            System.out.println("Facultad modificada");
         }                   
 
     }
@@ -99,30 +93,8 @@ public class CategoriaMethod {
         }   
     }                     
   
-    
-public boolean existeCategoriaConNombre(String nombre, int codigoEscuela) throws SQLException {
-    // Usamos LOWER para que no importe si escriben en mayúsculas o minúsculas
-    String sql = "SELECT 1 FROM categoria "
-               + "WHERE LOWER(nombre_categoria) = LOWER(?) "
-               + "AND id_categoria <> ?";
-    
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, nombre.trim());
-        ps.setInt(2, codigoEscuela); // Pasamos 0 si es un INSERT nuevo
-        
-        try (ResultSet rs = ps.executeQuery()) {
-            // Si rs.next() es true, significa que encontró una fila con ese nombre
-            return rs.next(); 
-        }
-    } catch (SQLException e) {
-        System.err.println("Error al validar nombre de la categoría: " + e.getMessage());
-        throw e;
-    }
-}
        
-     
-     
-     
+       
          //======================================//  
         // Métodos de los COMBOBOX - VIEW de FK //
        //======================================//            

@@ -55,32 +55,26 @@ public class MesaMethod {
 
 
        /* INSERT--> AGREGAR DATOS */
-    public void insertarMesas(String nombre, int capacidad) throws SQLException{
-        if (existeMesaConNumero(nombre, 0)) {
-    throw new IllegalArgumentException("El número de mesa ya está registrado.");
-}
-        String sql = "{CALL insertar_mesa(?,?)}";//Llamada al procedimiento
+    public void insertarMesas(String nombre, String capacidad) throws SQLException{
+        String sql = "CALL insertar_mesa(?,?)";//Llamada al procedimiento
         try 
             (PreparedStatement ps =conn.prepareCall(sql)){
             ps.setString(1, nombre);
-            ps.setInt(2, capacidad);
+            ps.setString(2, capacidad);
             ps.execute();
             System.out.println("Mesa insertada con éxito");
         }
     } 
 
 
-    public void modificarMesas(int id, String nuevoNombre,int nuevaCapacidad) throws SQLException{
-        if (existeMesaConNumero(nuevoNombre, id)) {
-    throw new IllegalArgumentException("El número de mesa ya está registrado.");
-}
-        String sql = "{CALL Update_Mesa(?,?,?)}";/*Llamada al procedimiento*/
+       /* UPDATE --> ACTUALIZAR DATOS */
+     public void modificarMesas(int id, String nuevoNombre) throws SQLException{
+        String sql = "CALL vera_ModificarFacultad(?,?)";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
             ps.setString(2, nuevoNombre);
-            ps.setInt(3, nuevaCapacidad);
             ps.executeUpdate();
-            System.out.println("Mesa modificada");
+            System.out.println("Facultad modificada");
         }                   
 
     }
@@ -99,20 +93,7 @@ public class MesaMethod {
         }   
     }                     
   
-     
-     public boolean existeMesaConNumero(String numeroMesa, int codigoMesa) throws SQLException {
-    String sql = "SELECT 1 FROM mesa "
-               + "WHERE numero_mesa = ? "
-               + "AND id_mesa <> ?";
-    
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, numeroMesa);
-        ps.setInt(2, codigoMesa);
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next();
-        }
-    }
-}
+       
        
          //======================================//  
         // Métodos de los COMBOBOX - VIEW de FK //
