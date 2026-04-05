@@ -10,8 +10,7 @@ DROP PROCEDURE IF EXISTS Update_Cargo //
 -- 2. Creamos el procedimiento
 CREATE PROCEDURE Update_Cargo (
     IN p_id_cargo      INT,
-    IN p_nombre_cargo  VARCHAR(255),
-    IN p_estado        INT
+    IN p_nombre_cargo  VARCHAR(255)
 )
 BEGIN
     DECLARE v_existencia INT;
@@ -33,13 +32,6 @@ BEGIN
             MYSQL_ERRNO = 20072;
     END IF;
 
-    -- Validar estado
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', 
-            MYSQL_ERRNO = 20073;
-    END IF;
-
     -- Validar duplicados
     SELECT COUNT(*) INTO v_existencia FROM cargo 
     WHERE UPPER(nombre_cargo) = UPPER(TRIM(p_nombre_cargo)) 
@@ -53,8 +45,7 @@ BEGIN
 
     -- Ejecutar el UPDATE
     UPDATE cargo
-    SET nombre_cargo = TRIM(p_nombre_cargo),
-        estado       = p_estado
+    SET nombre_cargo = TRIM(p_nombre_cargo)
     WHERE id_cargo = p_id_cargo;
 
 END // 
@@ -63,7 +54,7 @@ END //
 DELIMITER ;
 
 --4. Ejemplo de uso
-CALL Update_Cargo(5,"Ayudante de Cocina II",1);
+CALL Update_Cargo(5,"Ayudante de Cocina II");
 
 /**************************************
 2.- CATEGORIA 
@@ -75,8 +66,7 @@ DROP PROCEDURE IF EXISTS Update_Categoria //
 
 CREATE PROCEDURE Update_Categoria (
     IN p_id_categoria     INT,
-    IN p_nombre_categoria VARCHAR(255),
-    IN p_estado            INT
+    IN p_nombre_categoria VARCHAR(255)
 )
 BEGIN
     DECLARE v_existencia INT;
@@ -98,13 +88,6 @@ BEGIN
             MYSQL_ERRNO = 20075;
     END IF;
 
-    -- 3. Validar estado (debe ser 0 o 1)
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.',
-            MYSQL_ERRNO = 20078; 
-    END IF;
-
     -- 4. Verificar duplicados (mismo nombre en otro ID)
     SELECT COUNT(*) INTO v_existencia 
     FROM categoria 
@@ -119,15 +102,14 @@ BEGIN
 
     -- 5. Ejecutar el UPDATE
     UPDATE categoria
-    SET nombre_categoria = TRIM(p_nombre_categoria),
-        estado           = p_estado
+    SET nombre_categoria = TRIM(p_nombre_categoria)
     WHERE id_categoria = p_id_categoria;
 
 END //
 
 DELIMITER ;
 
-CALL Update_Categoria(10,"Jugos Naturales",1);
+CALL Update_Categoria(10,"Jugos Naturales");
 
 /**************************************
 3.- CLIENTE
@@ -143,8 +125,7 @@ CREATE PROCEDURE Update_Cliente (
     IN p_apellido        VARCHAR(100),
     IN p_correo          VARCHAR(100),
     IN p_telefono        VARCHAR(20),
-    IN p_observacion     VARCHAR(200),
-    IN p_estado          INT
+    IN p_observacion     VARCHAR(200)
 )
 BEGIN
     -- Declaración de variables locales
@@ -199,11 +180,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El teléfono debe tener 9 dígitos y empezar con 9.', MYSQL_ERRNO = 20082;
     END IF;
 
-    -- 6. Validar estado
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20083;
-    END IF;
-
     -- 7. Validar DNI duplicado
     SELECT COUNT(*) INTO v_dni_duplicado FROM cliente 
     WHERE dni_cliente = v_dni AND id_cliente <> p_id_cliente;
@@ -220,8 +196,7 @@ BEGIN
         apellido_cliente  = v_apellido,
         correo_cliente    = v_correo,
         telefono_cliente  = v_telefono,
-        observacion_cliente = v_observacion,
-        estado            = p_estado
+        observacion_cliente = v_observacion
     WHERE id_cliente = p_id_cliente;
 
     COMMIT;
@@ -238,7 +213,6 @@ CALL Update_Cliente(
     'davidaguilar@gmail.com', 
     '987654321', 
     'Cliente muy frecuente', 
-    1
 );
 
 /**************************************
@@ -253,8 +227,7 @@ CREATE PROCEDURE Update_Contrato (
     IN p_id_turno         INT,
     IN p_id_empleado      INT,
     IN p_id_tipo_contrato INT,
-    IN p_id_cargo         INT,
-    IN p_estado           TINYINT
+    IN p_id_cargo         INT
 )
 BEGIN
     DECLARE v_existe_id INT;
@@ -335,13 +308,6 @@ BEGIN
             MESSAGE_TEXT = 'Error: Cargo no existe.';
     END IF;
 
-    -- Validar estado
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MYSQL_ERRNO = 20093, 
-            MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.';
-    END IF;
-
     -- UPDATE
     UPDATE contrato
     SET descripcion_contrato = TRIM(p_descripcion),
@@ -349,8 +315,7 @@ BEGIN
         id_turno             = p_id_turno,
         id_empleado          = p_id_empleado,
         id_tipo_contrato     = p_id_tipo_contrato,
-        id_cargo             = p_id_cargo,
-        estado               = p_estado
+        id_cargo             = p_id_cargo
     WHERE id_contrato = p_id_contrato;
 
     -- Validar afectación de filas
@@ -371,8 +336,7 @@ CALL Update_Contrato(
     '2024-07-01',            -- p_fecha (En MySQL se pasa como String YYYY-MM-DD)
     2,                       -- p_id_turno
     5,                       -- p_id_empleado
-    1,                       -- p_id_tipo_contrato
-    1                        -- p_estado
+    1                       -- p_id_tipo_contrato
 );
 
 /**************************************
@@ -475,8 +439,7 @@ CREATE PROCEDURE Update_Empleado (
     IN p_telefono1       VARCHAR(15),
     IN p_telefono2       VARCHAR(15),
     IN p_observacion     VARCHAR(500),
-    IN p_id_genero       INT,
-    IN p_estado          TINYINT
+    IN p_id_genero       INT
 )
 BEGIN
     -- Declaración de variables locales
@@ -540,11 +503,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Género no existe.', MYSQL_ERRNO = 20106;
     END IF;
 
-    -- 11. Validar estado
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Estado debe ser 0 o 1.', MYSQL_ERRNO = 20108;
-    END IF;
-
     -- Ejecutar actualización
     UPDATE empleado
     SET dni_empleado       = v_dni,
@@ -558,8 +516,7 @@ BEGIN
         telefono_principal = TRIM(p_telefono1),
         telefono_secundario = TRIM(p_telefono2),
         observacion_empleado = v_observacion,
-        id_genero          = p_id_genero,
-        estado             = p_estado
+        id_genero          = p_id_genero
     WHERE id_empleado = p_id_empleado;
 
 END //
@@ -579,8 +536,8 @@ CALL Update_Empleado(
     '987656321',             -- p_telefono1
     '912348678',             -- p_telefono2
     NULL,                    -- p_observacion
-    1,                       -- p_id_genero
-    1                        -- p_estado
+    1                      -- p_id_genero
+
 );
 
 /**************************************
@@ -722,8 +679,7 @@ DELIMITER //
 CREATE PROCEDURE Update_Mesa (
     IN p_id_mesa       INT,
     IN p_numero_mesa   VARCHAR(10),
-    IN p_capacidad     INT,
-    IN p_estado        TINYINT
+    IN p_capacidad     INT
 )
 BEGIN
     -- Declaración de variables locales
@@ -759,17 +715,10 @@ BEGIN
         SET MESSAGE_TEXT = 'Error: La capacidad debe ser mayor a 0.', MYSQL_ERRNO = 20119;
     END IF;
 
-    -- 5. Validar estado
-    IF p_estado IS NULL OR p_estado NOT IN (0,1) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20120;
-    END IF;
-
     -- 6. Ejecutar actualización
     UPDATE mesa
     SET numero_mesa = v_numero,
-        capacidad   = p_capacidad,
-        estado      = p_estado
+        capacidad   = p_capacidad
     WHERE id_mesa = p_id_mesa;
 
     -- 7. Validar si hubo cambios efectivos
@@ -785,8 +734,7 @@ DELIMITER ;
 CALL Update_Mesa(
     21,         -- p_id_mesa
     'M-05',     -- p_numero_mesa
-    4,          -- p_capacidad
-    1           -- p_estado (Activo)
+    4          -- p_capacidad
 );
 
 /**************************************
@@ -801,7 +749,6 @@ CREATE PROCEDURE Update_Pedido (
     IN p_id_cliente      INT,
     IN p_id_empleado     INT,
     IN p_id_tipo_pedido  INT,
-    IN p_estado          TINYINT -- Campo integrado según tu tabla
 )
 BEGIN
     -- Declaración de variable para validaciones
@@ -836,18 +783,12 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El tipo de pedido no existe.', MYSQL_ERRNO = 20131;
     END IF;
 
-    -- 6. Validar estado (0: Anulado/Inactivo, 1: Activo/Pendiente)
-    IF p_estado IS NULL OR p_estado NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20133;
-    END IF;
-
     -- 7. Ejecutar actualización
     UPDATE pedido
     SET fecha_pedido   = p_fecha,
         id_cliente     = p_id_cliente,
         id_empleado    = p_id_empleado,
-        id_tipo_pedido = p_id_tipo_pedido,
-        estado         = p_estado
+        id_tipo_pedido = p_id_tipo_pedido
     WHERE id_pedido = p_id_pedido;
 
     -- 8. Verificar si hubo cambios
@@ -864,8 +805,8 @@ CALL Update_Pedido(
     NOW(),       -- fecha_pedido
     2,           -- id_cliente
     1,           -- id_empleado
-    1,           -- id_tipo_pedido
-    1            -- estado (Activo)
+    1           -- id_tipo_pedido
+
 );
 
 /**************************************
@@ -880,7 +821,6 @@ CREATE PROCEDURE Update_Plato_Menu (
     IN p_descripcion    VARCHAR(500),
     IN p_precio         DECIMAL(10,2),
     IN p_id_categoria   INT,
-    IN p_estado         TINYINT -- Campo integrado de tu script de tablas
 )
 BEGIN
     -- Declaración de variables locales
@@ -922,18 +862,12 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Ya existe otro plato con ese nombre.', MYSQL_ERRNO = 20138;
     END IF;
 
-    -- 6. Validar estado (0 o 1)
-    IF p_estado IS NULL OR p_estado NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20140;
-    END IF;
-
     -- 7. Ejecutar actualización
     UPDATE plato_menu
     SET nombre_plato      = v_nombre,
         descripcion_plato = v_desc,
         precio_plato      = p_precio,
-        id_categoria      = p_id_categoria,
-        estado            = p_estado
+        id_categoria      = p_id_categoria
     WHERE id_plato_menu = p_id_plato_menu;
 
     -- 8. Validar si hubo cambios
@@ -950,8 +884,7 @@ CALL Update_Plato_Menu(
     'Ensalada Mixta',               -- p_nombre
     'Ensalada fresca sin limón',    -- p_descripcion
     12.99,                          -- p_precio
-    2,                              -- p_id_categoria
-    1                               -- p_estado (Activo)
+    2                              -- p_id_categoria
 );
 
 /**************************************
@@ -1220,8 +1153,7 @@ CREATE PROCEDURE Update_Reserva (
     IN p_cantidad_personas INT,
     IN p_observacion       VARCHAR(500),
     IN p_id_cliente        INT,
-    IN p_id_mesa           INT,
-    IN p_estado            TINYINT
+    IN p_id_mesa           INT
 )
 BEGIN
     -- Declaración de variables locales
@@ -1233,11 +1165,6 @@ BEGIN
     SELECT COUNT(*) INTO v_existe FROM reserva WHERE id_reserva = p_id_reserva;
     IF v_existe = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No existe la reserva.', MYSQL_ERRNO = 20182;
-    END IF;
-
-    -- 2. Validar estado (0 o 1)
-    IF p_estado IS NULL OR p_estado NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20174;
     END IF;
 
     -- 3. Validar cantidad de personas
@@ -1274,19 +1201,16 @@ BEGIN
     END IF;
 
     -- 8. Validar cruce de horarios (Solo si la reserva se intenta activar/mantener activa)
-    IF p_estado = 1 THEN
         SELECT COUNT(*) INTO v_ocupada
         FROM reserva
         WHERE id_mesa = p_id_mesa
           AND p_fecha_inicio < fecha_fin
           AND p_fecha_fin > fecha_inicio
-          AND id_reserva <> p_id_reserva
-          AND estado = 1;
-
+          AND id_reserva <> p_id_reserva;
+   
         IF v_ocupada > 0 THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La mesa ya está ocupada en ese horario.', MYSQL_ERRNO = 20181;
         END IF;
-    END IF;
 
     -- 9. Ejecutar actualización
     UPDATE reserva
@@ -1296,8 +1220,7 @@ BEGIN
         cantidad_personas   = p_cantidad_personas,
         observacion_reserva = IFNULL(TRIM(p_observacion), 'SIN OBSERVACIÓN'),
         id_cliente          = p_id_cliente,
-        id_mesa             = p_id_mesa,
-        estado              = p_estado
+        id_mesa             = p_id_mesa
     WHERE id_reserva = p_id_reserva;
 
     -- 10. Verificar si hubo cambios
@@ -1317,8 +1240,7 @@ CALL Update_Reserva(
     2,                       -- p_cantidad_personas
     'CLIENTE FRECUENTE',     -- p_observacion
     1,                       -- p_id_cliente
-    2,                       -- p_id_mesa
-    1                        -- p_estado (Activo)
+    2                       -- p_id_mesa
 );
 
 /**************************************
@@ -1386,8 +1308,7 @@ DELIMITER //
 
 CREATE PROCEDURE Update_TipoPago (
     IN p_id_tipo_pago      INT,
-    IN p_nombre_tipo_pago  VARCHAR(100),
-    IN p_estado            TINYINT
+    IN p_nombre_tipo_pago  VARCHAR(100)
 )
 BEGIN
     -- Declaración de variables locales
@@ -1418,15 +1339,9 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El nombre del tipo de pago ya existe.', MYSQL_ERRNO = 20188;
     END IF;
 
-    -- 4. Validar estado (0 o 1)
-    IF p_estado IS NULL OR p_estado NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20189;
-    END IF;
-
     -- 5. Ejecutar actualización
     UPDATE tipo_pago
-    SET nombre_tipo_pago = v_nombre,
-        estado           = p_estado
+    SET nombre_tipo_pago = v_nombre
     WHERE id_tipo_pago = p_id_tipo_pago;
 
     -- 6. Verificar si hubo cambios
@@ -1650,8 +1565,7 @@ CREATE PROCEDURE Update_Usuario (
     IN p_codigo       VARCHAR(50),
     IN p_password     VARCHAR(200),
     IN p_observacion  VARCHAR(200),
-    IN p_id_cargo     INT,
-    IN p_estado       TINYINT
+    IN p_id_cargo     INT
 )
 BEGIN
     -- Declaración de variables locales
@@ -1679,12 +1593,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Error: La contraseña no puede estar vacía.', MYSQL_ERRNO = 20203;
     END IF;
 
-    -- 4. Validar estado (0 o 1)
-    IF p_estado IS NULL OR p_estado NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Error: El estado debe ser 0 o 1.', MYSQL_ERRNO = 20204;
-    END IF;
-
     -- 5. Validar existencia del cargo (FK)
     SELECT COUNT(*) INTO v_existe FROM cargo WHERE id_cargo = p_id_cargo;
     IF v_existe = 0 THEN
@@ -1706,8 +1614,7 @@ BEGIN
     SET codigo_usuario      = v_codigo,
         password_usuario    = v_password,
         observacion_usuario = v_observacion,
-        id_cargo            = p_id_cargo,
-        estado              = p_estado
+        id_cargo            = p_id_cargo
     WHERE id_usuario = p_id_usuario;
 
     -- 8. Verificar si hubo cambios efectivos
@@ -1725,6 +1632,5 @@ CALL Update_Usuario(
     'USR050',             -- p_codigo
     'nueva_clave_2024',   -- p_password
     'ADMINISTRADOR SEDE', -- p_observacion
-    1,                    -- p_id_cargo
-    1                     -- p_estado (Activo)
+    1                    -- p_id_cargo
 );

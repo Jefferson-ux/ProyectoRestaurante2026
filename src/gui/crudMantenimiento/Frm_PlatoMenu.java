@@ -28,7 +28,7 @@ import javax.swing.table.TableColumnModel;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 
-public class Frm_Producto extends javax.swing.JFrame {
+public class Frm_PlatoMenu extends javax.swing.JFrame {
 
     DefaultTableModel modeloTablaMesa = new DefaultTableModel();
     //Objeto conexión a la base de datos
