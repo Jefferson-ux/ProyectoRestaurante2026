@@ -27,7 +27,7 @@ public class ConnectionDB {
             //=> jdbc (protocolo JDBC) localhost (mi PC) 3306 (port) universidad_db (database)
     private static final String USER = "root";  
             //=> USUARIO 
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "Pa$$Word-72328363%";
             //=> PASSWORD 
     
     

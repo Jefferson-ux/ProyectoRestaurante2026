@@ -395,13 +395,16 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         if (selectRow >= 0) {
             String codigo = JTABLE_Mant_Plato.getValueAt(selectRow, 0).toString().trim();
             String nombre_plato = JTABLE_Mant_Plato.getValueAt(selectRow, 1).toString().trim();
-            String precio = JTABLE_Mant_Plato.getValueAt(selectRow, 2).toString().trim();
+            
+            // Obtenemos el texto (ej: "S/ 16.00") y le quitamos el símbolo y el espacio
+            String precioRaw = JTABLE_Mant_Plato.getValueAt(selectRow, 2).toString().trim();
+            String precioLimpio = precioRaw.replace("S/", "").replace("S/ ", "").trim();
             String categoria = JTABLE_Mant_Plato.getValueAt(selectRow, 3).toString().trim();
             String descripcion = JTABLE_Mant_Plato.getValueAt(selectRow, 4).toString().trim();
 
             txtcodigoplato.setText(codigo);
             txtNombrePlato.setText(nombre_plato);
-            txtPrecio.setText(precio);
+            txtPrecio.setText(precioLimpio);
             jTextAreaDescripcion.setText(descripcion);
             
             String categoriaOriginal = categoria;
@@ -513,50 +516,82 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
          // Validar que se haya seleccionado un registro
     String codStr = txtcodigoplato.getText().trim();
     String nuevoNombre = txtNombrePlato.getText().trim();
+    String nuevoPrecio = txtPrecio.getText().trim();
+    String nombreCategoria = (String) jComboBoxCategoria.getSelectedItem();
+    String nuevoDescripcion = jTextAreaDescripcion.getText().trim();
 
-    if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Seleccione una facultad y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
+    if (codStr.isEmpty() || nuevoNombre.isEmpty() || nuevoPrecio.isEmpty()
+            ||nombreCategoria.isEmpty()||nombreCategoria==null||nuevoDescripcion.isEmpty()) {
+      JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios", "Validación", JOptionPane.WARNING_MESSAGE);
       return;
     }
-
     int codigo = Integer.parseInt(codStr);
+        int id_categoria=-1;
+        try {
+            id_categoria = methods.comboSeleccionarID(nombreCategoria);
+        } catch (SQLException ex) {
+            Logger.getLogger(Frm_PlatoMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        double precio = Double.parseDouble(nuevoPrecio);
+        
+        if (id_categoria==-1) {
+            JOptionPane.showMessageDialog(this, "La categoria seleccionada no es válida","Error",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            if (methods.existePlatoConNombre(nuevoNombre, codigo)) {
+                JOptionPane.showMessageDialog(this, "Ya existe un plato con ese nombre","Validación",JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Frm_PlatoMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
+    
+    
+    
+    
     // Confirmación del usuario
-    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta facultad?", "Confirmación",JOptionPane.YES_NO_OPTION);
-    if (respuesta == JOptionPane.YES_OPTION) {
+    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar este plato?", "Confirmación",JOptionPane.YES_NO_OPTION);
+    if (respuesta == JOptionPane.YES_OPTION) {        
       try {
-        this.methods.modificarPlatoMenu(codigo, nuevoNombre);
-
+        this.methods.modificarPlatoMenu(codigo, nuevoNombre,nuevoDescripcion,precio,id_categoria);
         JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
 
         this.MostrarPlatosMenu();
         // Limpia los campos de texto
-        txtcodigoplato.setText("");
+        this.limpiarCamposPlatoMenu();
         //txtprecio.setText("");
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al modificar facultad:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al modificar el plato:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
       }
     }
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
+    
+    
+    
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
-    // 1. Validar que se haya seleccionado una facultad
+    // 1. Validar que se haya seleccionado un plato
     String codStr = txtcodigoplato.getText().trim();
     if (codStr.isEmpty()) {
-      JOptionPane.showMessageDialog(this,"Seleccione una facultad en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(this,"Seleccione un plato en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
       return;
     }
     int codigo = Integer.parseInt(codStr); // Convertir a entero
     // 2. Confirmar la acción con el usuario
-    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar esta facultad?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+    int opcion = JOptionPane.showConfirmDialog(this,"¿Está seguro de que desea desactivar este plato?","Confirmar desactivación",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
     if (opcion == JOptionPane.YES_OPTION) {
       try {
        // 3. Llamar al método que ejecuta el procedure de desactivación
         this.methods.downFacultades(codigo);
        // 4. Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this,"Mesa desactivada correctamente.","Operación exitosa",JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this,"Plato desactivado correctamente.","Operación exitosa",JOptionPane.INFORMATION_MESSAGE);
        // 5. Actualizar tabla y limpiar campos
         this.MostrarPlatosMenu();
        // Limpia los campos de texto
@@ -566,7 +601,7 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         BTN_Modificar.setEnabled(false);
       } catch (SQLException ex) {
         // 6. Captura cualquier error lanzado por el procedure (por SIGNAL)
-        JOptionPane.showMessageDialog(this,"Error al desactivar facultad:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,"Error al desactivar plato:\n" + ex.getMessage(),"Error de base de datos",JOptionPane.ERROR_MESSAGE);
       }
    }
     }//GEN-LAST:event_BTN_DesactivarActionPerformed
@@ -771,16 +806,17 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_Desactivar1ActionPerformed
 
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
-        JTABLE_Mant_Plato.setRowSelectionAllowed(true);
-        JTABLE_Mant_Plato.setColumnSelectionAllowed(true);
-        JTABLE_Mant_Plato.setCellSelectionEnabled(true);
-        
-        BTN_Guardar.setEnabled(true);
-        BTN_Desactivar.setEnabled(false);
-        BTN_Modificar.setEnabled(false);
-        BTN_Nuevo.setVisible(true);
-        BTN_Cancel.setVisible(false);
-        JTABLE_Mant_Plato.setEnabled(true);
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la operación?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (respuesta == JOptionPane.YES_OPTION) {
+
+                        BTN_Guardar.setEnabled(false);
+                        BTN_Desactivar.setEnabled(false);
+                        BTN_Modificar.setEnabled(false);
+                        BTN_Nuevo.setVisible(true);
+                        BTN_Cancel.setVisible(false);
+                        JTABLE_Mant_Plato.setEnabled(true);
+                
+                }
     }//GEN-LAST:event_BTN_CancelActionPerformed
 
     /**
@@ -866,14 +902,14 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
     private javax.swing.JTextField txtcodigoplato;
     // End of variables declaration//GEN-END:variables
 
-//Método para mostrar las facultades
+//Método para mostrar las platoes
     public void MostrarPlatosMenu() {
         //Ordenar ASC, DESC
         JTABLE_Mant_Plato.setAutoCreateRowSorter(true);
         //Limpiar la tabla antes de mostrar nuevos datos
         modeloTablaMesa.setRowCount(0);
         try {
-            //Llama al método que retorna los datos de facultades
+            //Llama al método que retorna los datos de platoes
             ResultSet rs = this.methods.listarPlatoMenu();
             while (rs.next()) {
                 String descripcion = rs.getString("Descripciones");
@@ -897,14 +933,14 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         }
     }
 
-//Método para mostrar las facultades
+//Método para mostrar las platoes
     public void BuscarMesaPorNombre() {
         String parametro = TXT_BuscarMesas.getText().trim();
         if (parametro.isEmpty()) {
             parametro = "";
         }
         try {
-            //Llama al método que retorna los datos de facultades
+            //Llama al método que retorna los datos de platoes
             ResultSet rs = this.methods.buscarPlatoMenu(parametro);
             
             try (rs) {

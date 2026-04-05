@@ -57,6 +57,9 @@ public class CategoriaMethod {
 
        /* INSERT--> AGREGAR DATOS */
     public void insertarCategoria(String nombre) throws SQLException{
+        if (existeCategoriaConNombre(nombre, 0)){
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre");
+        }
         String sql = "CALL insertar_categoria(?)";//Llamada al procedimiento
         try
             (PreparedStatement ps =conn.prepareCall(sql)){
@@ -69,7 +72,10 @@ public class CategoriaMethod {
 
        /* UPDATE --> ACTUALIZAR DATOS */
      public void modificarMesas(int id, String nuevoNombre) throws SQLException{
-        String sql = "CALL vera_ModificarFacultad(?,?)";/*Llamada al procedimiento*/
+        if (existeCategoriaConNombre(nuevoNombre, id)){
+            throw new IllegalArgumentException("Ya existe una categoría registrada con ese nombre");
+        }
+        String sql = "{CALL Update_Categoria(?,?)}";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
             ps.setString(2, nuevoNombre);
@@ -95,6 +101,21 @@ public class CategoriaMethod {
   
        
        
+     /** Valida si ya existe una escuela profesional con ese nombre */
+    public boolean existeCategoriaConNombre(String nombre, int codigo) throws SQLException {
+        String sql = "SELECT 1 FROM categoria "
+                   + "WHERE LOWER(nombre_categoria) = LOWER(?) "
+                   + "AND id_categoria <> ?";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nombre.trim());
+        ps.setInt(2, codigo); // 0 si es insertar
+
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // si devuelve algo, ya existe
+    }
+     
+     
          //======================================//  
         // Métodos de los COMBOBOX - VIEW de FK //
        //======================================//            

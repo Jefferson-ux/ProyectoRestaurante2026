@@ -13,6 +13,8 @@ import logic.dao.MesaMethod;
   /*excel*/
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -112,6 +114,11 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         txtcapacidad.setForeground(new java.awt.Color(0, 0, 204));
         txtcapacidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtcapacidad.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtcapacidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtcapacidadActionPerformed(evt);
+            }
+        });
         txtcapacidad.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtcapacidadKeyTyped(evt);
@@ -136,6 +143,11 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         txtnumeroMesa.setForeground(new java.awt.Color(0, 0, 204));
         txtnumeroMesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtnumeroMesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtnumeroMesa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtnumeroMesaActionPerformed(evt);
+            }
+        });
         txtnumeroMesa.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtnumeroMesaKeyTyped(evt);
@@ -336,14 +348,22 @@ public class Frm_MantMesa extends javax.swing.JFrame {
       txtcapacidad.requestFocus();
       return;
     }
-
+    
+    int nuevaCapacidad=Integer.parseInt(capacidad);
+    
+    if (nuevaCapacidad<=0){
+         JOptionPane.showMessageDialog(this, "La capacidad de las mesas deben ser mínimo 1","Validación",JOptionPane.WARNING_MESSAGE);
+                return;
+     }
+    
+    
     // 2. Confirmar si el usuario desea guardar
     int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de mesas?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
 
       try {
         // 3. Llamar al método para insertar
-        this.methods.insertarMesas(nombre, capacidad);
+        this.methods.insertarMesas(nombre, nuevaCapacidad);
 
         // 4. Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Mesa registrada correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
@@ -360,19 +380,38 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
          // Validar que se haya seleccionado un registro
     String codStr = txtcodigomesa.getText().trim();
-    String nuevoNombre = txtcapacidad.getText().trim();
+    String nombre = txtnumeroMesa.getText().trim();
+    String capacidad = txtcapacidad.getText().trim();
 
-    if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
+    if (codStr.isEmpty() || capacidad.isEmpty() || nombre.isEmpty()) {
       JOptionPane.showMessageDialog(this, "Seleccione una Mesa y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
       return;
     }
 
     int codigo = Integer.parseInt(codStr);
+    int nuevaCapacidad = Integer.parseInt(capacidad);
+    
+     try {
+            if (methods.existeMesaConNombre(nombre, codigo)) {
+                JOptionPane.showMessageDialog(this, "Ya existe una mesa con ese nombre","Validación",JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Frm_PlatoMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     
+     if (nuevaCapacidad<=0){
+         JOptionPane.showMessageDialog(this, "La capacidad de las mesas deben ser mínimo 1","Validación",JOptionPane.WARNING_MESSAGE);
+                return;
+     }
+    
+    
+    
     // Confirmación del usuario
     int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta Mesa?", "Confirmación",JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
       try {
-        this.methods.modificarMesas(codigo, nuevoNombre);
+        this.methods.modificarMesas(codigo, nombre,nuevaCapacidad);
 
         JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
 
@@ -583,6 +622,14 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     private void txtnumeroMesaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnumeroMesaKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtnumeroMesaKeyTyped
+
+    private void txtcapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcapacidadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtcapacidadActionPerformed
+
+    private void txtnumeroMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnumeroMesaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtnumeroMesaActionPerformed
 
     /**
      * @param args the command line arguments

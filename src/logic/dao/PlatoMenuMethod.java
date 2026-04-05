@@ -55,6 +55,9 @@ public class PlatoMenuMethod {
 
        /* INSERT--> AGREGAR DATOS */
     public void insertarPlatoMenu(String nombre, String descripcion, double precio, int id_categoria) throws SQLException{
+        if (existePlatoConNombre(nombre, 0)){
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre");
+        }        
         String sql = "{CALL insertar_plato_menu(?,?,?,?)}";//Llamada al procedimiento
         try 
             (PreparedStatement ps =conn.prepareCall(sql)){
@@ -69,13 +72,19 @@ public class PlatoMenuMethod {
 
 
        /* UPDATE --> ACTUALIZAR DATOS */
-     public void modificarPlatoMenu(int id, String nuevoNombre) throws SQLException{
-        String sql = "CALL vera_ModificarFacultad(?,?)";/*Llamada al procedimiento*/
+     public void modificarPlatoMenu(int id, String nombre, String descripcion, double precio, int id_categoria) throws SQLException{
+         if (existePlatoConNombre(nombre, id)){
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre");
+        } 
+        String sql = "{CALL Update_Plato_Menu(?,?,?,?,?)}";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
-            ps.setString(2, nuevoNombre);
+            ps.setString(2, nombre);
+            ps.setString(3, descripcion);
+            ps.setDouble(4, precio);
+            ps.setInt(5, id_categoria);
             ps.executeUpdate();
-            System.out.println("Facultad modificada");
+            System.out.println("Plato modificado");
         }                   
 
     }
@@ -117,7 +126,28 @@ public class PlatoMenuMethod {
         } else {
             return -1;
         }        
-    } 
+    }
+    
+    
+    
+    
+    public boolean existePlatoConNombre(String nombre, int codigo) throws SQLException {
+        String sql = "SELECT 1 FROM plato_menu "
+                   + "WHERE LOWER(nombre_plato) = LOWER(?) "
+                   + "AND id_plato_menu <> ?";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nombre.trim());
+        ps.setInt(2, codigo); // 0 si es insertar
+
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // si devuelve algo, ya existe
+    }
+    
+    
+    
+    
+    
 
 
 }

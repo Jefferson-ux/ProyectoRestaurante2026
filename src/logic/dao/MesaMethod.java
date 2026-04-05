@@ -55,12 +55,15 @@ public class MesaMethod {
 
 
        /* INSERT--> AGREGAR DATOS */
-    public void insertarMesas(String nombre, String capacidad) throws SQLException{
-        String sql = "CALL insertar_mesa(?,?)";//Llamada al procedimiento
+    public void insertarMesas(String nombre, int capacidad) throws SQLException{
+        if (existeMesaConNombre(nombre, 0)){
+            throw new IllegalArgumentException("Ya existe una categoría registrada con ese nombre");
+        }
+        String sql = "{CALL insertar_mesa(?,?)}";//Llamada al procedimiento
         try 
             (PreparedStatement ps =conn.prepareCall(sql)){
             ps.setString(1, nombre);
-            ps.setString(2, capacidad);
+            ps.setInt(2, capacidad);
             ps.execute();
             System.out.println("Mesa insertada con éxito");
         }
@@ -68,13 +71,17 @@ public class MesaMethod {
 
 
        /* UPDATE --> ACTUALIZAR DATOS */
-     public void modificarMesas(int id, String nuevoNombre) throws SQLException{
-        String sql = "CALL vera_ModificarFacultad(?,?)";/*Llamada al procedimiento*/
+     public void modificarMesas(int id, String nuevoNombre, int nuevaCapacidad) throws SQLException{
+         if (existeMesaConNombre(nuevoNombre, id)){
+            throw new IllegalArgumentException("Ya existe una mesa registrada con ese número");
+        }
+        String sql = "CALL vera_ModificarFacultad(?,?,?)";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
             ps.setString(2, nuevoNombre);
+            ps.setInt(3,nuevaCapacidad);
             ps.executeUpdate();
-            System.out.println("Facultad modificada");
+            System.out.println("Mesa modificada");
         }                   
 
     }
@@ -94,6 +101,20 @@ public class MesaMethod {
     }                     
   
        
+     
+    /** Valida si ya existe una escuela profesional con ese nombre */
+    public boolean existeMesaConNombre(String nombre, int codigo) throws SQLException {
+        String sql = "SELECT 1 FROM mesa "
+                   + "WHERE LOWER(numero_mesa) = LOWER(?) "
+                   + "AND id_mesa <> ?";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nombre.trim());
+        ps.setInt(2, codigo); // 0 si es insertar
+
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // si devuelve algo, ya existe
+    }
        
          //======================================//  
         // Métodos de los COMBOBOX - VIEW de FK //
