@@ -174,14 +174,14 @@ DROP PROCEDURE IF EXISTS buscar_empleado;
 DELIMITER $$
 
 CREATE PROCEDURE buscar_empleado (
-    IN p_param VARCHAR(100) -- Este es el "nombre" que recibirás desde Java
+    IN p_param VARCHAR(100)
 )
 BEGIN
     SELECT *
     FROM Vista_Empleado
-    WHERE `Nombres`   LIKE CONCAT('%', p_param, '%')
-       OR `Apellidos` LIKE CONCAT('%', p_param, '%')
-       OR `DNI`       LIKE CONCAT('%', p_param, '%');
+    WHERE `DNI`                  LIKE CONCAT('%', p_param, '%');
+       OR `Nombre de Empleado`   LIKE CONCAT('%', p_param, '%')
+       OR `Apellido de Empleado` LIKE CONCAT('%', p_param, '%')
 END$$
 
 DELIMITER ;
