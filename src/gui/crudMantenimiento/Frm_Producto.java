@@ -54,7 +54,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_Nuevo.setEnabled(false);
         BTN_Guardar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-        BTN_Desactivar.setEnabled(false);
+        //BTN_Desactivar.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -86,7 +86,6 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_PDF = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         BTN_VerProductos = new javax.swing.JButton();
-        BTN_Desactivar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
         BTN_Nuevo = new javax.swing.JButton();
@@ -249,17 +248,12 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_VerProductos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_VerProductos.setText("VER PLATOS DEL MENÚ");
         BTN_VerProductos.addActionListener(this::BTN_VerProductosActionPerformed);
-        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
-
-        BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Desactivar.setText("     QUITAR");
-        BTN_Desactivar.addActionListener(this::BTN_DesactivarActionPerformed);
-        jPanel3.add(BTN_Desactivar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 280, 165, 48));
+        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 30, 165, 50));
 
         BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Modificar.setText("    MODIFICAR");
         BTN_Modificar.addActionListener(this::BTN_ModificarActionPerformed);
-        jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 220, 165, 48));
+        jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 280, 165, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setText("     GUARDAR");
@@ -269,17 +263,17 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
         });
         BTN_Guardar.addActionListener(this::BTN_GuardarActionPerformed);
-        jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 160, 165, 48));
+        jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 200, 165, 48));
 
         BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Nuevo.setText("      NUEVO");
         BTN_Nuevo.addActionListener(this::BTN_NuevoActionPerformed);
-        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 100, 165, 48));
+        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 110, 165, 48));
 
         BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Cancel.setText("     CANCELAR");
         BTN_Cancel.addActionListener(this::BTN_CancelActionPerformed);
-        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 100, 165, 48));
+        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 110, 165, 48));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 930, 720));
 
@@ -297,7 +291,7 @@ public class Frm_Producto extends javax.swing.JFrame {
     private void JTABLE_Mant_ProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_ProductoMouseClicked
         int filaSeleccionada = JTABLE_Mant_Producto.getSelectedRow();
         BTN_Modificar.setEnabled(true);
-        BTN_Desactivar.setEnabled(true);
+        //BTN_Desactivar.setEnabled(true);
         BTN_Guardar.setEnabled(false);
         BTN_Cancel.setVisible(false);
         BTN_Cancel.setEnabled(false);
@@ -371,13 +365,9 @@ public class Frm_Producto extends javax.swing.JFrame {
         this.listarProductos();
         this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
-        this.BTN_Desactivar.setEnabled(false);
+        //this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
     }//GEN-LAST:event_BTN_VerProductosActionPerformed
-
-    private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
-       
-    }//GEN-LAST:event_BTN_DesactivarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
         try {
@@ -541,7 +531,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         JTABLE_Mant_Producto.setCellSelectionEnabled(true);
 
         BTN_Guardar.setEnabled(true);
-        BTN_Desactivar.setEnabled(false);
+        //BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
         BTN_Nuevo.setVisible(true);
         BTN_Nuevo.setEnabled(true);
@@ -585,7 +575,6 @@ public class Frm_Producto extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
-    private javax.swing.JButton BTN_Desactivar;
     private javax.swing.JButton BTN_EXCEL;
     private javax.swing.JButton BTN_Guardar;
     private javax.swing.JButton BTN_Modificar;
@@ -669,7 +658,7 @@ public class Frm_Producto extends javax.swing.JFrame {
             BTN_Cancel.setEnabled(true);
             BTN_Nuevo.setEnabled(false);
             BTN_Modificar.setEnabled(false);
-            BTN_Desactivar.setEnabled(false);
+            //BTN_Desactivar.setEnabled(false);
             BTN_VerProductos.setEnabled(false);
         }
 }

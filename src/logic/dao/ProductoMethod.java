@@ -111,10 +111,10 @@ public class ProductoMethod {
 
 
     //DESACTIVAR
-    public void darDeBajaEscuela(int codigoEscuela) throws SQLException{
-        String sql="CALL vera_DarDeBajaEscuelaProfesional(?)";
+    public void darDeBajaProducto(int codigoProducto) throws SQLException{
+        String sql="CALL Desactivar_Producto(?)";
         CallableStatement cs = conn.prepareCall(sql);
-        cs.setInt(1, codigoEscuela); //Solo se pasa el codigo, el estado lo maneja el procedure
+        cs.setInt(1, codigoProducto); //Solo se pasa el codigo, el estado lo maneja el procedure
         cs.execute();
     }
     
