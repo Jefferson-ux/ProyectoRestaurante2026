@@ -1038,15 +1038,7 @@ BEGIN
 END //
 
 DELIMITER ;
---9.EJEMPLO DE USO
-CALL Update_Producto(
-    41,          -- p_id_producto
-    'Azúcar Blanca', -- p_nombre
-    3.50,        -- p_precio_unitario
-    10,          -- p_stock_minimo
-    50,          -- p_stock_actual
-    1            -- p_id_unidad_medida (Ej: Kg)
-);
+
 
 /**************************************
 13- PROVEEDOR
@@ -1119,15 +1111,9 @@ BEGIN
 END //
 
 DELIMITER ;
---9.Ejemplo de uso
-CALL Update_Proveedor(
-    8, 
-    '20601234567', 
-    'Distribuidora Norte SAC', 
-    '987654321', 
-    'ventas@norte.com', 
-    'Av. Perú 223'
-);
+
+
+
 
 /**************************************
 14- PROVEEDOR_PRODUCTO
@@ -1197,14 +1183,9 @@ BEGIN
 END //
 
 DELIMITER ;
---8.EJEMPLO DE USO
-CALL Update_ProveedorProducto(
-    7,           -- p_id_proveedor
-    2,           -- p_id_producto
-    1550.00,     -- p_precio_compra
-    5,           -- p_tiempo (días)
-    '2024-04-01' -- p_fecha
-);
+
+
+
 
 /**************************************
 15- RESERVA
@@ -1308,18 +1289,10 @@ BEGIN
 END //
 
 DELIMITER ;
---11.EJEMPLO DE USO
-CALL Update_Reserva(
-    11,                      -- p_id_reserva
-    NOW(),                   -- p_fecha_registro
-    '2026-01-15 19:00:00',   -- p_fecha_inicio
-    '2026-01-15 21:00:00',   -- p_fecha_fin
-    2,                       -- p_cantidad_personas
-    'CLIENTE FRECUENTE',     -- p_observacion
-    1,                       -- p_id_cliente
-    2,                       -- p_id_mesa
-    1                        -- p_estado (Activo)
-);
+
+
+
+
 
 /**************************************
 16- TIPO_CONTRATO
@@ -1372,11 +1345,10 @@ BEGIN
 END //
 
 DELIMITER ;
---6.EJEMPLO DE USO
-CALL Update_TipoContrato(
-    5, 
-    'Contrato Plazo Fijo'
-);
+
+
+
+
 
 /**************************************
 17- TIPO_PAGO
@@ -1437,8 +1409,10 @@ BEGIN
 END //
 
 DELIMITER ;
---7.EJEMPLO DE USO
-CALL Update_TipoPago(4, 'Yape', 1);
+
+
+
+
 
 /**************************************
 18- TIPO_PEDIDO
@@ -1495,8 +1469,9 @@ BEGIN
 END //
 
 DELIMITER ;
---6.EJEMPLO DE USO
-CALL Update_TipoPedido(4, 'Para llevar');
+
+
+
 
 /**************************************
 19. TURNO
@@ -1566,13 +1541,9 @@ BEGIN
 END //
 
 DELIMITER ;
---8.EJEMPLO DE USO
-CALL Update_Turno(
-    3, 
-    'Turno Mañana', 
-    '08:00:00', 
-    '16:00:00'
-);
+
+
+
 
 /* ============================================================
    20. UNIDAD_MEDIDA
@@ -1633,12 +1604,8 @@ END //
 
 DELIMITER ;
 
--- Ejemplo de uso
-CALL Update_UnidadMedida(
-    7, 
-    'Miligramos', 
-    'mg'
-);
+
+
 
 /**************************************
 21. USUARIO
@@ -1719,12 +1686,3 @@ BEGIN
 END //
 
 DELIMITER ;
---9.EJEMPLO DE USO
-CALL Update_Usuario(
-    4,                    -- p_id_usuario
-    'USR050',             -- p_codigo
-    'nueva_clave_2024',   -- p_password
-    'ADMINISTRADOR SEDE', -- p_observacion
-    1,                    -- p_id_cargo
-    1                     -- p_estado (Activo)
-);

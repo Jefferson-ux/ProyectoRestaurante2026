@@ -771,16 +771,17 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_Desactivar1ActionPerformed
 
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
-        JTABLE_Mant_Plato.setRowSelectionAllowed(true);
-        JTABLE_Mant_Plato.setColumnSelectionAllowed(true);
-        JTABLE_Mant_Plato.setCellSelectionEnabled(true);
-        
-        BTN_Guardar.setEnabled(true);
-        BTN_Desactivar.setEnabled(false);
-        BTN_Modificar.setEnabled(false);
-        BTN_Nuevo.setVisible(true);
-        BTN_Cancel.setVisible(false);
-        JTABLE_Mant_Plato.setEnabled(true);
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la operación?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (respuesta == JOptionPane.YES_OPTION) {
+
+                        BTN_Guardar.setEnabled(false);
+                        BTN_Desactivar.setEnabled(false);
+                        BTN_Modificar.setEnabled(false);
+                        BTN_Nuevo.setVisible(true);
+                        BTN_Cancel.setVisible(false);
+                        JTABLE_Mant_Plato.setEnabled(true);
+                
+                }
     }//GEN-LAST:event_BTN_CancelActionPerformed
 
     /**
