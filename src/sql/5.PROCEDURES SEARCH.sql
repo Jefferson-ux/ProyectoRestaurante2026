@@ -168,19 +168,22 @@ DELIMITER ;
    Valida duplicado por DNI.
    Valida formato de correos y teléfonos.
    ============================================================ */
-DROP PROCEDURE IF EXISTS buscar_pedido;
+
+--2. Procedure para buscar los Empleados
+DROP PROCEDURE IF EXISTS buscar_empleado;
 DELIMITER $$
 
-CREATE PROCEDURE buscar_pedido (
+CREATE PROCEDURE buscar_empleado (
     IN p_param VARCHAR(100)
 )
 BEGIN
     SELECT *
-    FROM vista_pedido
-    WHERE `Cliente` LIKE CONCAT('%', p_param, '%')
-       OR `Empleado` LIKE CONCAT('%', p_param, '%')
-       OR `Tipo de Pedido` LIKE CONCAT('%', p_param, '%');
+    FROM Vista_Empleado
+    WHERE `DNI`                  LIKE CONCAT('%', p_param, '%');
+       OR `Nombre de Empleado`   LIKE CONCAT('%', p_param, '%')
+       OR `Apellido de Empleado` LIKE CONCAT('%', p_param, '%')
 END$$
+
 DELIMITER ;
 
 

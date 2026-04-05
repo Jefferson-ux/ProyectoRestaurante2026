@@ -406,6 +406,8 @@ DELIMITER ;
    Valida duplicado por DNI.
    Valida formato de correos y teléfonos.
    ============================================================ */
+
+--3. Procedure para insertar Empleados
 DROP PROCEDURE IF EXISTS insertar_empleado;
 DELIMITER $$
 
