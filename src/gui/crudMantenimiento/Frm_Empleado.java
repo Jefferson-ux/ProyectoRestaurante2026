@@ -8,10 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-//Metodo de producto
-import logic.dao.ProductoMethod;
-//Metodo de unidad medida para el jcombobox
-import logic.dao.UnidadMedidaMethod;
+//Metodo de Empleado
+import logic.dao.EmpleadoMethod;
+//Metodo de genero para el jcombobox
+import logic.dao.GeneroMethod;
 
 public class Frm_Empleado extends javax.swing.JFrame {
     //Modelo para mostrar datos en ta tabla
@@ -19,7 +19,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
     
     //Objeto conexión a la base de datos
     EmpleadoMethod PR = new ProductoMethod();
-    UnidadMedidaMethod UM = new UnidadMedidaMethod();
+    GeneroMethod UM = new GeneroMethod();
 
     //Variable para comprobar cambios en mdoificar
     private String nombreOriginal;
@@ -142,6 +142,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
         });
         jPanel1.add(txtfechanacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 140, 30));
 
+        jComboBox_genero.addActionListener(this::jComboBox_generoActionPerformed);
         jPanel1.add(jComboBox_genero, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 200, 120, 30));
 
         txtNombreEmpleado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -624,6 +625,10 @@ public class Frm_Empleado extends javax.swing.JFrame {
     private void txtcorreoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcorreoKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtcorreoKeyTyped
+
+    private void jComboBox_generoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_generoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox_generoActionPerformed
 
     /**
      * @param args the command line arguments
