@@ -1,6 +1,8 @@
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import gui.menu.Frm_MenuPrincipal;
+import java.awt.Image;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.table.TableColumnModel;
 
@@ -28,7 +31,7 @@ import javax.swing.table.TableColumnModel;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 
-public class Frm_Producto extends javax.swing.JFrame {
+public class Frm_PlatoMenu extends javax.swing.JFrame {
 
     DefaultTableModel modeloTablaMesa = new DefaultTableModel();
     //Objeto conexión a la base de datos
@@ -40,17 +43,21 @@ public class Frm_Producto extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Mantenimiento de los platos del Menú");
         
-        this.methods = new PlatoMenuMethod();
+        ImageIcon icono = new ImageIcon(getClass().getResource("/assets/icon_user.png"));
+        // 2. Extraemos la imagen del objeto ImageIcon
+        Image imagen = icono.getImage();
+        // 3. Lo asignamos a la ventana
+        this.setIconImage(imagen);
         
+        
+        
+        
+        this.methods = new PlatoMenuMethod();
 
         String[] header = {"ID ", "Nombre del plato","Precio","Categoría","Descripción"};
         
-        
-        
         modeloTablaMesa.setColumnIdentifiers(header);
         JTABLE_Mant_Plato.setModel(modeloTablaMesa);
-        
-        
         
         TableColumnModel colModel = JTABLE_Mant_Plato.getColumnModel();
 
@@ -121,6 +128,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_Guardar = new javax.swing.JButton();
         BTN_Nuevo = new javax.swing.JButton();
         BTN_Cancel = new javax.swing.JButton();
+        BTN_Back = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -148,7 +156,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         txtcodigoplato.setForeground(new java.awt.Color(0, 0, 204));
         txtcodigoplato.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtcodigoplato.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.add(txtcodigoplato, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 160, 30));
+        jPanel1.add(txtcodigoplato, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 250, 30));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel6.setText("Nombre del Plato*");
@@ -171,6 +179,11 @@ public class Frm_Producto extends javax.swing.JFrame {
         txtNombrePlato.setForeground(new java.awt.Color(0, 0, 204));
         txtNombrePlato.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtNombrePlato.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtNombrePlato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNombrePlatoActionPerformed(evt);
+            }
+        });
         txtNombrePlato.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtNombrePlatoKeyTyped(evt);
@@ -341,7 +354,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 94, 165, 48));
 
         BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
+        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cancel.png"))); // NOI18N
         BTN_Cancel.setText("     CANCELAR");
         BTN_Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -349,6 +362,14 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
         });
         jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(732, 94, 165, 48));
+
+        BTN_Back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_back.png"))); // NOI18N
+        BTN_Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_BackActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Back, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 650, 50, 50));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 720));
 
@@ -784,6 +805,16 @@ public class Frm_Producto extends javax.swing.JFrame {
                 }
     }//GEN-LAST:event_BTN_CancelActionPerformed
 
+    private void txtNombrePlatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombrePlatoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNombrePlatoActionPerformed
+
+    private void BTN_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_BackActionPerformed
+        Frm_MenuPrincipal mainMenu = new Frm_MenuPrincipal();
+        mainMenu.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_BTN_BackActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -835,6 +866,7 @@ public class Frm_Producto extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BTN_Back;
     private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;

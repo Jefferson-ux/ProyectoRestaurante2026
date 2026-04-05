@@ -1,6 +1,8 @@
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import gui.menu.Frm_MenuPrincipal;
+import java.awt.Image;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +15,7 @@ import logic.dao.MesaMethod;
   /*excel*/
 import java.io.File;
 import java.io.FileOutputStream;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +39,12 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Mantenimiento de las mesa");
+
+        ImageIcon icono = new ImageIcon(getClass().getResource("/assets/icon_user.png"));
+        // 2. Extraemos la imagen del objeto ImageIcon
+        Image imagen = icono.getImage();
+        // 3. Lo asignamos a la ventana
+        this.setIconImage(imagen);
         
         this.methods = new MesaMethod();
         
@@ -79,7 +88,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        BTN_Back = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -270,9 +280,17 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         });
         getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 560, 170, 40));
 
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 620));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        BTN_Back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_back.png"))); // NOI18N
+        BTN_Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_BackActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Back, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 40, 40));
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 620));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -584,6 +602,12 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtnumeroMesaKeyTyped
 
+    private void BTN_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_BackActionPerformed
+        Frm_MenuPrincipal mainMenu = new Frm_MenuPrincipal();
+        mainMenu.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_BTN_BackActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -627,6 +651,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BTN_Back;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;
     private javax.swing.JButton BTN_EXCEL;
@@ -645,8 +670,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField txtcapacidad;
     private javax.swing.JTextField txtcodigomesa;
     private javax.swing.JTextField txtnumeroMesa;
