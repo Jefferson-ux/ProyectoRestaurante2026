@@ -43,7 +43,7 @@ public class Frm_PlatoMenu extends javax.swing.JFrame {
         this.methods = new PlatoMenuMethod();
         
 
-        String[] header = {"ID ", "Nombre del plato","Precio","Categoría","Descripción"};
+        String[] header = {"ID", "Nombre del plato","Precio","Categoría","Descripción"};
         
         
         

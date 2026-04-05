@@ -300,6 +300,8 @@ INNER JOIN cargo c ON u.id_cargo = c.id_cargo
 /* vista_unidad_medida */
 CREATE OR REPLACE VIEW vista_unidad_medida AS
 SELECT
+    id_unidad_medida AS `ID`,
   nombre_unidad_medida AS `Unidad de Medida`,
   abreviatura AS `Abreviatura`
 FROM unidad_medida;
+

@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 
 public class ProductoMethod {
     private final Connection conn;
+    
+    
    
     public ProductoMethod(){
         //===========================================//   
@@ -29,6 +31,13 @@ public class ProductoMethod {
             JOptionPane.showConfirmDialog(null, "No se puede conectar a la base de datos", "Error de conexión", 1);
         }
     }
+    public ResultSet combobox_ListarUnidadMedidas() throws SQLException {
+        String sql = "select `Unidad de Medida` from vista_unidad_medida";
+        Statement st =conn.createStatement(); // Creamos el statements
+        ResultSet rs=st.executeQuery(sql); // Ejecutamos la consulta
+        return rs; // Devolvemos los resultados 
+    }
+    
     
     // Validar si existe escuela similar
      public boolean existeProductoUnidadMedida(String nombre, int id_producto) throws SQLException {
@@ -44,7 +53,7 @@ public class ProductoMethod {
     
     
     /* VIEWS --> MOSTRAR DATOS */
-           public ResultSet listarProductos() throws SQLException{
+        public ResultSet listarProductos() throws SQLException{
         String sql = "Select * from vista_producto";/*SQL Query*/
         Statement st = conn.createStatement(); /*Creamos la sentencia*/
         return st.executeQuery(sql);  /*Ejecutamos el query y obtenemos el resultado */

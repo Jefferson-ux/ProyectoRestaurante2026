@@ -53,8 +53,7 @@ END //
 -- 3. Volvemos al delimitador estándar
 DELIMITER ;
 
---4. Ejemplo de uso
-CALL Update_Cargo(5,"Ayudante de Cocina II");
+
 
 /**************************************
 2.- CATEGORIA 
@@ -109,7 +108,6 @@ END //
 
 DELIMITER ;
 
-CALL Update_Categoria(10,"Jugos Naturales");
 
 /**************************************
 3.- CLIENTE
@@ -204,22 +202,14 @@ BEGIN
 END //
 
 DELIMITER ;
---9. Ejemplo de uso
-CALL Update_Cliente(
-    28, 
-    '32955556', 
-    'David', 
-    'Gonzales Aguilar', 
-    'davidaguilar@gmail.com', 
-    '987654321', 
-    'Cliente muy frecuente', 
-);
+
 
 /**************************************
 4.- CONTRATO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Contrato //
 CREATE PROCEDURE Update_Contrato (
     IN p_id_contrato      INT,
     IN p_descripcion      VARCHAR(200),
@@ -329,15 +319,7 @@ END //
 
 DELIMITER ;
 
---8. Ejemplo de uso
-CALL Update_Contrato(
-    11,                      -- p_id_contrato
-    'Contrato actualizado',  -- p_descripcion
-    '2024-07-01',            -- p_fecha (En MySQL se pasa como String YYYY-MM-DD)
-    2,                       -- p_id_turno
-    5,                       -- p_id_empleado
-    1                       -- p_id_tipo_contrato
-);
+
 
 /**************************************
 5.- DETALLE PEDIDO
@@ -411,13 +393,7 @@ BEGIN
 END //
 
 DELIMITER ;
---6.Ejemplo de uso
-CALL Update_DetallePedido(
-    61,                     -- p_id_detalle
-    2,                      -- p_cantidad
-    25.00,                  -- p_precio
-    'Sin cebolla ni ajo'    -- p_observacion
-);
+
 
 
 /**************************************
@@ -426,6 +402,7 @@ Tiene cambios en los nombres con respecto al de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Empleado //
 CREATE PROCEDURE Update_Empleado (
     IN p_id_empleado     INT,
     IN p_dni             CHAR(8),
@@ -523,22 +500,6 @@ END //
 
 DELIMITER ;
 
-CALL Update_Empleado(
-    10,                      -- p_id_empleado
-    '12325678',              -- p_dni
-    'Carlos',                -- p_nombres
-    'Lopez',                 -- p_apellidos
-    '1995-05-10',            -- p_fecha_nac
-    '2024-03-20',            -- p_fecha_reg
-    'Av Lima 123',           -- p_direccion
-    'david1@gmail.com',      -- p_correo1
-    'david2@gmail.com',      -- p_correo2
-    '987656321',             -- p_telefono1
-    '912348678',             -- p_telefono2
-    NULL,                    -- p_observacion
-    1                      -- p_id_genero
-
-);
 
 /**************************************
 7.- FACTURA
@@ -546,6 +507,7 @@ Tiene cambios en los campos, tiene mas con respecto a los de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Factura //
 CREATE PROCEDURE Update_Factura (
     IN p_id_factura        INT,
     IN p_num_comprobante   VARCHAR(20),
@@ -611,21 +573,14 @@ END //
 
 DELIMITER ;
 
---8. Emplo de uso
-CALL Update_Factura(
-    1,              -- id_factura
-    'F001-00045',   -- numero_comprobante
-    CURDATE(),      -- fecha_pago
-    185.20,         -- total_factura
-    10,             -- id_pedido
-    2               -- id_tipo_pago (Ej: Tarjeta)
-);
+
 
 /**************************************
 8.- GENERO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Genero //
 CREATE PROCEDURE Update_Genero (
     IN p_id_genero     INT,
     IN p_nombre_genero VARCHAR(2)
@@ -668,14 +623,15 @@ BEGIN
 END //
 
 DELIMITER ;
--- Ejemplo para actualizar a 'NB' (No Binario)
-CALL Update_Genero(3, 'NB');
+
+
 
 /**************************************
 9.- MESA
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Mesa //
 CREATE PROCEDURE Update_Mesa (
     IN p_id_mesa       INT,
     IN p_numero_mesa   VARCHAR(10),
@@ -731,11 +687,7 @@ END //
 
 DELIMITER ;
 --8. EJEMPLO DE USO
-CALL Update_Mesa(
-    21,         -- p_id_mesa
-    'M-05',     -- p_numero_mesa
-    4          -- p_capacidad
-);
+
 
 /**************************************
 10- PEDIDO
@@ -743,12 +695,13 @@ Mas campos a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Pedido //
 CREATE PROCEDURE Update_Pedido (
     IN p_id_pedido       INT,
     IN p_fecha           DATETIME,
     IN p_id_cliente      INT,
     IN p_id_empleado     INT,
-    IN p_id_tipo_pedido  INT,
+    IN p_id_tipo_pedido  INT
 )
 BEGIN
     -- Declaración de variable para validaciones
@@ -799,15 +752,8 @@ BEGIN
 END //
 
 DELIMITER ;
--- 9.Ejemplo de uso
-CALL Update_Pedido(
-    31,          -- id_pedido
-    NOW(),       -- fecha_pedido
-    2,           -- id_cliente
-    1,           -- id_empleado
-    1           -- id_tipo_pedido
 
-);
+
 
 /**************************************
 11- PLATO_MENU
@@ -815,12 +761,13 @@ Cambio de nombres a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Plato_Menu //
 CREATE PROCEDURE Update_Plato_Menu (
     IN p_id_plato_menu INT,
     IN p_nombre         VARCHAR(100),
     IN p_descripcion    VARCHAR(500),
     IN p_precio         DECIMAL(10,2),
-    IN p_id_categoria   INT,
+    IN p_id_categoria   INT
 )
 BEGIN
     -- Declaración de variables locales
@@ -878,14 +825,7 @@ BEGIN
 END //
 
 DELIMITER ;
--- 9.Emeplo de uso
-CALL Update_Plato_Menu(
-    28,                             -- p_id_plato_menu
-    'Ensalada Mixta',               -- p_nombre
-    'Ensalada fresca sin limón',    -- p_descripcion
-    12.99,                          -- p_precio
-    2                              -- p_id_categoria
-);
+
 
 /**************************************
 12- PRODUCTO
@@ -893,6 +833,7 @@ Cambio de nombres a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Producto //
 CREATE PROCEDURE Update_Producto (
     IN p_id_producto       INT,
     IN p_nombre            VARCHAR(100),
@@ -971,15 +912,7 @@ BEGIN
 END //
 
 DELIMITER ;
---9.EJEMPLO DE USO
-CALL Update_Producto(
-    41,          -- p_id_producto
-    'Azúcar Blanca', -- p_nombre
-    3.50,        -- p_precio_unitario
-    10,          -- p_stock_minimo
-    50,          -- p_stock_actual
-    1            -- p_id_unidad_medida (Ej: Kg)
-);
+
 
 /**************************************
 13- PROVEEDOR
@@ -987,6 +920,7 @@ Mas campos  a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Proveedor //
 CREATE PROCEDURE Update_Proveedor (
     IN p_id_proveedor  INT,
     IN p_ruc           CHAR(11),
@@ -1052,15 +986,7 @@ BEGIN
 END //
 
 DELIMITER ;
---9.Ejemplo de uso
-CALL Update_Proveedor(
-    8, 
-    '20601234567', 
-    'Distribuidora Norte SAC', 
-    '987654321', 
-    'ventas@norte.com', 
-    'Av. Perú 223'
-);
+
 
 /**************************************
 14- PROVEEDOR_PRODUCTO
@@ -1068,6 +994,7 @@ Cambio de nombres a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_ProveedorProducto //
 CREATE PROCEDURE Update_ProveedorProducto (
     IN p_id_proveedor  INT,
     IN p_id_producto   INT,
@@ -1130,14 +1057,7 @@ BEGIN
 END //
 
 DELIMITER ;
---8.EJEMPLO DE USO
-CALL Update_ProveedorProducto(
-    7,           -- p_id_proveedor
-    2,           -- p_id_producto
-    1550.00,     -- p_precio_compra
-    5,           -- p_tiempo (días)
-    '2024-04-01' -- p_fecha
-);
+
 
 /**************************************
 15- RESERVA
@@ -1145,6 +1065,7 @@ Cambio de nombres a comparación de Oracle
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Reserva //
 CREATE PROCEDURE Update_Reserva (
     IN p_id_reserva        INT,
     IN p_fecha_registro    DATETIME,
@@ -1231,23 +1152,14 @@ BEGIN
 END //
 
 DELIMITER ;
---11.EJEMPLO DE USO
-CALL Update_Reserva(
-    11,                      -- p_id_reserva
-    NOW(),                   -- p_fecha_registro
-    '2026-01-15 19:00:00',   -- p_fecha_inicio
-    '2026-01-15 21:00:00',   -- p_fecha_fin
-    2,                       -- p_cantidad_personas
-    'CLIENTE FRECUENTE',     -- p_observacion
-    1,                       -- p_id_cliente
-    2                       -- p_id_mesa
-);
+
 
 /**************************************
 16- TIPO_CONTRATO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_TipoContrato //
 CREATE PROCEDURE Update_TipoContrato (
     IN p_id_tipo_contrato      INT,
     IN p_nombre_tipo_contrato  VARCHAR(100)
@@ -1294,11 +1206,7 @@ BEGIN
 END //
 
 DELIMITER ;
---6.EJEMPLO DE USO
-CALL Update_TipoContrato(
-    5, 
-    'Contrato Plazo Fijo'
-);
+
 
 /**************************************
 17- TIPO_PAGO
@@ -1306,6 +1214,7 @@ CAMPOS ADICIONALES A COMPARACION DE ORACLE
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_TipoPago //
 CREATE PROCEDURE Update_TipoPago (
     IN p_id_tipo_pago      INT,
     IN p_nombre_tipo_pago  VARCHAR(100)
@@ -1352,14 +1261,14 @@ BEGIN
 END //
 
 DELIMITER ;
---7.EJEMPLO DE USO
-CALL Update_TipoPago(4, 'Yape', 1);
+
 
 /**************************************
 18- TIPO_PEDIDO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_TipoPedido //
 CREATE PROCEDURE Update_TipoPedido (
     IN p_id_tipo_pedido      INT,
     IN p_nombre_tipo_pedido  VARCHAR(100)
@@ -1410,14 +1319,14 @@ BEGIN
 END //
 
 DELIMITER ;
---6.EJEMPLO DE USO
-CALL Update_TipoPedido(4, 'Para llevar');
+
 
 /**************************************
 19. TURNO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Turno //
 CREATE PROCEDURE Update_Turno (
     IN p_id_turno       INT,
     IN p_nombre_turno   VARCHAR(100),
@@ -1481,13 +1390,7 @@ BEGIN
 END //
 
 DELIMITER ;
---8.EJEMPLO DE USO
-CALL Update_Turno(
-    3, 
-    'Turno Mañana', 
-    '08:00:00', 
-    '16:00:00'
-);
+
 
 /* ============================================================
    20. UNIDAD_MEDIDA
@@ -1548,18 +1451,14 @@ END //
 
 DELIMITER ;
 
--- Ejemplo de uso
-CALL Update_UnidadMedida(
-    7, 
-    'Miligramos', 
-    'mg'
-);
+
 
 /**************************************
 21. USUARIO
 **************************************/
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS Update_Usuario //
 CREATE PROCEDURE Update_Usuario (
     IN p_id_usuario   INT,
     IN p_codigo       VARCHAR(50),
@@ -1626,11 +1525,3 @@ BEGIN
 END //
 
 DELIMITER ;
---9.EJEMPLO DE USO
-CALL Update_Usuario(
-    4,                    -- p_id_usuario
-    'USR050',             -- p_codigo
-    'nueva_clave_2024',   -- p_password
-    'ADMINISTRADOR SEDE', -- p_observacion
-    1                    -- p_id_cargo
-);
