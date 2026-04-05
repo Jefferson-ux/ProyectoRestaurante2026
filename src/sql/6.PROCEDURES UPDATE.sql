@@ -1690,3 +1690,40 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
+--5. Procedure para dar de baja un Empleado
+DROP PROCEDURE IF EXISTS Desactivar_Empleado;
+DELIMITER //
+CREATE PROCEDURE Desactivar_Empleado(IN dni_empleado INT)
+BEGIN
+    DECLARE existe INT DEFAULT 0;
+    DECLARE yaDesactivado INT DEFAULT 0;
+    /* Verificar si el Empleado existe */
+    SELECT COUNT(*) INTO existe
+    FROM Empleado WHERE dni_empleado = dni_empleado;
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El código de Empleado no existe. ';
+    ELSE
+        /* Verificar si ya está desactivada */
+        SELECT COUNT(*) INTO yaDesactivado
+        FROM Empleado
+        WHERE dni_empleado = dni_empleado AND estado = 0;
+        IF yaDesactivado > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El Empleado ya está desactivado.';
+        ELSE
+            /* Proceder con la desactivación */
+            UPDATE Empleado
+            SET estado = 0
+            WHERE dni_empleado = dni_empleado;
+        END IF;
+    END IF;
+END //
+
+
+
+
