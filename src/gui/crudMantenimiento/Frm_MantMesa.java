@@ -47,9 +47,9 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         Image imagen = icono.getImage();
         // 3. Lo asignamos a la ventana
         this.setIconImage(imagen);
-        
+
         this.methods = new MesaMethod();
-        
+
         txtnumeroMesa.setEditable(false);
         txtcapacidad.setEditable(false);
 
@@ -306,13 +306,13 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    
-    //// --> --> 
+
+
+
+    //// --> -->
     private void JTABLE_Mant_MesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_MesaMouseClicked
                 if (!JTABLE_Mant_Mesa.isEnabled()) {
-            return; 
+            return;
         }
         int selectRow = JTABLE_Mant_Mesa.getSelectedRow();
         if (selectRow >= 0) {
@@ -324,7 +324,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             txtnumeroMesa.setText(numero_mesa);
             txtcapacidad.setText(capacidad);
         }
-        
+
         txtnumeroMesa.setEditable(true);
         txtcapacidad.setEditable(true);
         BTN_Guardar.setEnabled(false);
@@ -333,10 +333,10 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         BTN_Desactivar.setEnabled(true);
     }//GEN-LAST:event_JTABLE_Mant_MesaMouseClicked
 
-    
-    
-    
-    
+
+
+
+
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
         txtnumeroMesa.setText("");
         txtcodigomesa.setText("");
@@ -344,17 +344,17 @@ public class Frm_MantMesa extends javax.swing.JFrame {
 
         txtnumeroMesa.requestFocus();
         txtcapacidad.setEnabled(true);
-        JTABLE_Mant_Mesa.setEnabled(false);  
+        JTABLE_Mant_Mesa.setEnabled(false);
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-        
+
         JTABLE_Mant_Mesa.setEnabled(false);
             BTN_Nuevo.setVisible(false);
             BTN_Cancel.setVisible(true);
-            
-            
+
+
         txtnumeroMesa.setEditable(true);
         txtcapacidad.setEditable(true);
 
@@ -366,7 +366,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_GuardarMouseClicked
 
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
-      
+
    // 1. Validar que el campo no esté vacío
     String nombre = txtnumeroMesa.getText().trim();
     String capacidad = txtcapacidad.getText().trim();
@@ -380,11 +380,11 @@ public class Frm_MantMesa extends javax.swing.JFrame {
       txtcapacidad.requestFocus();
       return;
     }
-    
-    
-    
+
+
+
     int capacidadInt = Integer.parseInt(capacidad);
-    
+
             if (capacidadInt<=0) {
             JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser positiva.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
@@ -393,8 +393,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser menor de 20.\nEsto por temas de ergonomía.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-    
+
+
 
             try {
             if (this.methods.existeMesaConNumero(nombre, 0)) {
@@ -404,10 +404,10 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             }       } catch (SQLException ex) {
             Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
         }
-    
-    
-    
-    
+
+
+
+
     // 2. Confirmar si el usuario desea guardar
     int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de mesas?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
@@ -429,10 +429,10 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             BTN_Guardar.setEnabled(false);
             BTN_Nuevo.setVisible(true);
             BTN_Cancel.setVisible(false);
-            
+
             txtnumeroMesa.setEditable(false);
             txtcapacidad.setEditable(false);
-            
+
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
@@ -451,8 +451,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
 
         int id = Integer.parseInt(codStr);
         int capacidad = Integer.parseInt(capacidadStr);
-        
-        
+
+
         if (capacidad<=0) {
             JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser positiva.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
@@ -461,9 +461,9 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser menor de 20.\nEsto por temas de ergonomía.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        
-        
+
+
+
                 try {
             if (this.methods.existeMesaConNumero(numMesa, 0)) {
                 JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
@@ -472,15 +472,15 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             }       } catch (SQLException ex) {
             Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        
-        
+
+
+
+
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea modificar los datos de la mesa?", "Confirmación", JOptionPane.YES_NO_OPTION);
         if (respuesta == JOptionPane.YES_OPTION) {
             // Llama a tu método: modificarMesas(int id, String nuevoNombre, int nuevaCapacidad)
             this.methods.modificarMesas(id, numMesa, capacidad);
-            
+
             JOptionPane.showMessageDialog(this, "Mesa actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             this.MostrarMesas();
             this.limpiarCamposMesas();
@@ -495,30 +495,30 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, e.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Error al actualizar mesa: " + e.getMessage(), "Error SQL", JOptionPane.ERROR_MESSAGE);
-    } 
+    }
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
-    
-    
-    
+
+
+
             private void limpiarCamposMesas() {
     txtcodigomesa.setText("");
     txtnumeroMesa.setText("");
     txtcapacidad.setText("");
-    
+
     // Control de botones
     BTN_Guardar.setEnabled(true);
     BTN_Modificar.setEnabled(false);
     BTN_Desactivar.setEnabled(false);
 
-    BTN_VerMesas.setEnabled(false); 
+    BTN_VerMesas.setEnabled(false);
 }
-    
-    
-    
-    
-    
+
+
+
+
+
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
     // 1. Validar que se haya seleccionado una Mesa
     String codStr = txtcodigomesa.getText().trim();
@@ -598,7 +598,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     }//GEN-LAST:event_TXT_BuscarMesasKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
-        
+
             int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas cerrar el formulario?",
                 "Confirmar salida",
@@ -615,9 +615,9 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_BTN_Cerrar1ActionPerformed
 
-    
-    
-    
+
+
+
     private void BTN_PDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_PDFActionPerformed
   /*
     try {
@@ -686,16 +686,16 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     } catch (Exception e) {
       JOptionPane.showMessageDialog(this, "❌ Error al exportar a PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
-        
-       */ 
+
+       */
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
-    
-    
-    
+
+
+
     private void BTN_VerMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerMesasActionPerformed
         this.MostrarMesas();
-        
+
         this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
@@ -718,19 +718,20 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_BTN_BackActionPerformed
 
+
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la operación?", "Confirmación", JOptionPane.YES_NO_OPTION);
         if (respuesta == JOptionPane.YES_OPTION) {
-            
+
             JTABLE_Mant_Mesa.setEnabled(true);
             BTN_Guardar.setEnabled(false);
             BTN_Nuevo.setVisible(true);
             BTN_Cancel.setVisible(false);
-            
+
             BTN_Desactivar.setEnabled(false);
             BTN_Modificar.setEnabled(false);
-            
-            
+
+
             txtnumeroMesa.setEditable(false);
             txtcapacidad.setEditable(false);
             this.limpiarCamposMesas();
@@ -745,7 +746,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

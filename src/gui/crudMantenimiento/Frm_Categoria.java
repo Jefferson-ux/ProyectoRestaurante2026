@@ -46,9 +46,9 @@ CategoriaMethod methods;
         Image imagen = icono.getImage();
         // 3. Lo asignamos a la ventana
         this.setIconImage(imagen);
-        
+
         this.methods = new CategoriaMethod();
-        
+
         txtnombrecategoria.setEditable(false);
 
         String[] header = {"ID ", "Nombre de la Categoría"};
@@ -292,20 +292,20 @@ CategoriaMethod methods;
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    
-    //// --> --> 
+
+
+
+    //// --> -->
     private void JTABLE_Mant_CategoriaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_CategoriaMouseClicked
         if (!JTABLE_Mant_Categoria.isEnabled()) {
-            return; 
+            return;
         }
-        
+
         int selectRow = JTABLE_Mant_Categoria.getSelectedRow();
         if (selectRow >= 0) {
             String codigo = JTABLE_Mant_Categoria.getValueAt(selectRow, 0).toString();
             String numero_mesa = JTABLE_Mant_Categoria.getValueAt(selectRow, 1).toString();
-            
+
         txtcodigocategoria.setText(codigo);
         txtnombrecategoria.setText(numero_mesa);
 
@@ -317,28 +317,28 @@ CategoriaMethod methods;
         txtnombrecategoria.setEditable(true);
     }//GEN-LAST:event_JTABLE_Mant_CategoriaMouseClicked
 
-    
-    
-    
-    
+
+
+
+
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
         txtnombrecategoria.setText("");
         txtcodigocategoria.setText("");
         txtnombrecategoria.requestFocus();
-        
+
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-        
+
         BTN_Nuevo.setVisible(false);
         BTN_Cancel.setVisible(true);
-        
+
         txtnombrecategoria.setEditable(true);
-        
+
         JTABLE_Mant_Categoria.setEnabled(false);
-        
-        
+
+
 
     }//GEN-LAST:event_BTN_NuevoActionPerformed
 
@@ -347,7 +347,7 @@ CategoriaMethod methods;
     }//GEN-LAST:event_BTN_GuardarMouseClicked
 
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
-      
+
    // 1. Validar que el campo no esté vacío
     String nombre = txtnombrecategoria.getText().trim();
     if (nombre.isEmpty()) {
@@ -355,8 +355,8 @@ CategoriaMethod methods;
       txtnombrecategoria.requestFocus();
       return;
     }
-    
-    
+
+
         try {
             if (this.methods.existeCategoriaConNombre(nombre, 0)) {
                 JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
@@ -365,8 +365,8 @@ CategoriaMethod methods;
             }       } catch (SQLException ex) {
             Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
         }
-    
-    
+
+
     // 2. Confirmar si el usuario desea guardar
     int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de categorías?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
@@ -380,7 +380,7 @@ CategoriaMethod methods;
 
         // 5. Actualizar tabla y limpiar campos
         this.MostrarCategorias();
-        
+
 
       } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Error al registrar la categoría:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
@@ -390,13 +390,13 @@ CategoriaMethod methods;
         BTN_Nuevo.setVisible(true);
         BTN_Cancel.setVisible(false);
         this.limpiarCamposCategoria();
-        
+
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
-                                         
+
     try {
         String codStr = txtcodigocategoria.getText().trim();
         String nuevoNombre = txtnombrecategoria.getText().trim();
@@ -416,14 +416,14 @@ CategoriaMethod methods;
             }       } catch (SQLException ex) {
             Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        
+
+
+
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea modificar esta categoría?", "Confirmación", JOptionPane.YES_NO_OPTION);
         if (respuesta == JOptionPane.YES_OPTION) {
             // Llama a tu método: modificarCategoria(int id, String nuevoNombre)
             this.methods.modificarCategoria(id, nuevoNombre);
-            
+
             JOptionPane.showMessageDialog(this, "Categoría actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             this.MostrarCategorias();// Refresca tu tabla
             this.limpiarCamposCategoria();
@@ -444,24 +444,24 @@ CategoriaMethod methods;
         private void limpiarCamposCategoria() {
     txtcodigocategoria.setText("");
     txtnombrecategoria.setText("");
-    
+
     // Control de botones
     BTN_Guardar.setEnabled(false);
     BTN_Modificar.setEnabled(false);
     BTN_Desactivar.setEnabled(false);
     txtnombrecategoria.setEditable(false);
 
-    BTN_VerCategorias.setEnabled(false); 
+    BTN_VerCategorias.setEnabled(false);
 }
-    
-    
+
+
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
     // 1. Validar que se haya seleccionado una Categoria
-    
+
     String codStr = txtcodigocategoria.getText().trim();
     String nuevoNombre = txtnombrecategoria.getText().trim();
-    
-    
+
+
     if (codStr.isEmpty()) {
       JOptionPane.showMessageDialog(this,"Seleccione una Categoria en la tabla para desactivar.","Campo requerido",JOptionPane.WARNING_MESSAGE);
       return;
@@ -538,7 +538,7 @@ CategoriaMethod methods;
     }//GEN-LAST:event_TXT_BuscarCategoriasKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
-        
+
             int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas cerrar el formulario?",
                 "Confirmar salida",
@@ -555,9 +555,9 @@ CategoriaMethod methods;
         }
     }//GEN-LAST:event_BTN_Cerrar1ActionPerformed
 
-    
-    
-    
+
+
+
     private void BTN_PDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_PDFActionPerformed
   /*
     try {
@@ -626,16 +626,16 @@ CategoriaMethod methods;
     } catch (Exception e) {
       JOptionPane.showMessageDialog(this, "❌ Error al exportar a PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
-        
-       */ 
+
+       */
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
-    
-    
-    
+
+
+
     private void BTN_VerCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerCategoriasActionPerformed
-        this.MostrarCategorias();      
-        
+        this.MostrarCategorias();
+
         BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
@@ -680,7 +680,7 @@ CategoriaMethod methods;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
