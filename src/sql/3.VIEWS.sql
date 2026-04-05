@@ -83,7 +83,7 @@ INNER JOIN plato_menu pm ON d.id_plato_menu = pm.id_plato_menu;
 
 
 
-/* vista_empleado */
+--1. Vista mostrar Empleado
 CREATE OR REPLACE VIEW vista_empleado AS
 SELECT
     e.dni_empleado              AS `DNI`,
