@@ -321,7 +321,6 @@ DELIMITER ;
 
 
 
-
 /* ============================================================
    14. PLATO_MENU
    Valida nombre, precio y existencia de categoría.

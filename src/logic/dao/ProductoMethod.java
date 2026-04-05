@@ -62,7 +62,7 @@ public class ProductoMethod {
        
        /* SEARCH --> BUSCAR DATOS */
     public ResultSet buscarProducto(String nombre) throws SQLException{
-        String sql = "{CALL buscar_plato_producto(?)}";/*Llamada al procedimiento*/
+        String sql = "{CALL buscar_producto(?)}";/*Llamada al procedimiento*/
         CallableStatement cs = conn.prepareCall(sql);/*Usamos CallableStatement*/
         cs.setString(1, nombre);    /*Asignamos parámetros*/
         return cs.executeQuery(); 

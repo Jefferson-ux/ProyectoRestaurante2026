@@ -5,6 +5,7 @@
 package gui.crudMantenimiento;
 
 import java.sql.ResultSet;
+import connection.ConnectionDB;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -12,6 +13,19 @@ import javax.swing.table.DefaultTableModel;
 import logic.dao.ProductoMethod;
 //Metodo de unidad medida para el jcombobox
 import logic.dao.UnidadMedidaMethod;
+ /*excel*/
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JFileChooser;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+
+/*pdf*/
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Frm_Producto extends javax.swing.JFrame {
     //Modelo para mostrar datos en ta tabla
@@ -20,6 +34,7 @@ public class Frm_Producto extends javax.swing.JFrame {
     //Objeto conexión a la base de datos
     ProductoMethod PR = new ProductoMethod();
     UnidadMedidaMethod UM = new UnidadMedidaMethod();
+    ConnectionDB CBD = new ConnectionDB();
 
     //VAriable para comprobar cambios en mdoificar
     private String nombreOriginal;
@@ -216,7 +231,7 @@ public class Frm_Producto extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Ingresar el Nombre de la Facultad");
+        jLabel4.setText("Ingresar el Nombre del Producto");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, 30));
 
         TXT_BuscarProductos.addActionListener(this::TXT_BuscarProductosActionPerformed);
@@ -342,7 +357,56 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_JTABLE_Mant_ProductoMouseClicked
 
     private void BTN_EXCELActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_EXCELActionPerformed
-       
+        try {
+            // 1. Crear un nuevo libro de Excel (.xlsx)
+            XSSFWorkbook workbook = new XSSFWorkbook();
+
+            // 2. Crear una hoja dentro del libro
+            XSSFSheet sheet = workbook.createSheet("Facultades");
+
+            // 3. Escribir la fila de encabezados desde el JTable
+            XSSFRow headerRow = sheet.createRow(0); // Fila 0 para encabezados
+            for (int i = 0; i < JTABLE_Mant_Producto.getColumnCount(); i++) {
+                headerRow.createCell(i).setCellValue(JTABLE_Mant_Producto.getColumnName(i));
+            }
+
+            // 4. Escribir los datos fila por fila desde el JTable
+            for (int i = 0; i < JTABLE_Mant_Producto.getRowCount(); i++) {
+                XSSFRow dataRow = sheet.createRow(i + 1); // Fila 1 en adelante
+                for (int j = 0; j < JTABLE_Mant_Producto.getColumnCount(); j++) {
+                    Object valor = JTABLE_Mant_Producto.getValueAt(i, j);
+                    dataRow.createCell(j).setCellValue(valor != null ? valor.toString() : "");
+                }
+            }
+
+            // 5. Mostrar cuadro de diálogo para elegir ruta de guardado
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como Excel");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            // 6. Si el usuario acepta guardar, crear archivo
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+
+                // 7. Asegurar extensión .xlsx
+                if (!archivo.getAbsolutePath().endsWith(".xlsx")) {
+                    archivo = new File(archivo.getAbsolutePath() + ".xlsx");
+                }
+
+                // 8. Guardar el archivo
+                FileOutputStream fos = new FileOutputStream(archivo);
+                workbook.write(fos);
+                fos.close(); // Cerrar el flujo de salida
+                workbook.close(); // Cerrar el libro de Excel
+
+                // 9. Confirmación al usuario
+                JOptionPane.showMessageDialog(this, "✅ Datos exportados correctamente a:\n" + archivo.getAbsolutePath());
+            }
+
+        } catch (Exception e) {
+            // Manejo de errores en caso de fallo
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a Excel:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_EXCELActionPerformed
 
     private void TXT_BuscarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosActionPerformed
@@ -350,15 +414,107 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_TXT_BuscarProductosActionPerformed
 
     private void TXT_BuscarProductosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosKeyReleased
-
+        this.buscarProductosPorNombre();
     }//GEN-LAST:event_TXT_BuscarProductosKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+        "¿Estás seguro de que deseas cerrar el formulario?", 
+        "Confirmar salida", 
+        JOptionPane.YES_NO_OPTION);
 
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+            // Cerrar conexión si tienes un método cerrarConexion()
+            CBD.closeConnection();
+            } catch (Exception e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+
+            // Cierra el formulario actual
+            dispose(); // o this.dispose() si estás dentro del formulario
+        }
     }//GEN-LAST:event_BTN_Cerrar1ActionPerformed
 
     private void BTN_PDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_PDFActionPerformed
-        
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como PDF");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+                if (!archivo.getAbsolutePath().endsWith(".pdf")) {
+                archivo = new File(archivo.getAbsolutePath() + ".pdf");
+            }
+
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(archivo));
+            document.open();
+
+            // 1. Agregar LOGO (ajusta la ruta según tu proyecto)
+            String logoPath = "src/Icons/Fondo Universidad.jpg"; // Asegúrate que la imagen exista
+            try {
+                Image logo = Image.getInstance(logoPath);
+                 logo.scaleToFit(100, 100);
+                logo.setAlignment(Image.ALIGN_LEFT);
+                document.add(logo);
+            } catch (Exception e) {
+                System.out.println("⚠️ No se pudo cargar el logo: " + e.getMessage());
+            }
+
+            //2. Agregar FECHA y HORA
+            String fechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+            Paragraph fecha = new Paragraph("Fecha de Exportación: " + fechaHora,
+            FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY));
+            fecha.setAlignment(Element.ALIGN_RIGHT);
+            document.add(fecha);
+
+            // TÍTULO
+            Paragraph titulo = new Paragraph("LISTADO DE FACULTADES",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLUE));
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph(" ")); // espacio
+
+            // TABLA DE DATOS
+            PdfPTable pdfTable = new PdfPTable(JTABLE_Mant_Producto.getColumnCount());
+            pdfTable.setWidthPercentage(100);
+
+            // Encabezados
+            for (int i = 0; i < JTABLE_Mant_Producto.getColumnCount(); i++) {
+                PdfPCell cell = new PdfPCell(new Phrase(JTABLE_Mant_Producto.getColumnName(i)));
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                pdfTable.addCell(cell);
+            }
+
+            // Filas de datos
+            for (int row = 0; row < JTABLE_Mant_Producto.getRowCount(); row++) {
+                for (int col = 0; col < JTABLE_Mant_Producto.getColumnCount(); col++) {
+                    Object value = JTABLE_Mant_Producto.getValueAt(row, col);
+                    pdfTable.addCell(value != null ? value.toString() : "");
+                }
+            }
+
+            document.add(pdfTable);
+
+            // Pie de página con nombre del usuario
+            document.add(new Paragraph(" "));
+            String usuario = "Wilmer Vera Ostios"; // Puedes hacerlo dinámico si lo obtienes de sesión
+            Paragraph pie = new Paragraph("Exportado por: " + usuario,
+                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10, BaseColor.GRAY));
+            pie.setAlignment(Element.ALIGN_RIGHT);
+            document.add(pie);
+
+            document.close();
+            writer.close();
+
+            JOptionPane.showMessageDialog(this, "✅ PDF exportado correctamente:\n" + archivo.getAbsolutePath());
+        } 
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
     private void BTN_VerProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerProductosActionPerformed
@@ -661,4 +817,32 @@ public class Frm_Producto extends javax.swing.JFrame {
             //BTN_Desactivar.setEnabled(false);
             BTN_VerProductos.setEnabled(false);
         }
+    //Método para mostrar las facultades
+    public void buscarProductosPorNombre(){
+        //Limpiar la tabla antes de mostrar los resultados filtrados
+        modeloTablaProducto.setRowCount(0);
+        
+        //Obtiene el texto ingresado
+        String nombre = TXT_BuscarProductos.getText().trim();
+        
+        try{
+            //Lamar al metodo que devuelva los datos de facultades
+            ResultSet rs = PR.buscarProducto(nombre);
+            //Recorre cada fila del resultado y grega a la tabla
+            while (rs.next()){
+                Object[] fila = {
+                    rs.getInt("ID"),
+                    rs.getString("Nombre del Producto"),
+                    rs.getString("Unidad de Medida"),
+                    rs.getString("Precio")
+                };
+                modeloTablaProducto.addRow(fila);      
+            }
+        }catch (SQLException e){
+            //Muestra mensaje si ocurre un error en la consulta
+            JOptionPane.showMessageDialog(this,
+                    "Error al mostrar productos \n"+e.getMessage(),
+                    "Error de consulta",JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
