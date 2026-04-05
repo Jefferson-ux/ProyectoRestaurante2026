@@ -1,6 +1,8 @@
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import gui.menu.Frm_MenuPrincipal;
+import java.awt.Image;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +15,9 @@ import logic.dao.CategoriaMethod;
   /*excel*/
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,16 +34,22 @@ public class Frm_Categoria extends javax.swing.JFrame {
 
     DefaultTableModel modeloTablaMesa = new DefaultTableModel();
     //Objeto conexión a la base de datos
-    CategoriaMethod methods;
+CategoriaMethod methods;
 
     public Frm_Categoria() {
         FlatLightLaf.setup();
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Mantenimiento de las categorías");
+        ImageIcon icono = new ImageIcon(getClass().getResource("/assets/icon_user.png"));
+        // 2. Extraemos la imagen del objeto ImageIcon
+        Image imagen = icono.getImage();
+        // 3. Lo asignamos a la ventana
+        this.setIconImage(imagen);
         
         this.methods = new CategoriaMethod();
         
+        txtnombrecategoria.setEditable(false);
 
         String[] header = {"ID ", "Nombre de la Categoría"};
 
@@ -46,6 +57,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
         JTABLE_Mant_Categoria.setModel(modeloTablaMesa);
 
         //Desactivar button
+        BTN_Nuevo.setEnabled(false);
         BTN_Desactivar.setEnabled(false);
         BTN_Guardar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
@@ -67,6 +79,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         JTABLE_Mant_Categoria = new javax.swing.JTable();
         BTN_Nuevo = new javax.swing.JButton();
+        BTN_Cancel = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Desactivar = new javax.swing.JButton();
@@ -77,7 +90,8 @@ public class Frm_Categoria extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        BTN_Back = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -160,6 +174,16 @@ public class Frm_Categoria extends javax.swing.JFrame {
             }
         });
         getContentPane().add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 190, 50));
+
+        BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cancel.png"))); // NOI18N
+        BTN_Cancel.setText("     CANCELAR");
+        BTN_Cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_CancelActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 190, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_save.png"))); // NOI18N
@@ -252,11 +276,18 @@ public class Frm_Categoria extends javax.swing.JFrame {
                 BTN_PDFActionPerformed(evt);
             }
         });
-        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 470, 170, 40));
+        getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 470, 170, 40));
 
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 540));
+        BTN_Back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_back.png"))); // NOI18N
+        BTN_Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_BackActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BTN_Back, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, 40, 40));
+
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 540));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -266,11 +297,15 @@ public class Frm_Categoria extends javax.swing.JFrame {
     
     //// --> --> 
     private void JTABLE_Mant_CategoriaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_CategoriaMouseClicked
+        if (!JTABLE_Mant_Categoria.isEnabled()) {
+            return; 
+        }
+        
         int selectRow = JTABLE_Mant_Categoria.getSelectedRow();
         if (selectRow >= 0) {
             String codigo = JTABLE_Mant_Categoria.getValueAt(selectRow, 0).toString();
             String numero_mesa = JTABLE_Mant_Categoria.getValueAt(selectRow, 1).toString();
-
+            
         txtcodigocategoria.setText(codigo);
         txtnombrecategoria.setText(numero_mesa);
 
@@ -279,6 +314,7 @@ public class Frm_Categoria extends javax.swing.JFrame {
         BTN_VerCategorias.setEnabled(false);
         BTN_Modificar.setEnabled(true);
         BTN_Desactivar.setEnabled(true);
+        txtnombrecategoria.setEditable(true);
     }//GEN-LAST:event_JTABLE_Mant_CategoriaMouseClicked
 
     
@@ -294,7 +330,15 @@ public class Frm_Categoria extends javax.swing.JFrame {
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
-
+        
+        BTN_Nuevo.setVisible(false);
+        BTN_Cancel.setVisible(true);
+        
+        txtnombrecategoria.setEditable(true);
+        
+        JTABLE_Mant_Categoria.setEnabled(false);
+        
+        
 
     }//GEN-LAST:event_BTN_NuevoActionPerformed
 
@@ -311,7 +355,18 @@ public class Frm_Categoria extends javax.swing.JFrame {
       txtnombrecategoria.requestFocus();
       return;
     }
-
+    
+    
+        try {
+            if (this.methods.existeCategoriaConNombre(nombre, 0)) {
+                JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }       } catch (SQLException ex) {
+            Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
     // 2. Confirmar si el usuario desea guardar
     int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea guardar el registro de categorías?", "Confirmación", JOptionPane.YES_NO_OPTION);
     if (respuesta == JOptionPane.YES_OPTION) {
@@ -325,45 +380,81 @@ public class Frm_Categoria extends javax.swing.JFrame {
 
         // 5. Actualizar tabla y limpiar campos
         this.MostrarCategorias();
+        
 
       } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Error al registrar la categoría:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+      } finally {
+        JTABLE_Mant_Categoria.setEnabled(true);
+        txtnombrecategoria.setEditable(false);
+        BTN_Nuevo.setVisible(true);
+        BTN_Cancel.setVisible(false);
+        this.limpiarCamposCategoria();
+        
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
-         // Validar que se haya seleccionado un registro
-    String codStr = txtcodigocategoria.getText().trim();
-    String nuevoNombre = txtnombrecategoria.getText().trim();
+                                         
+    try {
+        String codStr = txtcodigocategoria.getText().trim();
+        String nuevoNombre = txtnombrecategoria.getText().trim();
 
-    if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Seleccione una Categoria y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
+        if (codStr.isEmpty() || nuevoNombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Complete todos los campos.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    int codigo = Integer.parseInt(codStr);
-    // Confirmación del usuario
-    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta Categoria?", "Confirmación",JOptionPane.YES_NO_OPTION);
-    if (respuesta == JOptionPane.YES_OPTION) {
-      try {
-        this.methods.modificarMesas(codigo, nuevoNombre);
+        int id = Integer.parseInt(codStr);
 
-        JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
+                try {
+            if (this.methods.existeCategoriaConNombre(nuevoNombre, id)) {
+                JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }       } catch (SQLException ex) {
+            Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea modificar esta categoría?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        if (respuesta == JOptionPane.YES_OPTION) {
+            // Llama a tu método: modificarCategoria(int id, String nuevoNombre)
+            this.methods.modificarCategoria(id, nuevoNombre);
+            
+            JOptionPane.showMessageDialog(this, "Categoría actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            this.MostrarCategorias();// Refresca tu tabla
+            this.limpiarCamposCategoria();
+            txtnombrecategoria.setEditable(false);
+        }
 
-        this.MostrarCategorias();
-        // Limpia los campos de texto
-        txtcodigocategoria.setText("");
-        txtnombrecategoria.setText("");
-        BTN_Desactivar.setEnabled(false);
-        BTN_Modificar.setEnabled(false);
-      } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al modificar categoría:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
-      }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Código no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException e) {
+        // Captura: "Ya existe una categoría con ese nombre."
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error SQL: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
+        private void limpiarCamposCategoria() {
+    txtcodigocategoria.setText("");
+    txtnombrecategoria.setText("");
+    
+    // Control de botones
+    BTN_Guardar.setEnabled(false);
+    BTN_Modificar.setEnabled(false);
+    BTN_Desactivar.setEnabled(false);
+    txtnombrecategoria.setEditable(false);
+
+    BTN_VerCategorias.setEnabled(false); 
+}
+    
+    
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
     // 1. Validar que se haya seleccionado una Categoria
     
@@ -543,7 +634,9 @@ public class Frm_Categoria extends javax.swing.JFrame {
     
     
     private void BTN_VerCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerCategoriasActionPerformed
-        this.MostrarCategorias();
+        this.MostrarCategorias();      
+        
+        BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
@@ -558,6 +651,27 @@ public class Frm_Categoria extends javax.swing.JFrame {
     private void txtnombrecategoriaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombrecategoriaKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtnombrecategoriaKeyTyped
+
+    private void BTN_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_BackActionPerformed
+        Frm_MenuPrincipal mainMenu = new Frm_MenuPrincipal();
+        mainMenu.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_BTN_BackActionPerformed
+
+    private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la operación?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        if (respuesta == JOptionPane.YES_OPTION) {
+
+            BTN_Guardar.setEnabled(false);
+            BTN_Desactivar.setEnabled(false);
+            BTN_Modificar.setEnabled(false);
+            BTN_Nuevo.setVisible(true);
+            BTN_Cancel.setVisible(false);
+            txtnombrecategoria.setEditable(false);
+            JTABLE_Mant_Categoria.setEnabled(true);
+            this.limpiarCamposCategoria();
+        }
+    }//GEN-LAST:event_BTN_CancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -610,6 +724,8 @@ public class Frm_Categoria extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BTN_Back;
+    private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;
     private javax.swing.JButton BTN_EXCEL;
@@ -627,8 +743,8 @@ public class Frm_Categoria extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField txtcodigocategoria;
     private javax.swing.JTextField txtnombrecategoria;
     // End of variables declaration//GEN-END:variables

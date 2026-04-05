@@ -1,6 +1,8 @@
 package gui.crudMantenimiento;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import gui.menu.Frm_MenuPrincipal;
+import java.awt.Image;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -38,9 +41,17 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Mantenimiento de las mesa");
+
+        ImageIcon icono = new ImageIcon(getClass().getResource("/assets/icon_user.png"));
+        // 2. Extraemos la imagen del objeto ImageIcon
+        Image imagen = icono.getImage();
+        // 3. Lo asignamos a la ventana
+        this.setIconImage(imagen);
         
         this.methods = new MesaMethod();
         
+        txtnumeroMesa.setEditable(false);
+        txtcapacidad.setEditable(false);
 
         String[] header = {"ID ", "Número de Mesa","Capacidad"};
 
@@ -48,6 +59,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         JTABLE_Mant_Mesa.setModel(modeloTablaMesa);
 
         //Desactivar button
+        BTN_Nuevo.setEnabled(false);
         BTN_Desactivar.setEnabled(false);
         BTN_Guardar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
@@ -64,13 +76,14 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtcodigomesa = new javax.swing.JTextField();
-        txtcapacidad = new javax.swing.JTextField();
         BTN_VerMesas = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         txtnumeroMesa = new javax.swing.JTextField();
+        txtcapacidad = new javax.swing.JFormattedTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTABLE_Mant_Mesa = new javax.swing.JTable();
         BTN_Nuevo = new javax.swing.JButton();
+        BTN_Cancel = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Desactivar = new javax.swing.JButton();
@@ -81,7 +94,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        BTN_Back = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -110,22 +124,6 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         txtcodigomesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(txtcodigomesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, 330, 30));
 
-        txtcapacidad.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtcapacidad.setForeground(new java.awt.Color(0, 0, 204));
-        txtcapacidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtcapacidad.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtcapacidad.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtcapacidadActionPerformed(evt);
-            }
-        });
-        txtcapacidad.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtcapacidadKeyTyped(evt);
-            }
-        });
-        jPanel1.add(txtcapacidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 100, 330, 30));
-
         BTN_VerMesas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_VerMesas.setText("VER MESAS");
         BTN_VerMesas.addActionListener(new java.awt.event.ActionListener() {
@@ -143,17 +141,18 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         txtnumeroMesa.setForeground(new java.awt.Color(0, 0, 204));
         txtnumeroMesa.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtnumeroMesa.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtnumeroMesa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtnumeroMesaActionPerformed(evt);
-            }
-        });
         txtnumeroMesa.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtnumeroMesaKeyTyped(evt);
             }
         });
         jPanel1.add(txtnumeroMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 59, 330, 30));
+
+        txtcapacidad.setForeground(new java.awt.Color(0, 0, 204));
+        txtcapacidad.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txtcapacidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtcapacidad.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jPanel1.add(txtcapacidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 100, 330, 30));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 790, 170));
 
@@ -188,6 +187,16 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             }
         });
         getContentPane().add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 190, 50));
+
+        BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cancel.png"))); // NOI18N
+        BTN_Cancel.setText("     CANCELAR");
+        BTN_Cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_CancelActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 190, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_save.png"))); // NOI18N
@@ -282,9 +291,17 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         });
         getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 560, 170, 40));
 
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 620));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        BTN_Back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_back.png"))); // NOI18N
+        BTN_Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN_BackActionPerformed(evt);
+            }
+        });
+        jPanel3.add(BTN_Back, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 40, 40));
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 620));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -294,6 +311,9 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     
     //// --> --> 
     private void JTABLE_Mant_MesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_MesaMouseClicked
+                if (!JTABLE_Mant_Mesa.isEnabled()) {
+            return; 
+        }
         int selectRow = JTABLE_Mant_Mesa.getSelectedRow();
         if (selectRow >= 0) {
             String codigo = JTABLE_Mant_Mesa.getValueAt(selectRow, 0).toString();
@@ -304,7 +324,10 @@ public class Frm_MantMesa extends javax.swing.JFrame {
             txtnumeroMesa.setText(numero_mesa);
             txtcapacidad.setText(capacidad);
         }
-        BTN_Guardar.setEnabled(true);
+        
+        txtnumeroMesa.setEditable(true);
+        txtcapacidad.setEditable(true);
+        BTN_Guardar.setEnabled(false);
         BTN_VerMesas.setEnabled(false);
         BTN_Modificar.setEnabled(true);
         BTN_Desactivar.setEnabled(true);
@@ -321,10 +344,19 @@ public class Frm_MantMesa extends javax.swing.JFrame {
 
         txtnumeroMesa.requestFocus();
         txtcapacidad.setEnabled(true);
+        JTABLE_Mant_Mesa.setEnabled(false);  
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
         BTN_Modificar.setEnabled(false);
+        
+        JTABLE_Mant_Mesa.setEnabled(false);
+            BTN_Nuevo.setVisible(false);
+            BTN_Cancel.setVisible(true);
+            
+            
+        txtnumeroMesa.setEditable(true);
+        txtcapacidad.setEditable(true);
 
 
     }//GEN-LAST:event_BTN_NuevoActionPerformed
@@ -349,12 +381,31 @@ public class Frm_MantMesa extends javax.swing.JFrame {
       return;
     }
     
-    int nuevaCapacidad=Integer.parseInt(capacidad);
     
-    if (nuevaCapacidad<=0){
-         JOptionPane.showMessageDialog(this, "La capacidad de las mesas deben ser mínimo 1","Validación",JOptionPane.WARNING_MESSAGE);
+    
+    int capacidadInt = Integer.parseInt(capacidad);
+    
+            if (capacidadInt<=0) {
+            JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser positiva.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (capacidadInt>=20) {
+            JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser menor de 20.\nEsto por temas de ergonomía.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+    
+
+            try {
+            if (this.methods.existeMesaConNumero(nombre, 0)) {
+                JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
                 return;
-     }
+            }       } catch (SQLException ex) {
+            Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
     
     
     // 2. Confirmar si el usuario desea guardar
@@ -363,7 +414,7 @@ public class Frm_MantMesa extends javax.swing.JFrame {
 
       try {
         // 3. Llamar al método para insertar
-        this.methods.insertarMesas(nombre, nuevaCapacidad);
+        this.methods.insertarMesas(nombre, capacidadInt);
 
         // 4. Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Mesa registrada correctamente", "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
@@ -373,61 +424,101 @@ public class Frm_MantMesa extends javax.swing.JFrame {
 
       } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Error al registrar mesa:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+      } finally {
+          JTABLE_Mant_Mesa.setEnabled(true);
+            BTN_Guardar.setEnabled(false);
+            BTN_Nuevo.setVisible(true);
+            BTN_Cancel.setVisible(false);
+            
+            txtnumeroMesa.setEditable(false);
+            txtcapacidad.setEditable(false);
+            
       }
     }
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
-         // Validar que se haya seleccionado un registro
-    String codStr = txtcodigomesa.getText().trim();
-    String nombre = txtnumeroMesa.getText().trim();
-    String capacidad = txtcapacidad.getText().trim();
 
-    if (codStr.isEmpty() || capacidad.isEmpty() || nombre.isEmpty()) {
-      JOptionPane.showMessageDialog(this, "Seleccione una Mesa y complete el nuevo nombre", "Campo requerido", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
+    try {
+        String codStr = txtcodigomesa.getText().trim();
+        String numMesa = txtnumeroMesa.getText().trim(); // El "nuevoNombre" en tu método
+        String capacidadStr = txtcapacidad.getText().trim();
 
-    int codigo = Integer.parseInt(codStr);
-    int nuevaCapacidad = Integer.parseInt(capacidad);
-    
-     try {
-            if (methods.existeMesaConNombre(nombre, codigo)) {
-                JOptionPane.showMessageDialog(this, "Ya existe una mesa con ese nombre","Validación",JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Frm_PlatoMenu.class.getName()).log(Level.SEVERE, null, ex);
+        if (codStr.isEmpty() || numMesa.isEmpty() || capacidadStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-     
-     if (nuevaCapacidad<=0){
-         JOptionPane.showMessageDialog(this, "La capacidad de las mesas deben ser mínimo 1","Validación",JOptionPane.WARNING_MESSAGE);
+
+        int id = Integer.parseInt(codStr);
+        int capacidad = Integer.parseInt(capacidadStr);
+        
+        
+        if (capacidad<=0) {
+            JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser positiva.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (capacidad>=20) {
+            JOptionPane.showMessageDialog(this, "La capacidad de las mesas debe ser menor de 20.\nEsto por temas de ergonomía.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        
+        
+                try {
+            if (this.methods.existeMesaConNumero(numMesa, 0)) {
+                JOptionPane.showMessageDialog(this, "Ya existe otra categoría con el mismo nombre.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
                 return;
-     }
-    
-    
-    
-    // Confirmación del usuario
-    int respuesta = JOptionPane.showConfirmDialog(this,"¿Desea modificar esta Mesa?", "Confirmación",JOptionPane.YES_NO_OPTION);
-    if (respuesta == JOptionPane.YES_OPTION) {
-      try {
-        this.methods.modificarMesas(codigo, nombre,nuevaCapacidad);
+            }       } catch (SQLException ex) {
+            Logger.getLogger(Frm_Categoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea modificar los datos de la mesa?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        if (respuesta == JOptionPane.YES_OPTION) {
+            // Llama a tu método: modificarMesas(int id, String nuevoNombre, int nuevaCapacidad)
+            this.methods.modificarMesas(id, numMesa, capacidad);
+            
+            JOptionPane.showMessageDialog(this, "Mesa actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            this.MostrarMesas();
+            this.limpiarCamposMesas();
+            txtnumeroMesa.setEditable(false);
+            txtcapacidad.setEditable(false);
+        }
 
-        JOptionPane.showMessageDialog(this, "Mesa modificada correctamente", "Modificación exitosa", JOptionPane.INFORMATION_MESSAGE);
-
-        this.MostrarMesas();
-        // Limpia los campos de texto
-        txtcodigomesa.setText("");
-        txtcapacidad.setText("");
-        BTN_Desactivar.setEnabled(false);
-        BTN_Modificar.setEnabled(false);
-      } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al modificar Mesa:\n" + ex.getMessage(), "Error de base de datos", JOptionPane.ERROR_MESSAGE);
-      }
-    }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Asegúrese de que el ID y la Capacidad sean números.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException e) {
+        // Captura: "El número de mesa ya está registrado."
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al actualizar mesa: " + e.getMessage(), "Error SQL", JOptionPane.ERROR_MESSAGE);
+    } 
 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
+    
+    
+    
+            private void limpiarCamposMesas() {
+    txtcodigomesa.setText("");
+    txtnumeroMesa.setText("");
+    txtcapacidad.setText("");
+    
+    // Control de botones
+    BTN_Guardar.setEnabled(true);
+    BTN_Modificar.setEnabled(false);
+    BTN_Desactivar.setEnabled(false);
+
+    BTN_VerMesas.setEnabled(false); 
+}
+    
+    
+    
+    
+    
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
     // 1. Validar que se haya seleccionado una Mesa
     String codStr = txtcodigomesa.getText().trim();
@@ -604,16 +695,14 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     
     private void BTN_VerMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerMesasActionPerformed
         this.MostrarMesas();
+        
+        this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
         this.BTN_VerMesas.setEnabled(false);
 
     }//GEN-LAST:event_BTN_VerMesasActionPerformed
-
-    private void txtcapacidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcapacidadKeyTyped
-
-    }//GEN-LAST:event_txtcapacidadKeyTyped
 
     private void TXT_BuscarMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarMesasActionPerformed
         // TODO add your handling code here:
@@ -623,13 +712,31 @@ public class Frm_MantMesa extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtnumeroMesaKeyTyped
 
-    private void txtcapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcapacidadActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtcapacidadActionPerformed
+    private void BTN_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_BackActionPerformed
+        Frm_MenuPrincipal mainMenu = new Frm_MenuPrincipal();
+        mainMenu.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_BTN_BackActionPerformed
 
-    private void txtnumeroMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnumeroMesaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtnumeroMesaActionPerformed
+    private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la operación?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        if (respuesta == JOptionPane.YES_OPTION) {
+            
+            JTABLE_Mant_Mesa.setEnabled(true);
+            BTN_Guardar.setEnabled(false);
+            BTN_Nuevo.setVisible(true);
+            BTN_Cancel.setVisible(false);
+            
+            BTN_Desactivar.setEnabled(false);
+            BTN_Modificar.setEnabled(false);
+            
+            
+            txtnumeroMesa.setEditable(false);
+            txtcapacidad.setEditable(false);
+            this.limpiarCamposMesas();
+
+        }
+    }//GEN-LAST:event_BTN_CancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -674,6 +781,8 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BTN_Back;
+    private javax.swing.JButton BTN_Cancel;
     private javax.swing.JButton BTN_Cerrar1;
     private javax.swing.JButton BTN_Desactivar;
     private javax.swing.JButton BTN_EXCEL;
@@ -692,9 +801,9 @@ public class Frm_MantMesa extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField txtcapacidad;
+    private javax.swing.JFormattedTextField txtcapacidad;
     private javax.swing.JTextField txtcodigomesa;
     private javax.swing.JTextField txtnumeroMesa;
     // End of variables declaration//GEN-END:variables
