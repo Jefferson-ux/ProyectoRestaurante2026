@@ -168,6 +168,8 @@ DELIMITER ;
    Valida duplicado por DNI.
    Valida formato de correos y teléfonos.
    ============================================================ */
+
+--2. Procedure para buscar los Empleados
 DROP PROCEDURE IF EXISTS buscar_pedido;
 DELIMITER $$
 
