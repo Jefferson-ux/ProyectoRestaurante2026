@@ -890,7 +890,7 @@ BEGIN
     END IF;
 
     -- 7. Validar unidad de medida
-    SELECT COUNT(*) INTO v_existencia FROM unidad_medida WHERE id_unidad_medida = p_id_id_unidad_medida;
+    SELECT COUNT(*) INTO v_existencia FROM unidad_medida WHERE id_unidad_medida = p_id_unidad_medida;
     IF v_existencia = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La unidad de medida no existe.', MYSQL_ERRNO = 20149;
     END IF;

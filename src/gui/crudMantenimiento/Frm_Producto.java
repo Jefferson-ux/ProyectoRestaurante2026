@@ -411,9 +411,10 @@ public class Frm_Producto extends javax.swing.JFrame {
             // Convertir código a entero
             int codigoProducto = Integer.parseInt(codigoStr);
             // Convertir precio a double
-            double precio = Double.parseDouble(nuevoPrecioUnitario);
+            String precioLimpio = nuevoPrecioUnitario.replace("S/", "").replace(",", ".").trim();
+            double precio = Double.parseDouble(precioLimpio);
             // Convertir código a entero
-            int stockActuak = Integer.parseInt(nuevoStockActual);
+            int stockActual = Integer.parseInt(nuevoStockActual);
             // Convertir código a entero
             int stockMinimo = Integer.parseInt(nuevoStockMinimo);
 
@@ -431,7 +432,7 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
 
              // Llamar al método de modificación
-            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockActuak, stockMinimo, codigoUnidadMedida);
+            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockMinimo, stockActual , codigoUnidadMedida);
 
             JOptionPane.showMessageDialog(this, "Escuela profesional actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 

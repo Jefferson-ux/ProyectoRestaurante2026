@@ -93,7 +93,7 @@ public class ProductoMethod {
         if (existeProductoUnidadMedida(nuevo_nombre, id)){
             throw new IllegalArgumentException("El nombre del producto ya esta registrado.");
         }
-        String sql = "CALL Update_Producto(?,?,?,?,?)";/*Llamada al procedimiento*/
+        String sql = "{CALL Update_Producto(?,?,?,?,?,?)}";/*Llamada al procedimiento*/
         try (PreparedStatement ps = conn.prepareCall(sql)){
             ps.setInt(1,id);
             ps.setString(2, nuevo_nombre);
