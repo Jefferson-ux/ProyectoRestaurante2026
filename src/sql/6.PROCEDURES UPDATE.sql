@@ -460,6 +460,10 @@ CALL Update_DetallePedido(
 6.- EMPLEADO
 Tiene cambios en los nombres con respecto al de Oracle
 **************************************/
+
+
+DROP PROCEDURE IF EXISTS Update_Empleado;
+
 DELIMITER //
 
 CREATE PROCEDURE Update_Empleado (
