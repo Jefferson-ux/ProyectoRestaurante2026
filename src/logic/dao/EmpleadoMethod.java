@@ -58,72 +58,58 @@ public class EmpleadoMethod {
         return cs.executeQuery();
     }
 
-    /** * Inserta un empleado (12 parámetros según tu SQL) */
-    public void insertarEmpleado(String dni, String nombres, String apellidos, 
-                                 String fechaNac, String fechaReg, String residencia, 
-                                 String correo1, String correo2, String tel1, String tel2, 
-                                 String observacion, int idGenero) throws SQLException {
-        
-        String sql = "{CALL insertar_empleado(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        
-        try (CallableStatement cs = conn.prepareCall(sql)) {
-            cs.setString(1, dni);
-            cs.setString(2, nombres);
-            cs.setString(3, apellidos);
-            cs.setString(4, fechaNac); 
-            cs.setString(5, fechaReg);
-            cs.setString(6, residencia);
-            cs.setString(7, correo1);
-            cs.setString(8, correo2);
-            cs.setString(9, tel1);
-            cs.setString(10, tel2);
-            cs.setString(11, observacion);
-            cs.setInt(12, idGenero);
-            cs.execute();
-            System.out.println("Empleado insertado con éxito");
+    /** * Inserta un empleado */
+    public void insertarEmpleado(String Nombre, String Apellido, String Fechanac, String Fechareg, String Direccion, String correo1, String telefono1, int genero) throws SQLException{
+        if (existeEmpleadoGenero(Nombre, 0)){
+            throw new IllegalArgumentException("El nombre del empleado ya esta registrado.");
         }
-    }
+        String sql = "{CALL insertar_producto(?,?,?,?,?,?,?,?,?)}";//Llamada al procedimiento
+        try (PreparedStatement ps = conn.prepareCall(sql)){
+            ps.setString(1, Nombre);
+            ps.setString(2, Apellido);
+            ps.setString(3, Fechanac);
+            ps.setString(4, Fechareg);
+            ps.setString(5, Fechareg);
+            ps.setString(6, Direccion);
+            ps.setString(7, correo1);
+            ps.setString(8, telefono1);
+            ps.setInt(9, genero);
+            ps.execute();
+            System.out.println("Empleado insertado");
+        }                   
+    }    
 
     /** * Actualiza un empleado (14 parámetros según tu SQL) */
     public void modificarEmpleado(int id, String newNombre, String newApellido, String newFechanac, String newFechareg, String newDireccion, String newcorreo1, String newcorreo2, String newtelefono1, String newtelefono2, String newObservacion, int genero, int estado) throws SQLException{
-        if (existeProductoUnidadMedida(nuevo_nombre, id)){
-            
-            
-            
-            {
-        
-        
-        
-        
-        String sql = "{CALL Update_Empleado(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        
-        try (CallableStatement cs = conn.prepareCall(sql)) {
-            cs.setInt(1, id);
-            cs.setString(2, dni);
-            cs.setString(3, nombres);
-            cs.setString(4, apellidos);
-            cs.setString(5, fNac);
-            cs.setString(6, fReg);
-            cs.setString(7, dir);
-            cs.setString(8, c1);
-            cs.setString(9, c2);
-            cs.setString(10, t1);
-            cs.setString(11, t2);
-            cs.setString(12, obs);
-            cs.setInt(13, idGen);
-            cs.setInt(14, estado);
-            cs.executeUpdate();
-            System.out.println("Empleado modificado correctamente");
+        if (existeEmpleadoGenero(newNombre, id)){
+            throw new IllegalArgumentException("El nombre del empleado ya esta registrado.");
         }
-    }
+        String sql = "{CALL Update_Empleado(?,?,?,?,?,?,?,?,?,?,?,?,?)}";/*Llamada al procedimiento*/
+        try (PreparedStatement ps = conn.prepareCall(sql)){
+            ps.setInt(1,id);
+            ps.setString(2, newNombre);
+            ps.setString(3, newApellido);
+            ps.setString(4, newFechanac);
+            ps.setString(5, newFechareg);
+            ps.setString(6, newFechareg);
+            ps.setString(7, newDireccion);
+            ps.setString(8, newcorreo1);
+            ps.setString(9, newcorreo2);
+            ps.setString(10, newtelefono1);
+            ps.setString(11, newtelefono2);
+            ps.setString(11, newObservacion);
+            ps.setInt(11, genero);
+            ps.setInt(12, estado);
+            ps.executeUpdate();
+            System.out.println("Empleado modificado");
+        }                   
+    }    
 
     /** * Baja lógica por DNI */
-    public void desactivarEmpleado(String dni) throws SQLException {
+    public void darDeBajaEmpleado(String dni) throws SQLException {
         String sql = "{CALL Desactivar_Empleado(?)}";
-        try (CallableStatement cs = conn.prepareCall(sql)) {
-            cs.setString(1, dni); 
-            cs.executeUpdate();
-            System.out.println("Empleado desactivado");
+        CallableStatement cs = conn.prepareCall(sql);
+        cs.setString(1, dni); //Solo se pasa el codigo, el estado lo maneja el procedure
+        cs.execute();
         }
     }
-}
