@@ -96,13 +96,11 @@ SELECT
     e.correo_secundario          AS `Correo Secundario`,
     e.telefono_principal AS `Teléfono Principal`,
     e.telefono_secundario AS `Teléfono Secundario`,
-    g.nombre_genero             AS `Género`,
+    g.nombre_genero             AS `Genero`,
     e.observacion_empleado 		 AS `Observaciones`
 FROM empleado e
 INNER JOIN genero g ON e.id_genero = g.id_genero
 WHERE  e.estado = 1;
-
-
 
 
 

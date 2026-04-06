@@ -149,6 +149,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         });
         jPanel1.add(txtstockActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 140, 30));
 
+        jComboBox_unidad_medida.addActionListener(this::jComboBox_unidad_medidaActionPerformed);
         jPanel1.add(jComboBox_unidad_medida, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 140, 330, 30));
 
         txtNombreProducto.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -702,6 +703,10 @@ public class Frm_Producto extends javax.swing.JFrame {
     private void txtPreciounitarioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPreciounitarioKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPreciounitarioKeyTyped
+
+    private void jComboBox_unidad_medidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_unidad_medidaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox_unidad_medidaActionPerformed
 
     /**
      * @param args the command line arguments
