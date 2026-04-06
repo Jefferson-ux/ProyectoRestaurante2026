@@ -592,7 +592,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
     private void BTN_VerEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerEmpleadosActionPerformed
-        this.listarProductos();
+        this.listarEmpleados();
         this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
@@ -605,45 +605,34 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
         try {
-            String nuevodni = txtdniempleado.getText().trim();
-            String nuevonombresEmpleados = txtNombreEmpleado.getText().trim();
-            String nuevoapellidosEmpleados = txtApellidoEmpleado.getText().trim();
-            String nuevofechanac = txtfechanacimiento.getText().trim();
-            String nuevofechareg = txtfecharegistro.getText().trim();
-            String nuevodireccion = txtdireccion.getText().trim();
-            String nuevocorreo = txtcorreo.getText().trim();
-            String nuevotele = txttelefeono.getText().trim();
-        
-        // Obtener Género del ComboBox
-        String nombreGenero = (String) jComboBox_genero.getSelectedItem();
+    // Capturamos el DNI como String directamente
+    String dni = txtdniempleado.getText().trim(); 
+    
+    String nom = txtNombreEmpleado.getText().trim();
+    String ape = txtApellidoEmpleado.getText().trim();
+    String fNac = txtfechanacimiento.getText().trim();
+    String fReg = txtfecharegistro.getText().trim();
+    String dir = txtdireccion.getText().trim();
+    String c1 = txtcorreo.getText().trim();
+    String t1 = txttelefeono.getText().trim();
 
-        // 2. Validar campos obligatorios (DNI, Nombres, Apellidos son críticos)
-        if (nuevodni.isEmpty() || nuevonombresEmpleados.isEmpty() || nuevoapellidosEmpleados.isEmpty() || nuevofechanac.isEmpty() || nuevofechareg.isEmpty() || nuevodireccion.isEmpty() || nuevocorreo.isEmpty() || nuevotele.isEmpty() || nombreGenero == null) {
-            JOptionPane.showMessageDialog(this, "DNI, Nombres, Apellidos y Género son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    // Para el género, obtenemos el índice + 1 (Asumiendo 1:Masculino, 2:Femenino...)
+    int gen = jComboBox_genero.getSelectedIndex() + 1; 
 
-        // 3. Validar longitud del DNI (Debe ser 8 según tu SQL)
-        if (nuevodni.length() != 8) {
-            JOptionPane.showMessageDialog(this, "El DNI debe tener exactamente 8 dígitos.", "Validación", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    // Campos por defecto para completar los 13 parámetros
+    String c2 = ""; 
+    String t2 = ""; 
+    String obs = "Modificado por DNI";
+    int est = 1; 
 
-        // . Definir el estado (Por defecto 1 si está activo)
-        int estado = 1; 
+    // LLAMADA CORREGIDA: El primer parámetro es el DNI (String)
+    PR.modificarEmpleado(dni, nom, ape, fNac, fReg, dir, c1, c2, t1, t2, obs, gen, est);
 
-        // . Llamar al método de modificación del DAO (EmpleadoMethod)
-        // idSeleccionado debe ser el ID obtenido al seleccionar la fila de la tabla
-        EmpleadoMethod.modificarEmpleado(dni, nombres, apellidos, fNac, fReg, 
-                                         direccion, correo1, tel1, idGenero, estado);
+    JOptionPane.showMessageDialog(this, "✅ Empleado con DNI " + dni + " actualizado.");
 
-        JOptionPane.showMessageDialog(this, "Empleado actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-        // . Refrescar tabla y limpiar campos
-        listarEmpleados(); // Tu método para recargar la JTable
-        limpiarCamposEmpleado();
-
-        } 
+} catch (SQLException e) {
+    JOptionPane.showMessageDialog(this, "Error en la base de datos: " + e.getMessage());
+}
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTN_GuardarMouseClicked
@@ -652,84 +641,73 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
     private void BTN_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_GuardarActionPerformed
         try {  
-            // 1. Obtener datos del formulario
-            //Variable para el jcombobox y el nombre (solo para Strings y jcombox)
-            String nombreProducto = txtNombreProducto.getText().trim();
-            String nombreUnidad = (String) jComboBox_unidad_medida.getSelectedItem();
-            
-            if (nombreProducto.isEmpty()){
-                JOptionPane.showMessageDialog(this, "El nombre del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
-                txtNombreProducto.requestFocus();
-                return;
-            }
-            if (txtPreciounitario.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "El precio del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
-                txtPreciounitario.requestFocus();
-                return;
-            }
-            if (txtstockActual.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "El stock actual del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
-                txtstockActual.requestFocus();
-                return;
-            }
-            if (txtstockMinimo.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "El stock minimo del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
-                txtstockMinimo.requestFocus();
-                return;
-            }
-            if (nombreUnidad == null || nombreUnidad.trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Seleccione una unidad de medida valida.", "Validación", JOptionPane.WARNING_MESSAGE);
-                txtNombreProducto.requestFocus();
-                return;
-            }
-            
-            
-            //Proceso de transformación de String a int o Double (Solo para los campos que tienen numeros)
-            double precioUnitario;
-            int stockActual;
-            int stockMinimo; 
-            try {
-                precioUnitario = Double.parseDouble(txtPreciounitario.getText().trim().replace(",", "."));
-                stockActual = Integer.parseInt(txtstockActual.getText().trim());
-                stockMinimo = Integer.parseInt(txtstockMinimo.getText().trim());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, """
-                                                    Error: Uno de los campos num\u00e9ricos tiene un formato incorrecto.
-                                                    Aseg\u00farese de usar solo n\u00fameros (y punto para decimales en el precio).""", 
-                        "Error de entrada", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-          
-            
-            // 3. Obtener el código de la facultad desde la vista
-            int codigoUnidad = UM.obtenerCodigoUnidad(nombreUnidad);
-            if (codigoUnidad == -1) {
-                JOptionPane.showMessageDialog(this, "No se encontró la unidad de medida seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
-             return;
-            }
-            
-            // 4. Insertar usando método de clase (que valida duplicados)
-            PR.insertarProducto(nombreProducto, precioUnitario, stockMinimo, stockActual, codigoUnidad);
+    // 1. Obtener datos del formulario
+    String dni = txtdniempleado.getText().trim();
+    String nombres = txtNombreEmpleado.getText().trim();
+    String apellidos = txtApellidoEmpleado.getText().trim();
+    String fNac = txtfechanacimiento.getText().trim();
+    String fReg = txtfecharegistro.getText().trim();
+    String direccion = txtdireccion.getText().trim();
+    String correo = txtcorreo.getText().trim();
+    String telefono = txttelefeono.getText().trim();
+    String nombreGenero = (String) jComboBox_genero.getSelectedItem();
 
-            // 5. Confirmar éxito
-            JOptionPane.showMessageDialog(this, "Producto registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    // 2. Validaciones de campos vacíos
+    if (dni.isEmpty() || dni.length() != 8) {
+        JOptionPane.showMessageDialog(this, "El DNI debe tener 8 dígitos.", "Validación", JOptionPane.WARNING_MESSAGE);
+        txtdniempleado.requestFocus();
+        return;
+    }
+    if (nombres.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.", "Validación", JOptionPane.WARNING_MESSAGE);
+        txtNombreEmpleado.requestFocus();
+        return;
+    }
+    if (apellidos.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "El apellido no puede estar vacío.", "Validación", JOptionPane.WARNING_MESSAGE);
+        txtApellidoEmpleado.requestFocus();
+        return;
+    }
+    if (fNac.isEmpty() || fReg.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Las fechas son obligatorias (YYYY-MM-DD).", "Validación", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    if (nombreGenero == null || nombreGenero.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Seleccione un género válido.", "Validación", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-            // 6. Refrescar tabla
-            listarProductos();
+    // 3. Obtener el ID del género (ajusta según tu clase de lógica)
+    // Si tu ComboBox solo tiene los nombres, puedes obtener el ID por índice o por un método
+    int idGenero = jComboBox_genero.getSelectedIndex() + 1; 
 
-             // 7. Limpiar campos
-            this.limpiarCamposProducto();
+    // 4. Parámetros adicionales (los que no usas en el formulario)
+    String correo2 = ""; 
+    String tel2 = "";
+    String observacion = "Registro desde sistema";
+    int estado = 1; // 1 para Activo
 
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al guardar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    // 5. Llamar al método del DAO (PR o EM según tu instancia)
+    // Usamos el DNI como primer parámetro según lo que definimos antes
+    PR.insertarEmpleado(dni, nombres, apellidos, fechanacOriginal, fecharegOriginal, nombreGenero, correo, telefono, idGenero);
+
+    // 6. Confirmar éxito
+    JOptionPane.showMessageDialog(this, "Empleado registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+    // 7. Refrescar tabla y limpiar
+    listarEmpleados(); 
+    this.limpiarCamposEmpleado();
+
+    } catch (IllegalArgumentException ex) {
+    // Esto captura los SIGNAL SQLSTATE de tu Procedure (DNI duplicado, formato de correo, etc.)
+    JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
+    } catch (SQLException ex) {
+    JOptionPane.showMessageDialog(this, "Error en la base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_BTN_GuardarActionPerformed
 
     private void BTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_NuevoActionPerformed
-        limpiarCamposProducto();
+        limpiarCamposEmpleado();
         BTN_Cancel.setVisible(true);
         BTN_Nuevo.setVisible(false);
     }//GEN-LAST:event_BTN_NuevoActionPerformed

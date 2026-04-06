@@ -85,30 +85,29 @@ public class EmpleadoMethod {
 
 
        /* UPDATE --> ACTUALIZAR DATOS */
-    public void modificarEmpleado(int id, String newNombre, String newApellido, String newFechanac, String newFechareg, String newDireccion, String newcorreo1, String newcorreo2, String newtelefono1, String newtelefono2, String newObservacion, int genero, int estado) throws SQLException{
-        if (existeEmpleadoGenero(newNombre, id)){
-            throw new IllegalArgumentException("El nombre del empleado ya esta registrado.");
-        }
-        String sql = "{CALL Update_Empleado(?,?,?,?,?,?,?,?,?,?,?,?,?)}";/*Llamada al procedimiento*/
-        try (PreparedStatement ps = conn.prepareCall(sql)){
-            ps.setInt(1,id);
-            ps.setString(2, newNombre);
-            ps.setString(3, newApellido);
-            ps.setString(4, newFechanac);
-            ps.setString(5, newFechareg);
-            ps.setString(6, newFechareg);
-            ps.setString(7, newDireccion);
-            ps.setString(8, newcorreo1);
-            ps.setString(9, newcorreo2);
-            ps.setString(10, newtelefono1);
-            ps.setString(11, newtelefono2);
-            ps.setString(11, newObservacion);
-            ps.setInt(11, genero);
-            ps.setInt(12, estado);
-            ps.executeUpdate();
-            System.out.println("Empleado modificado");
-        }                   
-    }    
+    // Cambiamos 'int id' por 'String dni'
+    public void modificarEmpleado(String dni, String newNombre, String newApellido, String newFechanac, String newFechareg, String newDireccion, String newcorreo1, String newcorreo2, String newtelefono1, String newtelefono2, String newObservacion, int genero, int estado) throws SQLException {
+    
+    String sql = "{CALL Update_Empleado(?,?,?,?,?,?,?,?,?,?,?,?,?)}";
+    
+    try (CallableStatement ps = conn.prepareCall(sql)) {
+        ps.setString(1, dni); // Ahora es setString en la posición 1
+        ps.setString(2, newNombre);
+        ps.setString(3, newApellido);
+        ps.setString(4, newFechanac);
+        ps.setString(5, newFechareg);
+        ps.setString(6, newDireccion);
+        ps.setString(7, newcorreo1);
+        ps.setString(8, newcorreo2);
+        ps.setString(9, newtelefono1);
+        ps.setString(10, newtelefono2);
+        ps.setString(11, newObservacion);
+        ps.setInt(12, genero);
+        ps.setInt(13, estado);
+        
+        ps.executeUpdate();
+    }
+}
 
     /** * Baja lógica por DNI */
     public void darDeBajaEmpleado(String dni_empleado) throws SQLException {
