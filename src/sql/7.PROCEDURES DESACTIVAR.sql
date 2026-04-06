@@ -63,4 +63,35 @@ BEGIN
     END IF;
 END //
 
+/***************************************
+3. PROVEEDOR
+*****************************************/
+DROP PROCEDURE IF EXISTS Desactivar_Proveedor;
+DELIMITER //
+CREATE PROCEDURE Desactivar_Proveedor(IN p_id_proveedor INT)
+BEGIN
+    DECLARE existe INT DEFAULT 0;
+    DECLARE yaDesactivado INT DEFAULT 0;
+    /* Verificar si el Empleado existe */
+    SELECT COUNT(*) INTO existe
+    FROM Proveedor WHERE id_proveedor = p_id_proveedor;
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El código del proveedor no existe. ';
+    ELSE
+        /* Verificar si ya está desactivada */
+        SELECT COUNT(*) INTO yaDesactivado
+        FROM Proveedor
+        WHERE id_proveedor = p_id_proveedor AND estado = 0;
+        IF yaDesactivado > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El Proveedor ya está desactivado.';
+        ELSE
+            /* Proceder con la desactivación */
+            UPDATE Proveedor
+            SET estado = 0
+            WHERE id_producto = P_id_producto;
+        END IF;
+    END IF;
+END //
 

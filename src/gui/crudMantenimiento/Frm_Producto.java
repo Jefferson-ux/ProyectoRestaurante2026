@@ -387,6 +387,7 @@ public class Frm_Producto extends javax.swing.JFrame {
 
             // 6. Si el usuario acepta guardar, crear archivo
             if (seleccion == JFileChooser.APPROVE_OPTION) {
+                
                 File archivo = fileChooser.getSelectedFile();
 
                 // 7. Asegurar extensión .xlsx
