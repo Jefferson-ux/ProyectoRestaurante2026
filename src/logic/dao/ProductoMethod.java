@@ -35,9 +35,7 @@ public class ProductoMethod {
         return rs; // Devolvemos los resultados 
     }
     
-    
-    // Validar si existe escuela similar
-     public boolean existeProductoUnidadMedida(String nombre, int id_producto) throws SQLException {
+    public boolean existeProductoUnidadMedida(String nombre, int id_producto) throws SQLException {
         String sql = "SELECT 1 FROM Producto "
             + "WHERE LOWER(nombre_producto) = LOWER(?) "
             + "AND id_producto <> ?";

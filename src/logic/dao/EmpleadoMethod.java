@@ -28,13 +28,11 @@ public class EmpleadoMethod {
             JOptionPane.showConfirmDialog(null, "No se puede conectar a la base de datos", "Error de conexión", 1);
         }
     }
-      
-     
-    /** * Carga la lista de géneros desde la vista */
     public ResultSet combobox_ListarGeneros() throws SQLException {
         String sql = "SELECT `Genero` FROM vista_genero";
-        Statement st = conn.createStatement();
-        return st.executeQuery(sql);
+        Statement st =conn.createStatement(); // Creamos el statements
+        ResultSet rs=st.executeQuery(sql); // Ejecutamos la consulta
+        return rs; // Devolvemos los resultados 
     }
 
     public boolean existeEmpleadoGenero (String nombre, int id_empleado) throws SQLException {
@@ -49,8 +47,8 @@ public class EmpleadoMethod {
         
     }
     /** * Muestra todos los empleados de la vista_empleado */
-    public ResultSet listarEmpleados() throws SQLException {
-        String sql = "SELECT * FROM vista_empleado";
+        public ResultSet listarEmpleados() throws SQLException {
+        String sql = "Select * from vista_empleado";/*SQL Query*/
         Statement st = conn.createStatement();
         return st.executeQuery(sql);
     }
