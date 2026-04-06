@@ -262,7 +262,7 @@ public class Frm_Producto extends javax.swing.JFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         BTN_VerProductos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerProductos.setText("VER PLATOS DEL MENÚ");
+        BTN_VerProductos.setText("VER PRODUCTOS");
         BTN_VerProductos.addActionListener(this::BTN_VerProductosActionPerformed);
         jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 30, 165, 50));
 

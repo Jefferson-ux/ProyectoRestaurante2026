@@ -136,7 +136,7 @@ public class Frm_Proveedor extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(51, 51, 51));
 
         BTN_VerProveedor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerProveedor.setText("VER MESAS");
+        BTN_VerProveedor.setText("VER PROVEEDORES");
         BTN_VerProveedor.addActionListener(this::BTN_VerProveedorActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
