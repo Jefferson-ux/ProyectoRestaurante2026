@@ -732,73 +732,63 @@ CREATE PROCEDURE insertar_proveedor(
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg VARCHAR(500);
 
-    SELECT COUNT(*) INTO v_count
-    FROM proveedor
-    WHERE ruc_proveedor = p_ruc;
-
+    -- 1. Validar RUC duplicado
+    SELECT COUNT(*) INTO v_count FROM proveedor WHERE ruc = p_ruc;
     IF v_count > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Ya existe un proveedor con el mismo RUC.',
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: Ya existe un proveedor registrado con este RUC.', 
         MYSQL_ERRNO = 1034;
     END IF;
 
-    SELECT COUNT(*) INTO v_count
-    FROM proveedor
-    WHERE correo_proveedor = p_correo;
-
+    -- 2. Validar correo duplicado
+    SELECT COUNT(*) INTO v_count FROM proveedor WHERE correo_proveedor = p_correo;
     IF v_count > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Ya existe un proveedor con el mismo correo.',
         MYSQL_ERRNO = 1035;
     END IF;
 
-    IF LENGTH(p_ruc) <> 11 THEN
+    -- 3. Validar longitud de RUC
+    IF LENGTH(TRIM(p_ruc)) <> 11 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El RUC debe tener exactamente 11 caracteres.',
         MYSQL_ERRNO = 1036;
     END IF;
 
+    -- 4. Validar campos obligatorios
     IF p_razon_social IS NULL OR TRIM(p_razon_social) = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La razón social no puede estar vacía.',
-        MYSQL_ERRNO = 1037;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La razón social no puede estar vacía.', MYSQL_ERRNO = 1037;
     END IF;
 
     IF p_telefono IS NULL OR TRIM(p_telefono) = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El teléfono no puede estar vacío.',
-        MYSQL_ERRNO = 1038;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El teléfono no puede estar vacío.', MYSQL_ERRNO = 1038;
     END IF;
 
     IF p_correo IS NULL OR TRIM(p_correo) = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El correo no puede estar vacío.',
-        MYSQL_ERRNO = 1039;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El correo no puede estar vacío.', MYSQL_ERRNO = 1039;
     END IF;
 
     IF p_direccion IS NULL OR TRIM(p_direccion) = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La dirección no puede estar vacía.',
-        MYSQL_ERRNO = 1040;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La dirección no puede estar vacía.', MYSQL_ERRNO = 1040;
     END IF;
 
-    INSERT INTO proveedor(
-        ruc,
-        razon_social,
-        telefono_proveedor,
-        correo_proveedor,
-        direccion_proveedor
-    )
+    -- 5. Validaciones de Formato (REGEXP)
+    IF p_telefono NOT REGEXP '^[0-9]{7,15}$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El teléfono debe contener solo números (7 a 15 dígitos).',
+        MYSQL_ERRNO = 1041;
+    END IF;
 
-    VALUES(
-        p_ruc,
-        p_razon_social,
-        p_telefono,
-        p_correo,
-        p_direccion
-    );
+    IF p_correo NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El formato del correo electrónico no es válido.',
+        MYSQL_ERRNO = 1042;
+    END IF;
+
+    -- 6. Inserción final
+    INSERT INTO proveedor(ruc, razon_social, telefono_proveedor, correo_proveedor, direccion_proveedor)
+    VALUES(p_ruc, p_razon_social, p_telefono, p_correo, p_direccion);
 
     SELECT 'Proveedor insertado exitosamente.' AS mensaje;
 

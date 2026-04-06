@@ -919,14 +919,13 @@ DELIMITER ;
 
 
 /**************************************
-13- PROVEEDOR
-Mas campos  a comparación de Oracle
+13- PROVEEDOR (CORREGIDO)
+Uso de RUC como identificador principal
 **************************************/
 DELIMITER //
 
 DROP PROCEDURE IF EXISTS Update_Proveedor //
 CREATE PROCEDURE Update_Proveedor (
-    IN p_id_proveedor  INT,
     IN p_ruc           CHAR(11),
     IN p_razon_social  VARCHAR(150),
     IN p_telefono      VARCHAR(15),
@@ -940,22 +939,24 @@ BEGIN
     DECLARE v_razon      VARCHAR(150) DEFAULT TRIM(p_razon_social);
     DECLARE v_correo     VARCHAR(150) DEFAULT LOWER(TRIM(p_correo));
 
-    -- 1. Validar existencia del proveedor
-    SELECT COUNT(*) INTO v_existencia FROM proveedor WHERE id_proveedor = p_id_proveedor;
+    -- 1. Validar existencia del proveedor (usando el RUC como ID)
+    SELECT COUNT(*) INTO v_existencia FROM proveedor WHERE ruc = v_ruc;
     IF v_existencia = 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El proveedor no existe.', MYSQL_ERRNO = 20161;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El proveedor con este RUC no existe.', MYSQL_ERRNO = 20161;
     END IF;
 
-    -- 2. Validar RUC (11 dígitos y no nulo)
+    -- 2. Validar formato del RUC (11 dígitos numéricos)
     IF v_ruc IS NULL OR v_ruc NOT REGEXP '^[0-9]{11}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El RUC debe tener 11 dígitos numéricos.', MYSQL_ERRNO = 20168;
     END IF;
 
-    -- 3. Validar RUC duplicado
+    -- 3. Validar Correo duplicado
+    -- Verificamos si existe OTRA fila con ese correo que NO sea la del RUC actual
     SELECT COUNT(*) INTO v_existencia FROM proveedor 
-    WHERE ruc = v_ruc AND id_proveedor <> p_id_proveedor;
+    WHERE correo_proveedor = v_correo AND ruc <> v_ruc;
+    
     IF v_existencia > 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El RUC ya pertenece a otro proveedor.', MYSQL_ERRNO = 20169;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El correo ya pertenece a otro proveedor.', MYSQL_ERRNO = 20169;
     END IF;
 
     -- 4. Validar Razón Social
@@ -963,28 +964,29 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La razón social es obligatoria.', MYSQL_ERRNO = 20162;
     END IF;
 
-    -- 5. Validar Teléfono (Mínimo 7, máximo 15 según tu CHECK)
-    IF p_telefono IS NULL OR p_telefono NOT REGEXP '^[0-9]{7,15}$' THEN
+    -- 5. Validar Teléfono (7 a 15 dígitos)
+    IF p_telefono IS NULL OR TRIM(p_telefono) NOT REGEXP '^[0-9]{7,15}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Teléfono inválido (7 a 15 dígitos).', MYSQL_ERRNO = 20163;
     END IF;
 
-    -- 6. Validar Correo
+    -- 6. Validar Formato de Correo
     IF v_correo NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Formato de correo inválido.', MYSQL_ERRNO = 20164;
     END IF;
 
     -- 7. Ejecutar actualización
     UPDATE proveedor
-    SET ruc                 = v_ruc,
+    SET 
         razon_social        = v_razon,
         telefono_proveedor  = TRIM(p_telefono),
         correo_proveedor    = v_correo,
         direccion_proveedor = TRIM(p_direccion)
-    WHERE id_proveedor = p_id_proveedor;
+    WHERE ruc = v_ruc;
 
     -- 8. Verificar si hubo cambios
+    -- Nota: Si envías exactamente los mismos datos que ya están, MySQL devuelve 0.
     IF ROW_COUNT() = 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se realizaron cambios en el proveedor.', MYSQL_ERRNO = 20167;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Aviso: No se realizaron cambios (los datos son idénticos).', MYSQL_ERRNO = 20167;
     END IF;
 
 END //
