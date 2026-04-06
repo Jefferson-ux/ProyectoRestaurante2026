@@ -13,28 +13,22 @@ public class EmpleadoMethod {
     private final Connection conn;
 
     public EmpleadoMethod() {
-        ConnectionDB connection = new ConnectionDB();
-        this.conn = connection.getConnection();
-        
-        if (this.conn == null) {
-            // Cambiado a MessageDialog para que no pida confirmación Si/No, solo informe el error
-            JOptionPane.showMessageDialog(null, "No se puede conectar a la base de datos", "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        //===========================================//   
+        //Crear la conexión al iniciar el formulario //
+       //===========================================//   
+           ConnectionDB connection = new ConnectionDB();
+           
+           
+         //=====================================//  
+        //Verificar que la conexion sea exitosa//
+       //=====================================//
+            this.conn = connection.getConnection();
+       
+            if (connection.getConnection() == null) {
+            JOptionPane.showConfirmDialog(null, "No se puede conectar a la base de datos", "Error de conexión", 1);
         }
     }
-    
-    
-     public boolean existeEmpleadoGenero (String nombre, int id_empleado) throws SQLException {
-        String sql = "SELECT 1 FROM Empleado "
-            + "WHERE LOWER(nombre_empleado) = LOWER(?) "
-            + "AND id_empleado <> ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, nombre.trim());
-        ps.setInt(2, id_empleado); // 0 si es insertar
-        ResultSet rs = ps.executeQuery();
-        return rs.next(); // si devuelve algo, ya existe
-    }
-     
-     
+      
      
     /** * Carga la lista de géneros desde la vista */
     public ResultSet combobox_ListarGeneros() throws SQLException {
@@ -43,6 +37,17 @@ public class EmpleadoMethod {
         return st.executeQuery(sql);
     }
 
+    public boolean existeEmpleadoGenero (String nombre, int id_empleado) throws SQLException {
+        String sql = "SELECT 1 FROM Empleado "
+            + "WHERE LOWER(nombre_empleado) = LOWER(?) "
+            + "AND id_empleado <> ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nombre.trim());
+        ps.setInt(2, id_empleado); // 0 si es insertar
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // si devuelve algo, ya existe
+        
+    }
     /** * Muestra todos los empleados de la vista_empleado */
     public ResultSet listarEmpleados() throws SQLException {
         String sql = "SELECT * FROM vista_empleado";
@@ -58,22 +63,24 @@ public class EmpleadoMethod {
         return cs.executeQuery();
     }
 
-    /** * Inserta un empleado */
-    public void insertarEmpleado(String Nombre, String Apellido, String Fechanac, String Fechareg, String Direccion, String correo1, String telefono1, int genero) throws SQLException{
-        if (existeEmpleadoGenero(Nombre, 0)){
+    /** * Inserta un empleado
+     * @param dni
+     * @param nombres */
+    public void insertarEmpleado(String dni, String nombres, String apellidos, String fecha_nacimiento, String fecha_registro, String lugar_residencia, String correo1, String telefono1, int id_genero) throws SQLException{
+        if (existeEmpleadoGenero(nombres, 0)){
             throw new IllegalArgumentException("El nombre del empleado ya esta registrado.");
         }
         String sql = "{CALL insertar_producto(?,?,?,?,?,?,?,?,?)}";//Llamada al procedimiento
         try (PreparedStatement ps = conn.prepareCall(sql)){
-            ps.setString(1, Nombre);
-            ps.setString(2, Apellido);
-            ps.setString(3, Fechanac);
-            ps.setString(4, Fechareg);
-            ps.setString(5, Fechareg);
-            ps.setString(6, Direccion);
+            ps.setString(1, dni);
+            ps.setString(2, nombres);
+            ps.setString(3, apellidos);
+            ps.setString(4, fecha_nacimiento);
+            ps.setString(5, fecha_registro);
+            ps.setString(6, lugar_residencia);
             ps.setString(7, correo1);
             ps.setString(8, telefono1);
-            ps.setInt(9, genero);
+            ps.setInt(9, id_genero);
             ps.execute();
             System.out.println("Empleado insertado");
         }                   

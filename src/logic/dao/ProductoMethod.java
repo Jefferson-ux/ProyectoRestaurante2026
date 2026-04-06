@@ -9,11 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-
 public class ProductoMethod {
     private final Connection conn;
-    
-    
    
     public ProductoMethod(){
         //===========================================//   
