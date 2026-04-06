@@ -116,7 +116,7 @@ public class ProductoMethod {
     public void activarEscuela(int codigoEscuela) throws SQLException{
         String sql = "CALL vera_ActivarEscuelaProfesional (?)";
         CallableStatement cs = conn.prepareCall(sql);
-        cs.setInt(1, codigoEscuela);
+            cs.setInt(1, codigoEscuela);
         cs.execute();
     }
     
