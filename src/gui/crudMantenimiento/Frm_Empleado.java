@@ -1,17 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package gui.crudMantenimiento;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import connection.ConnectionDB;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 //Metodo de Empleado
 import logic.dao.EmpleadoMethod;
 //Metodo de genero para el jcombobox
 import logic.dao.GeneroMethod;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Frm_Empleado extends javax.swing.JFrame {
     //Modelo para mostrar datos en ta tabla
@@ -20,6 +35,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
     //Objeto conexión a la base de datos
     EmpleadoMethod PR = new EmpleadoMethod();
     GeneroMethod UM = new GeneroMethod();
+    ConnectionDB CBD = new ConnectionDB();
 
     //Variable para comprobar cambios en mdoificar
     private String dniOriginal;
@@ -28,8 +44,8 @@ public class Frm_Empleado extends javax.swing.JFrame {
     private String fechanacOriginal;
     private String fecharegOriginal;
     private String direccionOriginal;
-    private String correoOriginal = "";
-    private String telefonoOriginal = "";
+    private String correoOriginal = ;
+    private String telefonoOriginal = ;
     private String generoOriginal = "";
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Empleado.class.getName());
@@ -395,41 +411,76 @@ public class Frm_Empleado extends javax.swing.JFrame {
             generoOriginal = genero;
 
             // Buscar coincidencia en el ComboBox ignorando mayúsculas
-            String generoBD = rs.getString("Gnero"); 
-
-            if (generoBD != null) {
-                String textoABuscar = "";
+            boolean generoBD = false;
+            for (int i = 0; i < jComboBox_genero.getItemCount(); i++) {
+                String item = jComboBox_genero.getItemAt(i).trim();
+                if (item.equalsIgnoreCase(genero)) {
+                    jComboBox_genero.setSelectedIndex(i);
+                    generoBD = true;
+                    break;
+                }
+            }
     
             // 2. Convertimos la letra al texto que tiene tu ComboBox
-            if (generoBD.equalsIgnoreCase("M")) {
-                textoABuscar = "Masculino";
-            } else if (generoBD.equalsIgnoreCase("F")) {
-                textoABuscar = "Femenino";
-         }
-
-    // 3. Ahora buscamos el texto completo en el ComboBox
-    boolean encontrado = false;
-    for (int i = 0; i < jComboBox_genero.getItemCount(); i++) {
-        String item = jComboBox_genero.getItemAt(i).toString().trim();
-        if (item.equalsIgnoreCase(textoABuscar)) {
-            jComboBox_genero.setSelectedIndex(i);
-            encontrado = true;
-            break;
+            if (!generoBD) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontró el genero en la lista del combo.",
+                    "Genero no encontrada", JOptionPane.WARNING_MESSAGE);
+            }
         }
-    }
-}
-
-    // Si por algún error en la DB el género no coincide con el Combo
-    if (!encontrado) {
-        JOptionPane.showMessageDialog(this,
-            "El género '" + generoEmpleado + "' no se encuentra en la lista de opciones.",
-            "Género no encontrado", JOptionPane.WARNING_MESSAGE);
-    }
-}
     }//GEN-LAST:event_JTABLE_Mant_EmpleadoMouseClicked
 
     private void BTN_EXCELActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_EXCELActionPerformed
-       
+       try {
+            // 1. Crear un nuevo libro de Excel (.xlsx)
+            XSSFWorkbook workbook = new XSSFWorkbook();
+
+            // 2. Crear una hoja dentro del libro
+            XSSFSheet sheet = workbook.createSheet("Facultades");
+
+            // 3. Escribir la fila de encabezados desde el JTable
+            XSSFRow headerRow = sheet.createRow(0); // Fila 0 para encabezados
+            for (int i = 0; i < JTABLE_Mant_Empleado.getColumnCount(); i++) {
+                headerRow.createCell(i).setCellValue(JTABLE_Mant_Empleado.getColumnName(i));
+            }
+
+            // 4. Escribir los datos fila por fila desde el JTable
+            for (int i = 0; i < JTABLE_Mant_Empleado.getRowCount(); i++) {
+                XSSFRow dataRow = sheet.createRow(i + 1); // Fila 1 en adelante
+                for (int j = 0; j < JTABLE_Mant_Empleado.getColumnCount(); j++) {
+                    Object valor = JTABLE_Mant_Empleado.getValueAt(i, j);
+                    dataRow.createCell(j).setCellValue(valor != null ? valor.toString() : "");
+                }
+            }
+
+            // 5. Mostrar cuadro de diálogo para elegir ruta de guardado
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como Excel");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            // 6. Si el usuario acepta guardar, crear archivo
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+
+                // 7. Asegurar extensión .xlsx
+                if (!archivo.getAbsolutePath().endsWith(".xlsx")) {
+                    archivo = new File(archivo.getAbsolutePath() + ".xlsx");
+                }
+
+                // 8. Guardar el archivo
+                FileOutputStream fos = new FileOutputStream(archivo);
+                workbook.write(fos);
+                fos.close(); // Cerrar el flujo de salida
+                workbook.close(); // Cerrar el libro de Excel
+
+                // 9. Confirmación al usuario
+                JOptionPane.showMessageDialog(this, "✅ Datos exportados correctamente a:\n" + archivo.getAbsolutePath());
+            }
+
+        } catch (Exception e) {
+            // Manejo de errores en caso de fallo
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a Excel:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_EXCELActionPerformed
 
     private void TXT_BuscarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosActionPerformed
@@ -441,11 +492,103 @@ public class Frm_Empleado extends javax.swing.JFrame {
     }//GEN-LAST:event_TXT_BuscarProductosKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+        "¿Estás seguro de que deseas cerrar el formulario?", 
+        "Confirmar salida", 
+        JOptionPane.YES_NO_OPTION);
 
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+            // Cerrar conexión si tienes un método cerrarConexion()
+            CBD.closeConnection();
+            } catch (Exception e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+
+            // Cierra el formulario actual
+            dispose(); // o this.dispose() si estás dentro del formulario
+        }
     }//GEN-LAST:event_BTN_Cerrar1ActionPerformed
 
     private void BTN_PDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_PDFActionPerformed
-        
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como PDF");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+                if (!archivo.getAbsolutePath().endsWith(".pdf")) {
+                archivo = new File(archivo.getAbsolutePath() + ".pdf");
+            }
+
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(archivo));
+            document.open();
+
+            // 1. Agregar LOGO (ajusta la ruta según tu proyecto)
+            String logoPath = "src/Icons/Fondo Universidad.jpg"; // Asegúrate que la imagen exista
+            try {
+                Image logo = Image.getInstance(logoPath);
+                 logo.scaleToFit(100, 100);
+                logo.setAlignment(Image.ALIGN_LEFT);
+                document.add(logo);
+            } catch (Exception e) {
+                System.out.println("⚠️ No se pudo cargar el logo: " + e.getMessage());
+            }
+
+            //2. Agregar FECHA y HORA
+            String fechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+            Paragraph fecha = new Paragraph("Fecha de Exportación: " + fechaHora,
+            FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY));
+            fecha.setAlignment(Element.ALIGN_RIGHT);
+            document.add(fecha);
+
+            // TÍTULO
+            Paragraph titulo = new Paragraph("LISTADO DE FACULTADES",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLUE));
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph(" ")); // espacio
+
+            // TABLA DE DATOS
+            PdfPTable pdfTable = new PdfPTable(JTABLE_Mant_Empleado.getColumnCount());
+            pdfTable.setWidthPercentage(100);
+
+            // Encabezados
+            for (int i = 0; i < JTABLE_Mant_Empleado.getColumnCount(); i++) {
+                PdfPCell cell = new PdfPCell(new Phrase(JTABLE_Mant_Empleado.getColumnName(i)));
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                pdfTable.addCell(cell);
+            }
+
+            // Filas de datos
+            for (int row = 0; row < JTABLE_Mant_Empleado.getRowCount(); row++) {
+                for (int col = 0; col < JTABLE_Mant_Empleado.getColumnCount(); col++) {
+                    Object value = JTABLE_Mant_Empleado.getValueAt(row, col);
+                    pdfTable.addCell(value != null ? value.toString() : "");
+                }
+            }
+
+            document.add(pdfTable);
+
+            // Pie de página con nombre del usuario
+            document.add(new Paragraph(" "));
+            String usuario = "Wilmer Vera Ostios"; // Puedes hacerlo dinámico si lo obtienes de sesión
+            Paragraph pie = new Paragraph("Exportado por: " + usuario,
+                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10, BaseColor.GRAY));
+            pie.setAlignment(Element.ALIGN_RIGHT);
+            document.add(pie);
+
+            document.close();
+            writer.close();
+
+            JOptionPane.showMessageDialog(this, "✅ PDF exportado correctamente:\n" + archivo.getAbsolutePath());
+        } 
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
     private void BTN_VerEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerEmpleadosActionPerformed
@@ -462,70 +605,55 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
         try {
-            // Obtener datos del formulario
-            String codigoStr = txtcodigoproducto.getText().trim();
-            String nuevoNombreProducto = txtNombreProducto.getText().trim();
-            String nuevoPrecioUnitario = txtPreciounitario.getText().trim();
-            String nuevoStockActual = txtstockActual.getText().trim();
-            String nuevoStockMinimo = txtstockMinimo.getText().trim();
-            String nombreUnidadMedida = (String) jComboBox_unidad_medida.getSelectedItem();
-    
+        // 1. Obtener datos del formulario
+        // Asumimos que tienes una variable 'idSeleccionado' guardada al hacer clic en la tabla
+        String dni = txtdniempleado.getText().trim();
+        String nombres = txtNombreEmpleado.getText().trim();
+        String apellidos = txtApellidoEmpleado.getText().trim();
+        String fNac = txtfechanacimiento.getText().trim();
+        String fReg = txtfecharegistro.getText().trim();
+        String direccion = txtdireccion.getText().trim();
+        String correo1 = txtcorreo.getText().trim();
+        String tel1 = txttelefeono.getText().trim();
+        
+        // Obtener Género del ComboBox
+        String nombreGenero = (String) jComboBox_genero.getSelectedItem();
 
-            // Validar campos obligatorios
-            if (codigoStr.isEmpty() || nuevoNombreProducto.isEmpty() || nuevoPrecioUnitario.isEmpty() || nuevoStockActual.isEmpty() || nuevoStockMinimo.isEmpty() || nombreUnidadMedida == null || nombreUnidadMedida.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Validar longitud del nombre
-            if (nuevoNombreProducto.length() > 85) {
-                JOptionPane.showMessageDialog(this, "El nombre de la escuela no debe exceder 85 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Validar si hubo cambios
-            if (nuevoNombreProducto.equalsIgnoreCase(nombreOriginal) && nuevoPrecioUnitario.equalsIgnoreCase(precioOriginal) && nuevoStockActual.equalsIgnoreCase(stockActualOriginal) && nuevoStockMinimo.equalsIgnoreCase(stockMinimoOriginal) && nombreUnidadMedida.equalsIgnoreCase(unidadOriginal)) {
-                JOptionPane.showMessageDialog(this, "No se detectaron cambios en los datos.", "Información", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            // Convertir código a entero
-            int codigoProducto = Integer.parseInt(codigoStr);
-            // Convertir precio a double
-            String precioLimpio = nuevoPrecioUnitario.replace("S/", "").replace(",", ".").trim();
-            double precio = Double.parseDouble(precioLimpio);
-            // Convertir código a entero
-            int stockActual = Integer.parseInt(nuevoStockActual);
-            // Convertir código a entero
-            int stockMinimo = Integer.parseInt(nuevoStockMinimo);
-
-            // Obtener código de la unidad de medida (FK)
-            int codigoUnidadMedida = UM.obtenerCodigoUnidad(nombreUnidadMedida);
-            if (codigoUnidadMedida == -1) {
-                JOptionPane.showMessageDialog(this, "La unidad de medida seleccionada no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Verificar duplicidad de nombre con otras escuelas
-            if (PR.existeProductoUnidadMedida(nuevoNombreProducto, codigoProducto)) {
-                JOptionPane.showMessageDialog(this, "Ya existe otra escuela con el mismo nombre.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-             // Llamar al método de modificación
-            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockMinimo, stockActual , codigoUnidadMedida);
-
-            JOptionPane.showMessageDialog(this, "Escuela profesional actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            // Refrescar tabla y limpiar
-            listarProductos();
-            limpiarCamposProducto();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Código de producto no válido.", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al modificar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        // 2. Validar campos obligatorios (DNI, Nombres, Apellidos son críticos)
+        if (dni.isEmpty() || nombres.isEmpty() || apellidos.isEmpty() || fNac.isEmpty() || nombreGenero == null) {
+            JOptionPane.showMessageDialog(this, "DNI, Nombres, Apellidos y Género son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        // 3. Validar longitud del DNI (Debe ser 8 según tu SQL)
+        if (dni.length() != 8) {
+            JOptionPane.showMessageDialog(this, "El DNI debe tener exactamente 8 dígitos.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 4. Obtener el ID del Género (FK)
+        // Debes tener un método en tu DAO para convertir el nombre del combo en ID
+        int idGenero = metodoGenero.obtenerIdPorNombre(nombreGenero); 
+        if (idGenero == -1) {
+            JOptionPane.showMessageDialog(this, "Género seleccionado no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 5. Definir el estado (Por defecto 1 si está activo)
+        int estado = 1; 
+
+        // 6. Llamar al método de modificación del DAO (EmpleadoMethod)
+        // idSeleccionado debe ser el ID obtenido al seleccionar la fila de la tabla
+        empleadoMetodo.modificarEmpleado(idSeleccionado, dni, nombres, apellidos, fNac, fReg, 
+                                         direccion, correo1, tel1, idGenero, estado);
+
+        JOptionPane.showMessageDialog(this, "Empleado actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        // 7. Refrescar tabla y limpiar campos
+        listarEmpleados(); // Tu método para recargar la JTable
+        limpiarCampos();
+
+        } 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTN_GuardarMouseClicked
