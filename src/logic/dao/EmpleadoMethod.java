@@ -1,7 +1,12 @@
-package logic.dao;
 
+package logic.dao;
 import connection.ConnectionDB;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class EmpleadoMethod {
@@ -16,10 +21,24 @@ public class EmpleadoMethod {
             JOptionPane.showMessageDialog(null, "No se puede conectar a la base de datos", "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
+    
+     public boolean existeEmpleadoGenero (String nombre, int id_empleado) throws SQLException {
+        String sql = "SELECT 1 FROM Empleado "
+            + "WHERE LOWER(nombre_empleado) = LOWER(?) "
+            + "AND id_empleado <> ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nombre.trim());
+        ps.setInt(2, id_empleado); // 0 si es insertar
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // si devuelve algo, ya existe
+    }
+     
+     
+     
     /** * Carga la lista de géneros desde la vista */
     public ResultSet combobox_ListarGeneros() throws SQLException {
-        String sql = "SELECT `Género` FROM vista_genero";
+        String sql = "SELECT `Genero` FROM vista_genero";
         Statement st = conn.createStatement();
         return st.executeQuery(sql);
     }
@@ -66,9 +85,15 @@ public class EmpleadoMethod {
     }
 
     /** * Actualiza un empleado (14 parámetros según tu SQL) */
-    public void modificarEmpleado(int id, String dni, String nombres, String apellidos, 
-                                  String fNac, String fReg, String dir, String c1, String c2, 
-                                  String t1, String t2, String obs, int idGen, int estado) throws SQLException {
+    public void modificarEmpleado(int id, String newNombre, String newApellido, String newFechanac, String newFechareg, String newDireccion, String newcorreo1, String newcorreo2, String newtelefono1, String newtelefono2, String newObservacion, int genero, int estado) throws SQLException{
+        if (existeProductoUnidadMedida(nuevo_nombre, id)){
+            
+            
+            
+            {
+        
+        
+        
         
         String sql = "{CALL Update_Empleado(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         

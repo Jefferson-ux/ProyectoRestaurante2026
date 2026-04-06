@@ -44,8 +44,8 @@ public class Frm_Empleado extends javax.swing.JFrame {
     private String fechanacOriginal;
     private String fecharegOriginal;
     private String direccionOriginal;
-    private String correoOriginal = ;
-    private String telefonoOriginal = ;
+    private String correoOriginal;
+    private String telefonoOriginal;
     private String generoOriginal = "";
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Empleado.class.getName());
@@ -605,53 +605,43 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
         try {
-        // 1. Obtener datos del formulario
-        // Asumimos que tienes una variable 'idSeleccionado' guardada al hacer clic en la tabla
-        String dni = txtdniempleado.getText().trim();
-        String nombres = txtNombreEmpleado.getText().trim();
-        String apellidos = txtApellidoEmpleado.getText().trim();
-        String fNac = txtfechanacimiento.getText().trim();
-        String fReg = txtfecharegistro.getText().trim();
-        String direccion = txtdireccion.getText().trim();
-        String correo1 = txtcorreo.getText().trim();
-        String tel1 = txttelefeono.getText().trim();
+            String nuevodni = txtdniempleado.getText().trim();
+            String nuevonombresEmpleados = txtNombreEmpleado.getText().trim();
+            String nuevoapellidosEmpleados = txtApellidoEmpleado.getText().trim();
+            String nuevofechanac = txtfechanacimiento.getText().trim();
+            String nuevofechareg = txtfecharegistro.getText().trim();
+            String nuevodireccion = txtdireccion.getText().trim();
+            String nuevocorreo = txtcorreo.getText().trim();
+            String nuevotele = txttelefeono.getText().trim();
         
         // Obtener Género del ComboBox
         String nombreGenero = (String) jComboBox_genero.getSelectedItem();
 
         // 2. Validar campos obligatorios (DNI, Nombres, Apellidos son críticos)
-        if (dni.isEmpty() || nombres.isEmpty() || apellidos.isEmpty() || fNac.isEmpty() || nombreGenero == null) {
+        if (nuevodni.isEmpty() || nuevonombresEmpleados.isEmpty() || nuevoapellidosEmpleados.isEmpty() || nuevofechanac.isEmpty() || nuevofechareg.isEmpty() || nuevodireccion.isEmpty() || nuevocorreo.isEmpty() || nuevotele.isEmpty() || nombreGenero == null) {
             JOptionPane.showMessageDialog(this, "DNI, Nombres, Apellidos y Género son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         // 3. Validar longitud del DNI (Debe ser 8 según tu SQL)
-        if (dni.length() != 8) {
+        if (nuevodni.length() != 8) {
             JOptionPane.showMessageDialog(this, "El DNI debe tener exactamente 8 dígitos.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // 4. Obtener el ID del Género (FK)
-        // Debes tener un método en tu DAO para convertir el nombre del combo en ID
-        int idGenero = metodoGenero.obtenerIdPorNombre(nombreGenero); 
-        if (idGenero == -1) {
-            JOptionPane.showMessageDialog(this, "Género seleccionado no válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // 5. Definir el estado (Por defecto 1 si está activo)
+        // . Definir el estado (Por defecto 1 si está activo)
         int estado = 1; 
 
-        // 6. Llamar al método de modificación del DAO (EmpleadoMethod)
+        // . Llamar al método de modificación del DAO (EmpleadoMethod)
         // idSeleccionado debe ser el ID obtenido al seleccionar la fila de la tabla
-        empleadoMetodo.modificarEmpleado(idSeleccionado, dni, nombres, apellidos, fNac, fReg, 
+        EmpleadoMethod.modificarEmpleado(dni, nombres, apellidos, fNac, fReg, 
                                          direccion, correo1, tel1, idGenero, estado);
 
         JOptionPane.showMessageDialog(this, "Empleado actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-        // 7. Refrescar tabla y limpiar campos
+        // . Refrescar tabla y limpiar campos
         listarEmpleados(); // Tu método para recargar la JTable
-        limpiarCampos();
+        limpiarCamposEmpleado();
 
         } 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
@@ -852,54 +842,58 @@ public class Frm_Empleado extends javax.swing.JFrame {
     
     //llenar elementos en el jcombobox el metodo viene de la clase
     //y la consulta de la vista
-    private void cargarUnidadMedida() {
+    private void cargarGenero() {
         try {
-            jComboBox_unidad_medida.removeAllItems();
-            jComboBox_unidad_medida.addItem("<<Seleccionar>>"); // Opción por defecto
+            jComboBox_genero.removeAllItems();
+            jComboBox_genero.addItem("<<Seleccionar>>"); // Opción por defecto
 
-            ResultSet rs = UM.listarUnidadMedida();
+            ResultSet rs = UM.listarGenero();
             while (rs.next()) {
-                jComboBox_unidad_medida.addItem(rs.getString("Unidad de Medida"));
+                jComboBox_genero.addItem(rs.getString("Genero"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar las unidades de medidas: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al cargar el genero: " + e.getMessage());
         }
     }
     
     //método para mostrar registros en el jtable
-    private void listarProductos() {
+    private void listarEmpleados() {
         try {
             // 1. Configuración de la tabla
             JTABLE_Mant_Empleado.setAutoCreateRowSorter(true);
-            modeloTablaProducto.setRowCount(0);
+            modeloTablaEmpleado.setRowCount(0);
 
             // 2. Obtener datos
-            ResultSet rs = PR.listarProductos();
+            ResultSet rs = PR.listarEmpleados();
 
             while (rs.next()) {
             Object fila[] = {
                 rs.getInt("ID"), 
-                rs.getString("Nombre del Producto"),
-                rs.getString("Unidad de Medida"), 
-                rs.getString("Abreviatura"), 
-                rs.getString("Precio"),    
-                rs.getInt("Stock Mínimo"),
-                rs.getInt("Stock Actual")
+                rs.getString("Nombre de Empleado"),
+                rs.getString("Apellido de Empleado"), 
+                rs.getString("Fecha de Nacimiento"), 
+                rs.getString("Fecha de Registro"),    
+                rs.getString("Lugar de Residencia"),    
+                rs.getString("Correo Principal"),    
+                rs.getString("Teléfono Principal"),    
+                rs.getInt("Genero")
             };
-                modeloTablaProducto.addRow(fila);
+                modeloTablaEmpleado.addRow(fila);
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar la tabla de productos: " + e.getMessage(), "Error de Datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar la tabla de empleados: " + e.getMessage(), "Error de Datos", JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void limpiarCamposProducto() {
-            txtcodigoproducto.setText("");
-            txtNombreProducto.setText("");
-            txtPreciounitario.setText("");
-            txtstockActual.setText("");
-            txtstockMinimo.setText("");
-            jComboBox_unidad_medida.setSelectedIndex(0); // O -1 si quieres dejarlo vacío
+    private void limpiarCamposEmpleado() {
+            txtdniempleado.setText("");
+            txtNombreEmpleado.setText("");
+            txtApellidoEmpleado.setText("");
+            txtfechanacimiento.setText("");
+            txtdireccion.setText("");
+            txtcorreo.setText("");
+            txttelefeono.setText("");
+            jComboBox_genero.setSelectedIndex(0); // O -1 si quieres dejarlo vacío
             BTN_Guardar.setEnabled(true);
             BTN_Cancel.setEnabled(true);
             BTN_Nuevo.setEnabled(false);
