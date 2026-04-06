@@ -1,36 +1,56 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package gui.crudMantenimiento;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import connection.ConnectionDB;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-//Metodo de producto
-import logic.dao.ProductoMethod;
-//Metodo de unidad medida para el jcombobox
-import logic.dao.UnidadMedidaMethod;
+//Metodo de Empleado
+import logic.dao.EmpleadoMethod;
+//Metodo de genero para el jcombobox
+import logic.dao.GeneroMethod;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Frm_Empleado extends javax.swing.JFrame {
     //Modelo para mostrar datos en ta tabla
     DefaultTableModel modeloTablaEmpleado = new DefaultTableModel();
     
     //Objeto conexión a la base de datos
-    EmpleadoMethod PR = new ProductoMethod();
-    UnidadMedidaMethod UM = new UnidadMedidaMethod();
+    EmpleadoMethod PR = new EmpleadoMethod();
+    GeneroMethod UM = new GeneroMethod();
+    ConnectionDB CBD = new ConnectionDB();
 
     //Variable para comprobar cambios en mdoificar
+    private String dniOriginal;
     private String nombreOriginal;
-    private String precioOriginal;
-    private String stockActualOriginal;
-    private String stockMinimoOriginal;
-    private String unidadOriginal = "";
+    private String apellidoOriginal;
+    private String fechanacOriginal;
+    private String fecharegOriginal;
+    private String direccionOriginal;
+    private String correoOriginal;
+    private String telefonoOriginal;
+    private String generoOriginal = "";
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Producto.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Empleado.class.getName());
 
-    public Frm_Producto() {
+    public Frm_Empleado() {
         initComponents();
         
         //Posicion
@@ -40,16 +60,16 @@ public class Frm_Empleado extends javax.swing.JFrame {
         cargarUnidadMedida();
         
         //definir los encabezados de la tabla
-        String titulos[]={"ID","Nombre del producto","unidad de medida","Abreviatura","Precio del producto", "Stock Minimo","Stock Actual"};
+        String titulos[]={"DNI","Nombre del empleado","Apellidos del empleado","Fecha de nacimiento","Fecha de registro", "direccion","correo", "telefono", "genero"};
         
         //Asignar los tiutlos al modelo
-        modeloTablaProducto.setColumnIdentifiers(titulos);
+        modeloTablaEmpleado.setColumnIdentifiers(titulos);
         
         //Establecer el modelo a la JTable
-        JTABLE_Mant_Producto.setModel(modeloTablaProducto);
+        JTABLE_Mant_Empleado.setModel(modeloTablaEmpleado);
         
         //Desabilitar campo de codigo (solo se mostrara no se escribe)
-        txtcodigoproducto.setEnabled(false);
+        txtdniempleado.setEnabled(false);
         BTN_Cancel.setEnabled(false);
         BTN_Nuevo.setEnabled(false);
         BTN_Guardar.setEnabled(false);
@@ -77,12 +97,12 @@ public class Frm_Empleado extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         txtfecharegistro = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        txtsdireccion = new javax.swing.JTextField();
+        txtdireccion = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         txtcorreo = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        JTABLE_Mant_Producto = new javax.swing.JTable();
+        JTABLE_Mant_Empleado = new javax.swing.JTable();
         BTN_EXCEL = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -91,7 +111,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
         BTN_Cerrar1 = new javax.swing.JButton();
         BTN_PDF = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        BTN_VerProductos = new javax.swing.JButton();
+        BTN_VerEmpleados = new javax.swing.JButton();
         BTN_Desactivar = new javax.swing.JButton();
         BTN_Modificar = new javax.swing.JButton();
         BTN_Guardar = new javax.swing.JButton();
@@ -142,6 +162,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
         });
         jPanel1.add(txtfechanacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 140, 30));
 
+        jComboBox_genero.addActionListener(this::jComboBox_generoActionPerformed);
         jPanel1.add(jComboBox_genero, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 200, 120, 30));
 
         txtNombreEmpleado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -204,16 +225,16 @@ public class Frm_Empleado extends javax.swing.JFrame {
         jLabel10.setText("Direccion");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 90, 100, -1));
 
-        txtsdireccion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        txtsdireccion.setForeground(new java.awt.Color(0, 0, 204));
-        txtsdireccion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtsdireccion.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        txtsdireccion.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtdireccion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtdireccion.setForeground(new java.awt.Color(0, 0, 204));
+        txtdireccion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtdireccion.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtdireccion.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtsdireccionKeyTyped(evt);
+                txtdireccionKeyTyped(evt);
             }
         });
-        jPanel1.add(txtsdireccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 120, 200, 30));
+        jPanel1.add(txtdireccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 120, 200, 30));
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel11.setText("Correo");
@@ -236,9 +257,9 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 730, 300));
 
-        JTABLE_Mant_Producto.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        JTABLE_Mant_Producto.setForeground(new java.awt.Color(0, 0, 204));
-        JTABLE_Mant_Producto.setModel(new javax.swing.table.DefaultTableModel(
+        JTABLE_Mant_Empleado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        JTABLE_Mant_Empleado.setForeground(new java.awt.Color(0, 0, 204));
+        JTABLE_Mant_Empleado.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -249,12 +270,12 @@ public class Frm_Empleado extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        JTABLE_Mant_Producto.addMouseListener(new java.awt.event.MouseAdapter() {
+        JTABLE_Mant_Empleado.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JTABLE_Mant_ProductoMouseClicked(evt);
+                JTABLE_Mant_EmpleadoMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(JTABLE_Mant_Producto);
+        jScrollPane1.setViewportView(JTABLE_Mant_Empleado);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 400, 920, 220));
 
@@ -298,10 +319,10 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        BTN_VerProductos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        BTN_VerProductos.setText("VER EMPLEADOS");
-        BTN_VerProductos.addActionListener(this::BTN_VerProductosActionPerformed);
-        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
+        BTN_VerEmpleados.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_VerEmpleados.setText("VER EMPLEADOS");
+        BTN_VerEmpleados.addActionListener(this::BTN_VerEmpleadosActionPerformed);
+        jPanel3.add(BTN_VerEmpleados, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
 
         BTN_Desactivar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Desactivar.setText("     QUITAR");
@@ -346,61 +367,120 @@ public class Frm_Empleado extends javax.swing.JFrame {
  
     }//GEN-LAST:event_txtNombreEmpleadoKeyTyped
 
-    private void JTABLE_Mant_ProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_ProductoMouseClicked
-        int filaSeleccionada = JTABLE_Mant_Producto.getSelectedRow();
+    private void JTABLE_Mant_EmpleadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTABLE_Mant_EmpleadoMouseClicked
+        int filaSeleccionada = JTABLE_Mant_Empleado.getSelectedRow();
         BTN_Modificar.setEnabled(true);
         BTN_Desactivar.setEnabled(true);
         BTN_Guardar.setEnabled(false);
         BTN_Cancel.setVisible(false);
         BTN_Cancel.setEnabled(false);
-        BTN_VerProductos.setEnabled(false);
+        BTN_VerEmpleados.setEnabled(false);
 
         if (filaSeleccionada != -1) {
             // Obtener los datos de la fila seleccionada
-            String codigo = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 0).toString().trim();
-            String nombreProducto = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 1).toString().trim();
-            String precioUnitario = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 4).toString().trim();
-            String stockActual = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 6).toString().trim();
-            String stockMinimo = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 5).toString().trim();
-            String unidadDeMedida = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 2).toString().trim();
+            String dni= JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 0).toString().trim();
+            String nombres = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 1).toString().trim();
+            String apellidos = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 4).toString().trim();
+            String fechanacimiento = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 6).toString().trim();
+            String fecharegistro = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 5).toString().trim();
+            String direccion = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 2).toString().trim();
+            String correo = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 2).toString().trim();
+            String telefono = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 2).toString().trim();
+            String genero = JTABLE_Mant_Empleado.getValueAt(filaSeleccionada, 2).toString().trim();
             
             
             // Mostrar en los controles
-            txtcodigoproducto.setText(codigo);
-            txtNombreProducto.setText(nombreProducto);
-            txtPreciounitario.setText(precioUnitario);
-            txtstockActual.setText(stockActual);
-            txtstockMinimo.setText(stockMinimo);
+            txtdniempleado.setText(dni);
+            txtNombreEmpleado.setText(nombres);
+            txtApellidoEmpleado.setText(apellidos);
+            txtfechanacimiento.setText(fechanacimiento);
+            txtfecharegistro.setText(fecharegistro);
+            txtdireccion.setText(direccion);
+            txtcorreo.setText(correo);
+            txttelefeono.setText(telefono);
 
             // Guardar valores originales para comparación
-            nombreOriginal = nombreProducto;
-            precioOriginal = precioUnitario;
-            stockActualOriginal = stockActual;
-            stockMinimoOriginal = stockMinimo;
-            unidadOriginal = unidadDeMedida;
+            dniOriginal = dni;
+            nombreOriginal = nombres;
+            apellidoOriginal = apellidos;
+            fechanacOriginal = fechanacimiento;
+            fecharegOriginal = fecharegistro;
+            direccionOriginal = direccion;
+            correoOriginal = correo;
+            telefonoOriginal = telefono;
+            generoOriginal = genero;
 
             // Buscar coincidencia en el ComboBox ignorando mayúsculas
-            boolean encontrado = false;
-            for (int i = 0; i < jComboBox_unidad_medida.getItemCount(); i++) {
-                String item = jComboBox_unidad_medida.getItemAt(i).trim();
-                if (item.equalsIgnoreCase(unidadDeMedida)) {
-                    jComboBox_unidad_medida.setSelectedIndex(i);
-                    encontrado = true;
+            boolean generoBD = false;
+            for (int i = 0; i < jComboBox_genero.getItemCount(); i++) {
+                String item = jComboBox_genero.getItemAt(i).trim();
+                if (item.equalsIgnoreCase(genero)) {
+                    jComboBox_genero.setSelectedIndex(i);
+                    generoBD = true;
                     break;
                 }
             }
-
-            // Si no se encontró, mostrar alerta opcional
-            if (!encontrado) {
+    
+            // 2. Convertimos la letra al texto que tiene tu ComboBox
+            if (!generoBD) {
                 JOptionPane.showMessageDialog(this,
-                    "No se encontró la unidad de medida en la lista del combo.",
-                    "Facultad no encontrada", JOptionPane.WARNING_MESSAGE);
+                    "No se encontró el genero en la lista del combo.",
+                    "Genero no encontrada", JOptionPane.WARNING_MESSAGE);
             }
         }
-    }//GEN-LAST:event_JTABLE_Mant_ProductoMouseClicked
+    }//GEN-LAST:event_JTABLE_Mant_EmpleadoMouseClicked
 
     private void BTN_EXCELActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_EXCELActionPerformed
-       
+       try {
+            // 1. Crear un nuevo libro de Excel (.xlsx)
+            XSSFWorkbook workbook = new XSSFWorkbook();
+
+            // 2. Crear una hoja dentro del libro
+            XSSFSheet sheet = workbook.createSheet("Facultades");
+
+            // 3. Escribir la fila de encabezados desde el JTable
+            XSSFRow headerRow = sheet.createRow(0); // Fila 0 para encabezados
+            for (int i = 0; i < JTABLE_Mant_Empleado.getColumnCount(); i++) {
+                headerRow.createCell(i).setCellValue(JTABLE_Mant_Empleado.getColumnName(i));
+            }
+
+            // 4. Escribir los datos fila por fila desde el JTable
+            for (int i = 0; i < JTABLE_Mant_Empleado.getRowCount(); i++) {
+                XSSFRow dataRow = sheet.createRow(i + 1); // Fila 1 en adelante
+                for (int j = 0; j < JTABLE_Mant_Empleado.getColumnCount(); j++) {
+                    Object valor = JTABLE_Mant_Empleado.getValueAt(i, j);
+                    dataRow.createCell(j).setCellValue(valor != null ? valor.toString() : "");
+                }
+            }
+
+            // 5. Mostrar cuadro de diálogo para elegir ruta de guardado
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como Excel");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            // 6. Si el usuario acepta guardar, crear archivo
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+
+                // 7. Asegurar extensión .xlsx
+                if (!archivo.getAbsolutePath().endsWith(".xlsx")) {
+                    archivo = new File(archivo.getAbsolutePath() + ".xlsx");
+                }
+
+                // 8. Guardar el archivo
+                FileOutputStream fos = new FileOutputStream(archivo);
+                workbook.write(fos);
+                fos.close(); // Cerrar el flujo de salida
+                workbook.close(); // Cerrar el libro de Excel
+
+                // 9. Confirmación al usuario
+                JOptionPane.showMessageDialog(this, "✅ Datos exportados correctamente a:\n" + archivo.getAbsolutePath());
+            }
+
+        } catch (Exception e) {
+            // Manejo de errores en caso de fallo
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a Excel:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_EXCELActionPerformed
 
     private void TXT_BuscarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TXT_BuscarProductosActionPerformed
@@ -412,20 +492,112 @@ public class Frm_Empleado extends javax.swing.JFrame {
     }//GEN-LAST:event_TXT_BuscarProductosKeyReleased
 
     private void BTN_Cerrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_Cerrar1ActionPerformed
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+        "¿Estás seguro de que deseas cerrar el formulario?", 
+        "Confirmar salida", 
+        JOptionPane.YES_NO_OPTION);
 
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+            // Cerrar conexión si tienes un método cerrarConexion()
+            CBD.closeConnection();
+            } catch (Exception e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+
+            // Cierra el formulario actual
+            dispose(); // o this.dispose() si estás dentro del formulario
+        }
     }//GEN-LAST:event_BTN_Cerrar1ActionPerformed
 
     private void BTN_PDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_PDFActionPerformed
-        
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar como PDF");
+            int seleccion = fileChooser.showSaveDialog(this);
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+                if (!archivo.getAbsolutePath().endsWith(".pdf")) {
+                archivo = new File(archivo.getAbsolutePath() + ".pdf");
+            }
+
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(archivo));
+            document.open();
+
+            // 1. Agregar LOGO (ajusta la ruta según tu proyecto)
+            String logoPath = "src/Icons/Fondo Universidad.jpg"; // Asegúrate que la imagen exista
+            try {
+                Image logo = Image.getInstance(logoPath);
+                 logo.scaleToFit(100, 100);
+                logo.setAlignment(Image.ALIGN_LEFT);
+                document.add(logo);
+            } catch (Exception e) {
+                System.out.println("⚠️ No se pudo cargar el logo: " + e.getMessage());
+            }
+
+            //2. Agregar FECHA y HORA
+            String fechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+            Paragraph fecha = new Paragraph("Fecha de Exportación: " + fechaHora,
+            FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY));
+            fecha.setAlignment(Element.ALIGN_RIGHT);
+            document.add(fecha);
+
+            // TÍTULO
+            Paragraph titulo = new Paragraph("LISTADO DE FACULTADES",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLUE));
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph(" ")); // espacio
+
+            // TABLA DE DATOS
+            PdfPTable pdfTable = new PdfPTable(JTABLE_Mant_Empleado.getColumnCount());
+            pdfTable.setWidthPercentage(100);
+
+            // Encabezados
+            for (int i = 0; i < JTABLE_Mant_Empleado.getColumnCount(); i++) {
+                PdfPCell cell = new PdfPCell(new Phrase(JTABLE_Mant_Empleado.getColumnName(i)));
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                pdfTable.addCell(cell);
+            }
+
+            // Filas de datos
+            for (int row = 0; row < JTABLE_Mant_Empleado.getRowCount(); row++) {
+                for (int col = 0; col < JTABLE_Mant_Empleado.getColumnCount(); col++) {
+                    Object value = JTABLE_Mant_Empleado.getValueAt(row, col);
+                    pdfTable.addCell(value != null ? value.toString() : "");
+                }
+            }
+
+            document.add(pdfTable);
+
+            // Pie de página con nombre del usuario
+            document.add(new Paragraph(" "));
+            String usuario = "Wilmer Vera Ostios"; // Puedes hacerlo dinámico si lo obtienes de sesión
+            Paragraph pie = new Paragraph("Exportado por: " + usuario,
+                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10, BaseColor.GRAY));
+            pie.setAlignment(Element.ALIGN_RIGHT);
+            document.add(pie);
+
+            document.close();
+            writer.close();
+
+            JOptionPane.showMessageDialog(this, "✅ PDF exportado correctamente:\n" + archivo.getAbsolutePath());
+        } 
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al exportar a PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_BTN_PDFActionPerformed
 
-    private void BTN_VerProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerProductosActionPerformed
+    private void BTN_VerEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_VerEmpleadosActionPerformed
         this.listarProductos();
         this.BTN_Nuevo.setEnabled(true);
         this.BTN_Guardar.setEnabled(false);
         this.BTN_Desactivar.setEnabled(false);
         this.BTN_Modificar.setEnabled(false);
-    }//GEN-LAST:event_BTN_VerProductosActionPerformed
+    }//GEN-LAST:event_BTN_VerEmpleadosActionPerformed
 
     private void BTN_DesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_DesactivarActionPerformed
        
@@ -433,70 +605,45 @@ public class Frm_Empleado extends javax.swing.JFrame {
 
     private void BTN_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_ModificarActionPerformed
         try {
-            // Obtener datos del formulario
-            String codigoStr = txtcodigoproducto.getText().trim();
-            String nuevoNombreProducto = txtNombreProducto.getText().trim();
-            String nuevoPrecioUnitario = txtPreciounitario.getText().trim();
-            String nuevoStockActual = txtstockActual.getText().trim();
-            String nuevoStockMinimo = txtstockMinimo.getText().trim();
-            String nombreUnidadMedida = (String) jComboBox_unidad_medida.getSelectedItem();
-    
+            String nuevodni = txtdniempleado.getText().trim();
+            String nuevonombresEmpleados = txtNombreEmpleado.getText().trim();
+            String nuevoapellidosEmpleados = txtApellidoEmpleado.getText().trim();
+            String nuevofechanac = txtfechanacimiento.getText().trim();
+            String nuevofechareg = txtfecharegistro.getText().trim();
+            String nuevodireccion = txtdireccion.getText().trim();
+            String nuevocorreo = txtcorreo.getText().trim();
+            String nuevotele = txttelefeono.getText().trim();
+        
+        // Obtener Género del ComboBox
+        String nombreGenero = (String) jComboBox_genero.getSelectedItem();
 
-            // Validar campos obligatorios
-            if (codigoStr.isEmpty() || nuevoNombreProducto.isEmpty() || nuevoPrecioUnitario.isEmpty() || nuevoStockActual.isEmpty() || nuevoStockMinimo.isEmpty() || nombreUnidadMedida == null || nombreUnidadMedida.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Validar longitud del nombre
-            if (nuevoNombreProducto.length() > 85) {
-                JOptionPane.showMessageDialog(this, "El nombre de la escuela no debe exceder 85 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Validar si hubo cambios
-            if (nuevoNombreProducto.equalsIgnoreCase(nombreOriginal) && nuevoPrecioUnitario.equalsIgnoreCase(precioOriginal) && nuevoStockActual.equalsIgnoreCase(stockActualOriginal) && nuevoStockMinimo.equalsIgnoreCase(stockMinimoOriginal) && nombreUnidadMedida.equalsIgnoreCase(unidadOriginal)) {
-                JOptionPane.showMessageDialog(this, "No se detectaron cambios en los datos.", "Información", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            // Convertir código a entero
-            int codigoProducto = Integer.parseInt(codigoStr);
-            // Convertir precio a double
-            String precioLimpio = nuevoPrecioUnitario.replace("S/", "").replace(",", ".").trim();
-            double precio = Double.parseDouble(precioLimpio);
-            // Convertir código a entero
-            int stockActual = Integer.parseInt(nuevoStockActual);
-            // Convertir código a entero
-            int stockMinimo = Integer.parseInt(nuevoStockMinimo);
-
-            // Obtener código de la unidad de medida (FK)
-            int codigoUnidadMedida = UM.obtenerCodigoUnidad(nombreUnidadMedida);
-            if (codigoUnidadMedida == -1) {
-                JOptionPane.showMessageDialog(this, "La unidad de medida seleccionada no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Verificar duplicidad de nombre con otras escuelas
-            if (PR.existeProductoUnidadMedida(nuevoNombreProducto, codigoProducto)) {
-                JOptionPane.showMessageDialog(this, "Ya existe otra escuela con el mismo nombre.", "Validación", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-             // Llamar al método de modificación
-            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockMinimo, stockActual , codigoUnidadMedida);
-
-            JOptionPane.showMessageDialog(this, "Escuela profesional actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            // Refrescar tabla y limpiar
-            listarProductos();
-            limpiarCamposProducto();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Código de producto no válido.", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al modificar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        // 2. Validar campos obligatorios (DNI, Nombres, Apellidos son críticos)
+        if (nuevodni.isEmpty() || nuevonombresEmpleados.isEmpty() || nuevoapellidosEmpleados.isEmpty() || nuevofechanac.isEmpty() || nuevofechareg.isEmpty() || nuevodireccion.isEmpty() || nuevocorreo.isEmpty() || nuevotele.isEmpty() || nombreGenero == null) {
+            JOptionPane.showMessageDialog(this, "DNI, Nombres, Apellidos y Género son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        // 3. Validar longitud del DNI (Debe ser 8 según tu SQL)
+        if (nuevodni.length() != 8) {
+            JOptionPane.showMessageDialog(this, "El DNI debe tener exactamente 8 dígitos.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // . Definir el estado (Por defecto 1 si está activo)
+        int estado = 1; 
+
+        // . Llamar al método de modificación del DAO (EmpleadoMethod)
+        // idSeleccionado debe ser el ID obtenido al seleccionar la fila de la tabla
+        EmpleadoMethod.modificarEmpleado(dni, nombres, apellidos, fNac, fReg, 
+                                         direccion, correo1, tel1, idGenero, estado);
+
+        JOptionPane.showMessageDialog(this, "Empleado actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        // . Refrescar tabla y limpiar campos
+        listarEmpleados(); // Tu método para recargar la JTable
+        limpiarCamposEmpleado();
+
+        } 
     }//GEN-LAST:event_BTN_ModificarActionPerformed
 
     private void BTN_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTN_GuardarMouseClicked
@@ -588,9 +735,9 @@ public class Frm_Empleado extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_NuevoActionPerformed
 
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
-        JTABLE_Mant_Producto.setRowSelectionAllowed(true);
-        JTABLE_Mant_Producto.setColumnSelectionAllowed(true);
-        JTABLE_Mant_Producto.setCellSelectionEnabled(true);
+        JTABLE_Mant_Empleado.setRowSelectionAllowed(true);
+        JTABLE_Mant_Empleado.setColumnSelectionAllowed(true);
+        JTABLE_Mant_Empleado.setCellSelectionEnabled(true);
 
         BTN_Guardar.setEnabled(true);
         BTN_Desactivar.setEnabled(false);
@@ -598,7 +745,7 @@ public class Frm_Empleado extends javax.swing.JFrame {
         BTN_Nuevo.setVisible(true);
         BTN_Nuevo.setEnabled(true);
         BTN_Cancel.setVisible(false);
-        JTABLE_Mant_Producto.setEnabled(true);
+        JTABLE_Mant_Empleado.setEnabled(true);
     }//GEN-LAST:event_BTN_CancelActionPerformed
 
     private void txttelefeonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelefeonoKeyTyped
@@ -617,13 +764,17 @@ public class Frm_Empleado extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtfecharegistroKeyTyped
 
-    private void txtsdireccionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsdireccionKeyTyped
+    private void txtdireccionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdireccionKeyTyped
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtsdireccionKeyTyped
+    }//GEN-LAST:event_txtdireccionKeyTyped
 
     private void txtcorreoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcorreoKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txtcorreoKeyTyped
+
+    private void jComboBox_generoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_generoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox_generoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -659,8 +810,8 @@ public class Frm_Empleado extends javax.swing.JFrame {
     private javax.swing.JButton BTN_Modificar;
     private javax.swing.JButton BTN_Nuevo;
     private javax.swing.JButton BTN_PDF;
-    private javax.swing.JButton BTN_VerProductos;
-    private javax.swing.JTable JTABLE_Mant_Producto;
+    private javax.swing.JButton BTN_VerEmpleados;
+    private javax.swing.JTable JTABLE_Mant_Empleado;
     private javax.swing.JTextField TXT_BuscarProductos;
     private javax.swing.JComboBox<String> jComboBox_genero;
     private javax.swing.JLabel jLabel1;
@@ -682,68 +833,72 @@ public class Frm_Empleado extends javax.swing.JFrame {
     private javax.swing.JTextField txtApellidoEmpleado;
     private javax.swing.JTextField txtNombreEmpleado;
     private javax.swing.JTextField txtcorreo;
+    private javax.swing.JTextField txtdireccion;
     private javax.swing.JTextField txtdniempleado;
     private javax.swing.JTextField txtfechanacimiento;
     private javax.swing.JTextField txtfecharegistro;
-    private javax.swing.JTextField txtsdireccion;
     private javax.swing.JTextField txttelefeono;
     // End of variables declaration//GEN-END:variables
     
     //llenar elementos en el jcombobox el metodo viene de la clase
     //y la consulta de la vista
-    private void cargarUnidadMedida() {
+    private void cargarGenero() {
         try {
-            jComboBox_unidad_medida.removeAllItems();
-            jComboBox_unidad_medida.addItem("<<Seleccionar>>"); // Opción por defecto
+            jComboBox_genero.removeAllItems();
+            jComboBox_genero.addItem("<<Seleccionar>>"); // Opción por defecto
 
-            ResultSet rs = UM.listarUnidadMedida();
+            ResultSet rs = UM.listarGenero();
             while (rs.next()) {
-                jComboBox_unidad_medida.addItem(rs.getString("Unidad de Medida"));
+                jComboBox_genero.addItem(rs.getString("Genero"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar las unidades de medidas: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al cargar el genero: " + e.getMessage());
         }
     }
     
     //método para mostrar registros en el jtable
-    private void listarProductos() {
+    private void listarEmpleados() {
         try {
             // 1. Configuración de la tabla
-            JTABLE_Mant_Producto.setAutoCreateRowSorter(true);
-            modeloTablaProducto.setRowCount(0);
+            JTABLE_Mant_Empleado.setAutoCreateRowSorter(true);
+            modeloTablaEmpleado.setRowCount(0);
 
             // 2. Obtener datos
-            ResultSet rs = PR.listarProductos();
+            ResultSet rs = PR.listarEmpleados();
 
             while (rs.next()) {
             Object fila[] = {
                 rs.getInt("ID"), 
-                rs.getString("Nombre del Producto"),
-                rs.getString("Unidad de Medida"), 
-                rs.getString("Abreviatura"), 
-                rs.getString("Precio"),    
-                rs.getInt("Stock Mínimo"),
-                rs.getInt("Stock Actual")
+                rs.getString("Nombre de Empleado"),
+                rs.getString("Apellido de Empleado"), 
+                rs.getString("Fecha de Nacimiento"), 
+                rs.getString("Fecha de Registro"),    
+                rs.getString("Lugar de Residencia"),    
+                rs.getString("Correo Principal"),    
+                rs.getString("Teléfono Principal"),    
+                rs.getInt("Genero")
             };
-                modeloTablaProducto.addRow(fila);
+                modeloTablaEmpleado.addRow(fila);
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar la tabla de productos: " + e.getMessage(), "Error de Datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar la tabla de empleados: " + e.getMessage(), "Error de Datos", JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void limpiarCamposProducto() {
-            txtcodigoproducto.setText("");
-            txtNombreProducto.setText("");
-            txtPreciounitario.setText("");
-            txtstockActual.setText("");
-            txtstockMinimo.setText("");
-            jComboBox_unidad_medida.setSelectedIndex(0); // O -1 si quieres dejarlo vacío
+    private void limpiarCamposEmpleado() {
+            txtdniempleado.setText("");
+            txtNombreEmpleado.setText("");
+            txtApellidoEmpleado.setText("");
+            txtfechanacimiento.setText("");
+            txtdireccion.setText("");
+            txtcorreo.setText("");
+            txttelefeono.setText("");
+            jComboBox_genero.setSelectedIndex(0); // O -1 si quieres dejarlo vacío
             BTN_Guardar.setEnabled(true);
             BTN_Cancel.setEnabled(true);
             BTN_Nuevo.setEnabled(false);
             BTN_Modificar.setEnabled(false);
             BTN_Desactivar.setEnabled(false);
-            BTN_VerProductos.setEnabled(false);
+            BTN_VerEmpleados.setEnabled(false);
         }
 }
