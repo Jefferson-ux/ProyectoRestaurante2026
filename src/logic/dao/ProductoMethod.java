@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 public class ProductoMethod {
     private final Connection conn;
-   
+    
     public ProductoMethod(){
         //===========================================//   
         //Crear la conexión al iniciar el formulario //
@@ -28,6 +28,7 @@ public class ProductoMethod {
             JOptionPane.showConfirmDialog(null, "No se puede conectar a la base de datos", "Error de conexión", 1);
         }
     }
+    
     public ResultSet combobox_ListarUnidadMedidas() throws SQLException {
         String sql = "select `Unidad de Medida` from vista_unidad_medida";
         Statement st =conn.createStatement(); // Creamos el statements
@@ -35,7 +36,7 @@ public class ProductoMethod {
         return rs; // Devolvemos los resultados 
     }
     
-    public boolean existeProductoUnidadMedida(String nombre, int id_producto) throws SQLException {
+    public boolean existeProductoConNombre(String nombre, int id_producto) throws SQLException {
         String sql = "SELECT 1 FROM Producto "
             + "WHERE LOWER(nombre_producto) = LOWER(?) "
             + "AND id_producto <> ?";
@@ -65,41 +66,39 @@ public class ProductoMethod {
 
 
        /* INSERT--> AGREGAR DATOS */
-    public void insertarProducto(String nombre, double precio, int stock_minimo, int stock_actual, int id_unidad_medida) throws SQLException{
-        if(existeProductoUnidadMedida(nombre, 0)){
-            throw  new IllegalArgumentException("Ya exsiste una escuela con ese nombre.");
+    public void insertarProducto(String nombre, double precio, int stock_minimo, int stock_actual, String obervacion,int id_unidad_medida) throws SQLException{
+        if(existeProductoConNombre(nombre, 0)){
+            throw  new IllegalArgumentException("Ya exsiste un producto con ese nombre.");
         }
-        String sql = "{CALL insertar_producto(?,?,?,?,?)}";//Llamada al procedimiento
+        String sql = "{CALL insertar_producto(?,?,?,?,?,?)}";//Llamada al procedimiento
         try 
             (PreparedStatement ps =conn.prepareCall(sql)){
             ps.setString(1, nombre);
             ps.setDouble(2, precio);
-            ps.setInt(3, stock_actual);
-            ps.setInt(4, stock_minimo);
-            ps.setInt(5, id_unidad_medida);
+            ps.setInt(3, stock_minimo);
+            ps.setInt(4, stock_actual);
+            ps.setString(5, obervacion);
+            ps.setInt(6, id_unidad_medida);
             ps.execute();
             System.out.println("Producto insertado con éxito");
         }
     } 
 
 
-       /* UPDATE --> ACTUALIZAR DATOS */
-     public void modificarProducto(int id, String nuevo_nombre, double nuevo_precio, int nuevo_stock_minimo, int nuevo_stock_actual, int nuevo_unidad_medida) throws SQLException{
-        if (existeProductoUnidadMedida(nuevo_nombre, id)){
-            throw new IllegalArgumentException("El nombre del producto ya esta registrado.");
+    /* UPDATE --> ACTUALIZAR DATOS */
+    public void modificarProducto(int id, String nombre, double precio, int stock_minimo, int stock_actual, String observacion, int id_unidad) throws SQLException {
+        // El orden del PROCEDURE Update_Producto es: id, nombre, precio, stock_minimo, stock_actual, obs, id_unidad
+        String sql = "{CALL Update_Producto(?,?,?,?,?,?,?)}";
+       try (CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, id);
+            cs.setString(2, nombre);
+            cs.setDouble(3, precio);
+            cs.setInt(4, stock_minimo);
+            cs.setInt(5, stock_actual);
+            cs.setString(6, observacion);
+            cs.setInt(7, id_unidad);
+            cs.execute();
         }
-        String sql = "{CALL Update_Producto(?,?,?,?,?,?)}";/*Llamada al procedimiento*/
-        try (PreparedStatement ps = conn.prepareCall(sql)){
-            ps.setInt(1,id);
-            ps.setString(2, nuevo_nombre);
-            ps.setDouble(3, nuevo_precio);
-            ps.setInt(4, nuevo_stock_minimo);
-            ps.setInt(5, nuevo_stock_actual);
-            ps.setInt(6, nuevo_unidad_medida);
-            ps.executeUpdate();
-            System.out.println("Producto modificado");
-        }                   
-
     }
 
 
@@ -113,21 +112,11 @@ public class ProductoMethod {
         cs.execute();
     }
     
-    public void activarEscuela(int codigoEscuela) throws SQLException{
-        String sql = "CALL vera_ActivarEscuelaProfesional (?)";
+    //ACtivar
+    public void activarProducto(int codigoEscuela) throws SQLException{
+        String sql = "CALL Activar_Producto(?)";
         CallableStatement cs = conn.prepareCall(sql);
             cs.setInt(1, codigoEscuela);
         cs.execute();
-    }
-    
-   
-    
-    /**
-     * Método opcional: permite obtener el objeto Connection si se requiere
-     *
-     * @return conexión actual
-     */
-    public Connection getConexion() {
-        return conn;
     }
 }

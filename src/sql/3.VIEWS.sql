@@ -187,14 +187,14 @@ WHERE pm.estado = 1;
 /* vista_producto */
 CREATE OR REPLACE VIEW vista_producto AS
 SELECT
-    
     p.id_producto	AS `ID`,
     p.nombre_producto AS `Nombre del Producto`,
     um.nombre_unidad_medida AS `Unidad de Medida`,
     um.abreviatura AS `Abreviatura`,
     CONCAT('S/ ', FORMAT(p.precio_producto, 2)) AS `Precio`,
     p.stock_minimo AS `Stock Mínimo`,
-    p.stock_actual AS `Stock Actual`
+    p.stock_actual AS `Stock Actual`,
+    p.observacion_producto AS `Observaciones`
 FROM producto p
 INNER JOIN unidad_medida um
     ON p.id_unidad_medida = um.id_unidad_medida;
@@ -204,11 +204,13 @@ INNER JOIN unidad_medida um
 /* vista_proveedor */
 CREATE OR REPLACE VIEW vista_proveedor AS
 SELECT
+  id_proveedor AS `ID`,
   ruc AS `RUC`,
   razon_social AS `Razón Social (Nombre del Proveedor)`,
   telefono_proveedor AS `Teléfono de contacto`,
   correo_proveedor AS `Correo de contacto`,
-  direccion_proveedor AS `Dirección`
+  direccion_proveedor AS `Dirección`,
+  observacion_proveedor AS `Observaciones`
 FROM proveedor;
 
 

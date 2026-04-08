@@ -836,7 +836,6 @@ DELIMITER ;
 Cambio de nombres a comparación de Oracle
 **************************************/
 DELIMITER //
-
 DROP PROCEDURE IF EXISTS Update_Producto //
 CREATE PROCEDURE Update_Producto (
     IN p_id_producto       INT,
@@ -844,12 +843,14 @@ CREATE PROCEDURE Update_Producto (
     IN p_precio_unitario   DECIMAL(10,2),
     IN p_stock_minimo      INT,
     IN p_stock_actual      INT,
+    IN p_observacion       TEXT,
     IN p_id_unidad_medida  INT
 )
 BEGIN
     -- Declaración de variables locales
     DECLARE v_existencia INT;
     DECLARE v_nombre     VARCHAR(100) DEFAULT TRIM(p_nombre);
+    DECLARE v_obs        TEXT         DEFAULT TRIM(p_observacion);
 
     -- 1. Validar ID y existencia del producto
     IF p_id_producto IS NULL THEN
@@ -893,22 +894,28 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El stock mínimo no puede ser mayor al stock actual.', MYSQL_ERRNO = 20147;
     END IF;
 
-    -- 7. Validar unidad de medida
+    --7. Validar que la observacion no exeda 500 caracteres 
+    IF v_obs IS NOT NULL AND CHAR_LENGTH(v_obs) > 500 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La observación es demasiado larga (máx 500 caracteres).', MYSQL_ERRNO = 20165;
+    END IF;
+
+    -- 8. Validar unidad de medida
     SELECT COUNT(*) INTO v_existencia FROM unidad_medida WHERE id_unidad_medida = p_id_unidad_medida;
     IF v_existencia = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La unidad de medida no existe.', MYSQL_ERRNO = 20149;
     END IF;
 
-    -- 8. Ejecutar actualización
+    -- 9. Ejecutar actualización
     UPDATE producto
     SET nombre_producto  = v_nombre,
         precio_producto  = p_precio_unitario,
         stock_minimo     = p_stock_minimo,
         stock_actual     = p_stock_actual,
+        observacion_producto = v_obs,
         id_unidad_medida = p_id_unidad_medida
     WHERE id_producto = p_id_producto;
 
-    -- 9. Verificar si hubo cambios
+    -- 10. Verificar si hubo cambios
     IF ROW_COUNT() = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se realizaron cambios en el producto.', MYSQL_ERRNO = 20150;
     END IF;
@@ -918,19 +925,22 @@ END //
 DELIMITER ;
 
 
+
 /**************************************
-13- PROVEEDOR (CORREGIDO)
-Uso de RUC como identificador principal
+13- PROVEEDOR
+Mas campos  a comparación de Oracle
 **************************************/
 DELIMITER //
 
 DROP PROCEDURE IF EXISTS Update_Proveedor //
 CREATE PROCEDURE Update_Proveedor (
+    IN p_id_proveedor  INT,
     IN p_ruc           CHAR(11),
     IN p_razon_social  VARCHAR(150),
     IN p_telefono      VARCHAR(15),
     IN p_correo        VARCHAR(150),
-    IN p_direccion     VARCHAR(150)
+    IN p_direccion     VARCHAR(150),
+    IN p_observacion   TEXT
 )
 BEGIN
     -- Declaración de variables locales
@@ -938,25 +948,24 @@ BEGIN
     DECLARE v_ruc        CHAR(11)     DEFAULT TRIM(p_ruc);
     DECLARE v_razon      VARCHAR(150) DEFAULT TRIM(p_razon_social);
     DECLARE v_correo     VARCHAR(150) DEFAULT LOWER(TRIM(p_correo));
+    DECLARE v_obs        TEXT         DEFAULT TRIM(p_observacion);
 
-    -- 1. Validar existencia del proveedor (usando el RUC como ID)
-    SELECT COUNT(*) INTO v_existencia FROM proveedor WHERE ruc = v_ruc;
+    -- 1. Validar existencia del proveedor
+    SELECT COUNT(*) INTO v_existencia FROM proveedor WHERE id_proveedor = p_id_proveedor;
     IF v_existencia = 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El proveedor con este RUC no existe.', MYSQL_ERRNO = 20161;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El proveedor no existe.', MYSQL_ERRNO = 20161;
     END IF;
 
-    -- 2. Validar formato del RUC (11 dígitos numéricos)
+    -- 2. Validar RUC (11 dígitos y no nulo)
     IF v_ruc IS NULL OR v_ruc NOT REGEXP '^[0-9]{11}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El RUC debe tener 11 dígitos numéricos.', MYSQL_ERRNO = 20168;
     END IF;
 
-    -- 3. Validar Correo duplicado
-    -- Verificamos si existe OTRA fila con ese correo que NO sea la del RUC actual
+    -- 3. Validar RUC duplicado
     SELECT COUNT(*) INTO v_existencia FROM proveedor 
-    WHERE correo_proveedor = v_correo AND ruc <> v_ruc;
-    
+    WHERE ruc = v_ruc AND id_proveedor <> p_id_proveedor;
     IF v_existencia > 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El correo ya pertenece a otro proveedor.', MYSQL_ERRNO = 20169;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El RUC ya pertenece a otro proveedor.', MYSQL_ERRNO = 20169;
     END IF;
 
     -- 4. Validar Razón Social
@@ -964,29 +973,34 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La razón social es obligatoria.', MYSQL_ERRNO = 20162;
     END IF;
 
-    -- 5. Validar Teléfono (7 a 15 dígitos)
-    IF p_telefono IS NULL OR TRIM(p_telefono) NOT REGEXP '^[0-9]{7,15}$' THEN
+    -- 5. Validar Teléfono (Mínimo 7, máximo 15 según tu CHECK)
+    IF p_telefono IS NULL OR p_telefono NOT REGEXP '^[0-9]{7,15}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Teléfono inválido (7 a 15 dígitos).', MYSQL_ERRNO = 20163;
     END IF;
 
-    -- 6. Validar Formato de Correo
+    -- 6. Validar Correo
     IF v_correo NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Formato de correo inválido.', MYSQL_ERRNO = 20164;
     END IF;
+    
+    --7. Validar que la observacion no exeda 500 caracteres 
+    IF v_obs IS NOT NULL AND CHAR_LENGTH(v_obs) > 500 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La observación es demasiado larga (máx 500 caracteres).', MYSQL_ERRNO = 20165;
+    END IF;
 
-    -- 7. Ejecutar actualización
+    -- 8. Ejecutar actualización
     UPDATE proveedor
-    SET 
+    SET ruc                 = v_ruc,
         razon_social        = v_razon,
         telefono_proveedor  = TRIM(p_telefono),
         correo_proveedor    = v_correo,
-        direccion_proveedor = TRIM(p_direccion)
-    WHERE ruc = v_ruc;
+        direccion_proveedor = TRIM(p_direccion),
+        observacion_proveedor = v_obs
+    WHERE id_proveedor = p_id_proveedor;
 
-    -- 8. Verificar si hubo cambios
-    -- Nota: Si envías exactamente los mismos datos que ya están, MySQL devuelve 0.
+    -- 9. Verificar si hubo cambios
     IF ROW_COUNT() = 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Aviso: No se realizaron cambios (los datos son idénticos).', MYSQL_ERRNO = 20167;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se realizaron cambios en el proveedor.', MYSQL_ERRNO = 20167;
     END IF;
 
 END //

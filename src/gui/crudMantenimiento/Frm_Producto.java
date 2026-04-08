@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package gui.crudMantenimiento;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.sql.ResultSet;
 import connection.ConnectionDB;
 import java.sql.SQLException;
@@ -24,8 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 /*pdf*/
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.BorderFactory;
+import javax.swing.UIManager;
 
 public class Frm_Producto extends javax.swing.JFrame {
     //Modelo para mostrar datos en ta tabla
@@ -41,12 +41,58 @@ public class Frm_Producto extends javax.swing.JFrame {
     private String precioOriginal;
     private String stockActualOriginal;
     private String stockMinimoOriginal;
+    private String ObservacionOriginal;
     private String unidadOriginal = "";
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frm_Producto.class.getName());
 
     public Frm_Producto() {
+        FlatLightLaf.setup();
         initComponents();
+        
+        // --- CONFIGURACIÓN GLOBAL ---
+    UIManager.put("Button.arc", 15);           // Redondeo de botones
+    UIManager.put("TextComponent.arc", 10);    // Redondeo de campos de texto
+    this.setResizable(false);                  // Bloquea redimensionado
+    this.setLocationRelativeTo(null);          // Centra la ventana
+    this.setTitle("Mantenimiento de Productos - Bistro System");
+
+    // --- APLICACIÓN DE COLORES (ESTILO BISTRO) ---
+    this.getContentPane().setBackground(new Color(0xFFFFFF));
+    
+    // Panel de datos (Blanco con borde fino)
+    jPanel1.setBackground(new Color(0xFFFFFF)); 
+    jPanel1.setBorder(BorderFactory.createLineBorder(new Color(0xE5E5D1), 1));
+    
+    // Paneles de diseño (Café oscuro para contraste)
+    jPanel2.setBackground(new Color(0x3E2723)); // Panel de búsqueda
+    jPanel3.setBackground(new Color(0xFDFCF0)); // Panel lateral/fondo
+    
+    // --- COLORES DE BOTONES ---
+    BTN_Guardar.setBackground(new Color(0x274C5B)); // Azul Petróleo
+    BTN_Guardar.setForeground(Color.WHITE);
+    
+    BTN_Modificar.setBackground(new Color(0xE67E22)); // Naranja desaturado
+    BTN_Modificar.setForeground(Color.WHITE);
+    
+    BTN_PDF.setBackground(new Color(0xE74C3C)); // Rojo Alizarin
+    BTN_PDF.setForeground(Color.WHITE);
+    
+    BTN_EXCEL.setBackground(new Color(0x27AE60)); // Verde Esmeralda
+    BTN_EXCEL.setForeground(Color.WHITE);
+    
+    BTN_Nuevo.setBackground(new Color(0x7EB693)); // Verde Sage
+    BTN_Nuevo.setForeground(Color.WHITE);
+    
+    BTN_Cerrar1.setBackground(new Color(0x95A5A6)); // Gris Asfalto
+    BTN_Cerrar1.setForeground(Color.WHITE);
+    
+    BTN_VerProductos.setBackground(new Color(0x546E7A)); // Azul Grisáceo
+    BTN_VerProductos.setForeground(Color.WHITE);
+    
+    BTN_Cancel.setBackground(new Color(0xBDC3C7)); // Gris claro
+    BTN_Cancel.setForeground(Color.BLACK);
+        
         
         //Posicion
         this.setLocationRelativeTo(null);
@@ -55,13 +101,22 @@ public class Frm_Producto extends javax.swing.JFrame {
         cargarUnidadMedida();
         
         //definir los encabezados de la tabla
-        String titulos[]={"ID","Nombre del producto","unidad de medida","Abreviatura","Precio del producto", "Stock Minimo","Stock Actual"};
+        String titulos[]={"ID","Nombre del producto","unidad de medida","Abreviatura","Precio del producto", "Stock Minimo","Stock Actual","Observaciones"};
         
         //Asignar los tiutlos al modelo
         modeloTablaProducto.setColumnIdentifiers(titulos);
         
         //Establecer el modelo a la JTable
         JTABLE_Mant_Producto.setModel(modeloTablaProducto);
+        
+        //ocultar columnas sesibles o internas: solo visual, noafecta al modelo, ocultar columna "id_producto y observacion_producto"
+        JTABLE_Mant_Producto.getColumnModel().getColumn(0).setMinWidth(0);
+        JTABLE_Mant_Producto.getColumnModel().getColumn(0).setMaxWidth(0);
+        JTABLE_Mant_Producto.getColumnModel().getColumn(0).setWidth(0);
+        
+        //JTABLE_Mant_Producto.getColumnModel().getColumn(7).setMinWidth(0);
+        //JTABLE_Mant_Producto.getColumnModel().getColumn(7).setMaxWidth(0);
+        //JTABLE_Mant_Producto.getColumnModel().getColumn(7).setWidth(0);
         
         //Desabilitar campo de codigo (solo se mostrara no se escribe)
         txtcodigoproducto.setEnabled(false);
@@ -90,6 +145,9 @@ public class Frm_Producto extends javax.swing.JFrame {
         txtstockMinimo = new javax.swing.JTextField();
         txtPreciounitario = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtobservaciones = new javax.swing.JTextArea();
+        jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTABLE_Mant_Producto = new javax.swing.JTable();
         BTN_EXCEL = new javax.swing.JButton();
@@ -168,8 +226,8 @@ public class Frm_Producto extends javax.swing.JFrame {
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 20, 100, -1));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel8.setText("unidad de medida");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 120, 100, -1));
+        jLabel8.setText("Observacion");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 200, 100, -1));
 
         txtstockMinimo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtstockMinimo.setForeground(new java.awt.Color(0, 0, 204));
@@ -196,6 +254,16 @@ public class Frm_Producto extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel9.setText("Stock mínimo*");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 120, 90, -1));
+
+        txtobservaciones.setColumns(20);
+        txtobservaciones.setRows(5);
+        jScrollPane3.setViewportView(txtobservaciones);
+
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 330, 60));
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel10.setText("unidad de medida");
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 120, 100, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 730, 300));
 
@@ -259,17 +327,18 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_PDF.addActionListener(this::BTN_PDFActionPerformed);
         getContentPane().add(BTN_PDF, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 650, 170, 50));
 
+        jPanel3.setBackground(new java.awt.Color(253, 252, 240));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         BTN_VerProductos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_VerProductos.setText("VER PRODUCTOS");
         BTN_VerProductos.addActionListener(this::BTN_VerProductosActionPerformed);
-        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 30, 165, 50));
+        jPanel3.add(BTN_VerProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 165, 50));
 
         BTN_Modificar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Modificar.setText("    MODIFICAR");
         BTN_Modificar.addActionListener(this::BTN_ModificarActionPerformed);
-        jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 280, 165, 48));
+        jPanel3.add(BTN_Modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 280, 165, 48));
 
         BTN_Guardar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Guardar.setText("     GUARDAR");
@@ -279,19 +348,20 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
         });
         BTN_Guardar.addActionListener(this::BTN_GuardarActionPerformed);
-        jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 200, 165, 48));
+        jPanel3.add(BTN_Guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 200, 165, 48));
 
         BTN_Nuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         BTN_Nuevo.setText("      NUEVO");
         BTN_Nuevo.addActionListener(this::BTN_NuevoActionPerformed);
-        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 110, 165, 48));
+        jPanel3.add(BTN_Nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 110, 165, 48));
 
         BTN_Cancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        BTN_Cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_delete.png"))); // NOI18N
         BTN_Cancel.setText("     CANCELAR");
         BTN_Cancel.addActionListener(this::BTN_CancelActionPerformed);
-        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 110, 165, 48));
+        jPanel3.add(BTN_Cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 110, 165, 48));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 930, 720));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 940, 720));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -312,6 +382,9 @@ public class Frm_Producto extends javax.swing.JFrame {
         BTN_Cancel.setVisible(false);
         BTN_Cancel.setEnabled(false);
         BTN_VerProductos.setEnabled(false);
+        BTN_Nuevo.setVisible(true);
+        BTN_Nuevo.setEnabled(true);
+
 
         if (filaSeleccionada != -1) {
             // Obtener los datos de la fila seleccionada
@@ -322,6 +395,10 @@ public class Frm_Producto extends javax.swing.JFrame {
             String stockMinimo = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 5).toString().trim();
             String unidadDeMedida = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 2).toString().trim();
             
+            //Para observacion
+            Object celdaObservacion = JTABLE_Mant_Producto.getValueAt(filaSeleccionada, 7);
+            String observacionProducto = (celdaObservacion != null) ? celdaObservacion.toString().trim() : "";
+            
             
             // Mostrar en los controles
             txtcodigoproducto.setText(codigo);
@@ -329,6 +406,7 @@ public class Frm_Producto extends javax.swing.JFrame {
             txtPreciounitario.setText(precioUnitario);
             txtstockActual.setText(stockActual);
             txtstockMinimo.setText(stockMinimo);
+            txtobservaciones.setText(observacionProducto);
 
             // Guardar valores originales para comparación
             nombreOriginal = nombreProducto;
@@ -336,6 +414,7 @@ public class Frm_Producto extends javax.swing.JFrame {
             stockActualOriginal = stockActual;
             stockMinimoOriginal = stockMinimo;
             unidadOriginal = unidadDeMedida;
+            ObservacionOriginal = observacionProducto;
 
             // Buscar coincidencia en el ComboBox ignorando mayúsculas
             boolean encontrado = false;
@@ -535,23 +614,34 @@ public class Frm_Producto extends javax.swing.JFrame {
             String nuevoPrecioUnitario = txtPreciounitario.getText().trim();
             String nuevoStockActual = txtstockActual.getText().trim();
             String nuevoStockMinimo = txtstockMinimo.getText().trim();
+            String nuevaObservacion = txtobservaciones.getText().trim();
             String nombreUnidadMedida = (String) jComboBox_unidad_medida.getSelectedItem();
     
 
             // Validar campos obligatorios
-            if (codigoStr.isEmpty() || nuevoNombreProducto.isEmpty() || nuevoPrecioUnitario.isEmpty() || nuevoStockActual.isEmpty() || nuevoStockMinimo.isEmpty() || nombreUnidadMedida == null || nombreUnidadMedida.isEmpty()) {
+            if (codigoStr.isEmpty() || nuevoNombreProducto.isEmpty() || nuevoPrecioUnitario.isEmpty() || nuevoStockActual.isEmpty() 
+                    || nuevoStockMinimo.isEmpty() || nombreUnidadMedida == null || nombreUnidadMedida.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
+            
+            // Validar la longitud de la observacion
+            if (nuevaObservacion.length() > 500) {
+                JOptionPane.showMessageDialog(this, "La observación no puede exceder los 500 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtobservaciones.requestFocus();
+                return;
+            }
+            
             // Validar longitud del nombre
             if (nuevoNombreProducto.length() > 85) {
-                JOptionPane.showMessageDialog(this, "El nombre de la escuela no debe exceder 85 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "El nombre del producto no debe exceder 85 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
             // Validar si hubo cambios
-            if (nuevoNombreProducto.equalsIgnoreCase(nombreOriginal) && nuevoPrecioUnitario.equalsIgnoreCase(precioOriginal) && nuevoStockActual.equalsIgnoreCase(stockActualOriginal) && nuevoStockMinimo.equalsIgnoreCase(stockMinimoOriginal) && nombreUnidadMedida.equalsIgnoreCase(unidadOriginal)) {
+            if (nuevoNombreProducto.equalsIgnoreCase(nombreOriginal) && nuevoPrecioUnitario.equalsIgnoreCase(precioOriginal) 
+                    && nuevoStockActual.equalsIgnoreCase(stockActualOriginal) && nuevoStockMinimo.equalsIgnoreCase(stockMinimoOriginal) 
+                    && nombreUnidadMedida.equalsIgnoreCase(unidadOriginal) && nuevaObservacion.equalsIgnoreCase(ObservacionOriginal)) {
                 JOptionPane.showMessageDialog(this, "No se detectaron cambios en los datos.", "Información", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -559,11 +649,13 @@ public class Frm_Producto extends javax.swing.JFrame {
             // Convertir código a entero
             int codigoProducto = Integer.parseInt(codigoStr);
             // Convertir precio a double
-            String precioLimpio = nuevoPrecioUnitario.replace("S/", "").replace(",", ".").trim();
+            // En BTN_ModificarActionPerformed
+            String precioLimpio = nuevoPrecioUnitario.replace("S/", "").replace(",", "").trim(); 
+            // Nota: Si el formato usa coma para miles, elimínala. Si usa punto para decimales, asegúrate de mantenerlo.
             double precio = Double.parseDouble(precioLimpio);
-            // Convertir código a entero
+            // Convertir stock actual a entero
             int stockActual = Integer.parseInt(nuevoStockActual);
-            // Convertir código a entero
+            // Convertir stock minimo a entero
             int stockMinimo = Integer.parseInt(nuevoStockMinimo);
 
             // Obtener código de la unidad de medida (FK)
@@ -574,13 +666,13 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
 
             // Verificar duplicidad de nombre con otras escuelas
-            if (PR.existeProductoUnidadMedida(nuevoNombreProducto, codigoProducto)) {
+            if (PR.existeProductoConNombre(nuevoNombreProducto, codigoProducto)) {
                 JOptionPane.showMessageDialog(this, "Ya existe otra escuela con el mismo nombre.", "Validación", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
              // Llamar al método de modificación
-            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockMinimo, stockActual , codigoUnidadMedida);
+            PR.modificarProducto(codigoProducto, nuevoNombreProducto, precio, stockMinimo, stockActual, nuevaObservacion, codigoUnidadMedida);
 
             JOptionPane.showMessageDialog(this, "Escuela profesional actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
@@ -605,10 +697,16 @@ public class Frm_Producto extends javax.swing.JFrame {
             //Variable para el jcombobox y el nombre (solo para Strings y jcombox)
             String nombreProducto = txtNombreProducto.getText().trim();
             String nombreUnidad = (String) jComboBox_unidad_medida.getSelectedItem();
+            String Observacion = txtobservaciones.getText().trim();
             
             if (nombreProducto.isEmpty()){
                 JOptionPane.showMessageDialog(this, "El nombre del producto no puede estar vacio.", "Validación", JOptionPane.WARNING_MESSAGE);
                 txtNombreProducto.requestFocus();
+                return;
+            }
+            if (Observacion.length() > 500) {
+                JOptionPane.showMessageDialog(this, "La observación no puede exceder los 500 caracteres.", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtobservaciones.requestFocus();
                 return;
             }
             if (txtPreciounitario.getText().trim().isEmpty()){
@@ -659,7 +757,7 @@ public class Frm_Producto extends javax.swing.JFrame {
             }
             
             // 4. Insertar usando método de clase (que valida duplicados)
-            PR.insertarProducto(nombreProducto, precioUnitario, stockMinimo, stockActual, codigoUnidad);
+            PR.insertarProducto(nombreProducto, precioUnitario, stockMinimo, stockActual, Observacion, codigoUnidad);
 
             // 5. Confirmar éxito
             JOptionPane.showMessageDialog(this, "Producto registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -684,9 +782,7 @@ public class Frm_Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_BTN_NuevoActionPerformed
 
     private void BTN_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN_CancelActionPerformed
-        JTABLE_Mant_Producto.setRowSelectionAllowed(true);
-        JTABLE_Mant_Producto.setColumnSelectionAllowed(true);
-        JTABLE_Mant_Producto.setCellSelectionEnabled(true);
+        listarProductos();
 
         BTN_Guardar.setEnabled(true);
         //BTN_Desactivar.setEnabled(false);
@@ -747,6 +843,7 @@ public class Frm_Producto extends javax.swing.JFrame {
     private javax.swing.JTextField TXT_BuscarProductos;
     private javax.swing.JComboBox<String> jComboBox_unidad_medida;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -759,9 +856,11 @@ public class Frm_Producto extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField txtNombreProducto;
     private javax.swing.JTextField txtPreciounitario;
     private javax.swing.JTextField txtcodigoproducto;
+    private javax.swing.JTextArea txtobservaciones;
     private javax.swing.JTextField txtstockActual;
     private javax.swing.JTextField txtstockMinimo;
     // End of variables declaration//GEN-END:variables
@@ -800,7 +899,8 @@ public class Frm_Producto extends javax.swing.JFrame {
                 rs.getString("Abreviatura"), 
                 rs.getString("Precio"),    
                 rs.getInt("Stock Mínimo"),
-                rs.getInt("Stock Actual")
+                rs.getInt("Stock Actual"),
+                rs.getString("Observaciones")
             };
                 modeloTablaProducto.addRow(fila);
             }
@@ -824,31 +924,26 @@ public class Frm_Producto extends javax.swing.JFrame {
             BTN_VerProductos.setEnabled(false);
         }
     //Método para mostrar las facultades
-    public void buscarProductosPorNombre(){
-        //Limpiar la tabla antes de mostrar los resultados filtrados
+    public void buscarProductosPorNombre() {
         modeloTablaProducto.setRowCount(0);
-        
-        //Obtiene el texto ingresado
         String nombre = TXT_BuscarProductos.getText().trim();
-        
-        try{
-            //Lamar al metodo que devuelva los datos de facultades
+        try {
             ResultSet rs = PR.buscarProducto(nombre);
-            //Recorre cada fila del resultado y grega a la tabla
-            while (rs.next()){
+            while (rs.next()) {
                 Object[] fila = {
                     rs.getInt("ID"),
                     rs.getString("Nombre del Producto"),
                     rs.getString("Unidad de Medida"),
-                    rs.getString("Precio")
+                    rs.getString("Abreviatura"),
+                    rs.getString("Precio"),
+                    rs.getInt("Stock Mínimo"),
+                    rs.getInt("Stock Actual"),
+                    rs.getString("Observaciones")
                 };
                 modeloTablaProducto.addRow(fila);      
             }
-        }catch (SQLException e){
-            //Muestra mensaje si ocurre un error en la consulta
-            JOptionPane.showMessageDialog(this,
-                    "Error al mostrar productos \n"+e.getMessage(),
-                    "Error de consulta",JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage());
         }
-    }
+    }   
 }

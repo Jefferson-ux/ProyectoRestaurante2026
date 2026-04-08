@@ -34,7 +34,7 @@ END //
 /***************************************
 2. PRODUCTO
 *****************************************/
-DROP PROCEDURE IF EXISTS Desactivar_Producto;
+DROP PROCEDURE IF EXISTS ACtivar_Producto;
 DELIMITER //
 CREATE PROCEDURE Desactivar_Producto(IN p_id_producto INT)
 BEGIN
@@ -57,7 +57,7 @@ BEGIN
         ELSE
             /* Proceder con la desactivación */
             UPDATE Producto
-            SET estado = 0
+            SET estado = 1
             WHERE id_producto = P_id_producto;
         END IF;
     END IF;
@@ -66,7 +66,7 @@ END //
 /***************************************
 3. PROVEEDOR
 *****************************************/
-DROP PROCEDURE IF EXISTS Desactivar_Proveedor;
+DROP PROCEDURE IF EXISTS Activar_Proveedor;
 DELIMITER //
 CREATE PROCEDURE Desactivar_Proveedor(IN p_id_proveedor INT)
 BEGIN
@@ -89,7 +89,7 @@ BEGIN
         ELSE
             /* Proceder con la desactivación */
             UPDATE Proveedor
-            SET estado = 0
+            SET estado = 1
             WHERE id_proveedor = P_id_proveedor;
         END IF;
     END IF;

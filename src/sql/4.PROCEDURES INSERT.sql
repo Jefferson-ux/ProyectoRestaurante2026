@@ -628,9 +628,10 @@ DELIMITER ;
 
 
 /* ============================================================
-   11. PRODUCTO
-   Valida nombre único, campos no vacíos y valores numéricos válidos.
-   Valida existencia de unidad de medida.
+    11. PRODUCTO
+    Valida nombre único, campos no vacíos, valores numéricos,
+    existencia de unidad de medida e inserta observación.
+    El estado se asigna como 1 (Activo) por defecto.
    ============================================================ */
 DROP PROCEDURE IF EXISTS insertar_producto;
 DELIMITER $$
@@ -640,12 +641,14 @@ CREATE PROCEDURE insertar_producto(
     IN p_precio_unitario DECIMAL(10,2),
     IN p_stock_minimo INT,
     IN p_stock_actual INT,
+    IN p_observacion TEXT, -- Único parámetro nuevo conservado
     IN p_id_unidad_medida INT
 )
 BEGIN
     DECLARE v_count INT;
-	DECLARE v_msg VARCHAR(500);
+    DECLARE v_obs TEXT DEFAULT TRIM(p_observacion);
 
+    -- 1. Validar nombre único
     SELECT COUNT(*) INTO v_count
     FROM producto
     WHERE UPPER(TRIM(nombre_producto)) = UPPER(TRIM(p_nombre));
@@ -656,12 +659,14 @@ BEGIN
         MYSQL_ERRNO = 1028;
     END IF;
 
+    -- 2. Validar que el nombre no esté vacío
     IF p_nombre IS NULL OR TRIM(p_nombre) = '' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El nombre del producto no puede estar vacío.',
         MYSQL_ERRNO = 1029;
     END IF;
 
+    -- 3. Validar precios y stock
     IF p_precio_unitario < 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El precio unitario debe ser mayor o igual a 0.',
@@ -680,6 +685,7 @@ BEGIN
         MYSQL_ERRNO = 1032;
     END IF;
 
+    -- 4. Validar existencia de unidad de medida
     SELECT COUNT(*) INTO v_count
     FROM unidad_medida
     WHERE id_unidad_medida = p_id_unidad_medida;
@@ -690,20 +696,26 @@ BEGIN
         MYSQL_ERRNO = 1033;
     END IF;
 
+    -- 5. Ejecutar inserción (Estado se manda como 1 internamente)
     INSERT INTO producto(
         nombre_producto,
         precio_producto,
         stock_minimo,
         stock_actual,
-        id_unidad_medida
+        observacion_producto,
+        id_unidad_medida,
+        estado 
     )
     VALUES(
-        p_nombre,
+        TRIM(p_nombre),
         p_precio_unitario,
         p_stock_minimo,
         p_stock_actual,
-        p_id_unidad_medida
+        v_obs,
+        p_id_unidad_medida,
+        1 -- Se asigna "Activo" automáticamente
     );
+
     SELECT 'Producto insertado exitosamente.' AS mensaje;
 
 END$$
@@ -716,9 +728,10 @@ DELIMITER ;
 
 
 /* ============================================================
-   12. PROVEEDOR
-   Valida duplicado por RUC y correo.
-   Valida formato y campos obligatorios.
+    12. PROVEEDOR
+    Valida duplicado por RUC y correo.
+    Valida formato y campos obligatorios.
+    Asigna estado 1 por defecto e incluye observación.
    ============================================================ */
 DROP PROCEDURE IF EXISTS insertar_proveedor;
 DELIMITER $$
@@ -728,28 +741,36 @@ CREATE PROCEDURE insertar_proveedor(
     IN p_razon_social VARCHAR(255),
     IN p_telefono VARCHAR(50),
     IN p_correo VARCHAR(255),
-    IN p_direccion VARCHAR(255)
+    IN p_direccion VARCHAR(255),
+    IN p_observacion TEXT -- Nuevo parámetro
 )
 BEGIN
     DECLARE v_count INT;
+    DECLARE v_obs TEXT DEFAULT TRIM(p_observacion);
 
-    -- 1. Validar RUC duplicado
-    SELECT COUNT(*) INTO v_count FROM proveedor WHERE ruc = p_ruc;
+    -- 1. Validar duplicado por RUC
+    SELECT COUNT(*) INTO v_count
+    FROM proveedor
+    WHERE ruc = p_ruc; -- Nombre de columna corregido a 'ruc'
+
     IF v_count > 0 THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Error: Ya existe un proveedor registrado con este RUC.', 
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ya existe un proveedor con el mismo RUC.',
         MYSQL_ERRNO = 1034;
     END IF;
 
-    -- 2. Validar correo duplicado
-    SELECT COUNT(*) INTO v_count FROM proveedor WHERE correo_proveedor = p_correo;
+    -- 2. Validar duplicado por Correo
+    SELECT COUNT(*) INTO v_count
+    FROM proveedor
+    WHERE correo_proveedor = p_correo;
+
     IF v_count > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Ya existe un proveedor con el mismo correo.',
         MYSQL_ERRNO = 1035;
     END IF;
 
-    -- 3. Validar longitud de RUC
+    -- 3. Validar longitud del RUC
     IF LENGTH(TRIM(p_ruc)) <> 11 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El RUC debe tener exactamente 11 caracteres.',
@@ -758,37 +779,48 @@ BEGIN
 
     -- 4. Validar campos obligatorios
     IF p_razon_social IS NULL OR TRIM(p_razon_social) = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La razón social no puede estar vacía.', MYSQL_ERRNO = 1037;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La razón social no puede estar vacía.',
+        MYSQL_ERRNO = 1037;
     END IF;
 
     IF p_telefono IS NULL OR TRIM(p_telefono) = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El teléfono no puede estar vacío.', MYSQL_ERRNO = 1038;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El teléfono no puede estar vacío.',
+        MYSQL_ERRNO = 1038;
     END IF;
 
     IF p_correo IS NULL OR TRIM(p_correo) = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El correo no puede estar vacío.', MYSQL_ERRNO = 1039;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El correo no puede estar vacío.',
+        MYSQL_ERRNO = 1039;
     END IF;
 
     IF p_direccion IS NULL OR TRIM(p_direccion) = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La dirección no puede estar vacía.', MYSQL_ERRNO = 1040;
-    END IF;
-
-    -- 5. Validaciones de Formato (REGEXP)
-    IF p_telefono NOT REGEXP '^[0-9]{7,15}$' THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El teléfono debe contener solo números (7 a 15 dígitos).',
-        MYSQL_ERRNO = 1041;
+        SET MESSAGE_TEXT = 'La dirección no puede estar vacía.',
+        MYSQL_ERRNO = 1040;
     END IF;
 
-    IF p_correo NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El formato del correo electrónico no es válido.',
-        MYSQL_ERRNO = 1042;
-    END IF;
-
-    -- 6. Inserción final
-    INSERT INTO proveedor(ruc, razon_social, telefono_proveedor, correo_proveedor, direccion_proveedor)
-    VALUES(p_ruc, p_razon_social, p_telefono, p_correo, p_direccion);
+    -- 5. Ejecutar inserción
+    INSERT INTO proveedor(
+        ruc,
+        razon_social,
+        telefono_proveedor,
+        correo_proveedor,
+        direccion_proveedor,
+        observacion_proveedor, -- Campo añadido
+        estado        -- Campo añadido (Valor 1 por defecto)
+    )
+    VALUES(
+        TRIM(p_ruc),
+        TRIM(p_razon_social),
+        TRIM(p_telefono),
+        LOWER(TRIM(p_correo)),
+        TRIM(p_direccion),
+        v_obs,
+        1 -- Estado activo por defecto
+    );
 
     SELECT 'Proveedor insertado exitosamente.' AS mensaje;
 
